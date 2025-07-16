@@ -67,10 +67,14 @@ button:focus-visible {
   }
 } */
  :root{
-  
+  /* #FFC943 */
+     /* background-color: #603C2C;
+     background: linear-gradient(90deg, #F6D8CC 0%, #603C2C 100%); */
     background: #405C6F;
-    background: linear-gradient(90deg, rgb(197, 203, 208) 0%, rgba(255, 255, 255, 1) 100%);
- 
+    background: linear-gradient(90deg, rgb(255, 255, 255) 0%, rgb(255, 183, 183) 100%);
+     margin: 0;
+     padding:0;
+     box-sizing:border-box;
  }
         .fa:hover {
             opacity: 0.9;
@@ -102,3 +106,6 @@ button:focus-visible {
             background-color: transparent;
             color: black;
         }
+        body{
+  margin:0px;
+}
