@@ -63,34 +63,42 @@
   border: 1px solid #10131d;
 } */
 .header-container {
-  
+   height: 10vh;
     display: flex;
-    justify-content: space-around;
-    width: 80%;
+    justify-content:space-between;
+    align-items: center;
+    /* width: 90%; */
     margin: auto;
-    border-radius: 30px;
+    background-color: white;
+    /* border-radius: 30px; */
     box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
     padding: 0px 10px;
-    margin-top: 15px;
+    /* margin-top: 15px; */
 }
 
-.header-options {
+/* .header-options {
     padding-top: 20px;
-}
+} */
 
 .header-options a {
     margin: 0px 30px;
     text-decoration: none;
     color: black;
 }
-
+.logo{
+  margin-left: 33px;
+}
 .accounts-btn {
-    padding-top: 16px;
+    /* padding-top: 16px; */
 }
 
 .accounts-btn button {
-    background: none;
+    background:black;
+    color: white;
+    font-size: 17px;
+    border: none;
+    padding: 15px 35px ;
     margin: 0px 5px;
-    border-radius: 15px;
-    padding: 4px 15px;
+    border-radius: 35px;
+    /* padding: 4px 15px; */
 }

@@ -24,7 +24,7 @@ export default function Header(){
     return (
         <header>
             <div className="header-container">
-                <div className="logo"><h3>JOBS</h3></div>
+                <div className="logo"><h3>JOBS FINDER</h3></div>
                 <div className="header-options">
                     <a href="">Home</a>
                     <a href="">About</a>
