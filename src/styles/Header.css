@@ -1,0 +1,58 @@
+.header {
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-radius: 30px;
+    margin: auto;
+    width: 85vw;
+    height: 5vh;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #10131d;
+}
+
+.search-login {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-box {
+  padding: 6px 200px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+}
+
+.btn {
+  padding: 6px 12px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 30px;
+}
+
+.login {
+  background: #10131d;
+  color: white;
+}
+
+.register {
+  background: white;
+  color: #10131d;
+  border: 1px solid #10131d;
+}
