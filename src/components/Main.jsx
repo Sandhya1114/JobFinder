@@ -1,12 +1,14 @@
 import React from "react";
 import "../styles/Main.css";
+import Categories3DRing from "./rotate";
+import JobCards from "./JobCard";
 
 function Main() {
   const categories = ["IT Jobs", "Marketing", "Finance", "Engineering", "Remote Jobs"];
 
   return (
     <main className="main">
-      <section className="categories">
+      {/* <section className="categories">
         <h2>Browse Jobs by Category</h2>
         <div className="category-list">
           {categories.map((cat, index) => (
@@ -15,8 +17,9 @@ function Main() {
             </div>
           ))}
         </div>
-      </section>
-
+      </section> */}
+      <Categories3DRing/>
+      
       <section className="recommended">
         <h2>Recommended Jobs</h2>
         <div className="job-list">
@@ -30,6 +33,7 @@ function Main() {
           ))}
         </div>
       </section>
+       <JobCards/>
     </main>
   );
 }
