@@ -19,7 +19,7 @@ function Main() {
         </div>
       </section> */}
       <Categories3DRing/>
-      
+{/*       
       <section className="recommended">
         <h2>Recommended Jobs</h2>
         <div className="job-list">
@@ -32,7 +32,7 @@ function Main() {
             </div>
           ))}
         </div>
-      </section>
+      </section> */}
        <JobCards/>
     </main>
   );

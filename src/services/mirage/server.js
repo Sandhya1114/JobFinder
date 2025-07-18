@@ -90,11 +90,31 @@ const JOBS = {
     salary: { min: 120000, max: 180000, currency: 'USD' },
     description: 'Support AWS Security Operations Center to maintain a secure cloud environment.',
     requirements: ['3+ years security operations', 'AWS security knowledge', 'SIEM tools experience'],
-    postedDate: '2024-12-15',
+    postedDate: 'July 8, 2025',
     applyUrl: 'https://www.amazon.jobs/en/jobs/2988485/soc-support-engineer-iii-aws-soc-security-support-engineer',
   },
-  2: {
-    id: 2,
+  2:{
+  id: 2,
+  
+  title: 'ASIC Design Engineer, Cloud‑Scale Machine Learning Acceleration team',
+  categoryId: 4, // adjust to your internal mapping
+  location: 'Cupertino, CA, USA / Austin, TX, USA',
+  type: 'Full-time',
+  experience: 'Mid-level',
+  salary: { min: 129800, max: 212800, currency: 'USD' },
+  description: 'Develop and implement high‑performance, power‑ and area‑efficient RTL designs for AWS custom SoCs like Inferentia.',
+  requirements: [
+    'Bachelor’s degree or equivalent',
+    '3+ years ASIC design/architecture experience',
+    'Proficiency in SystemVerilog and RTL design',
+    'Experience with synthesis, timing, lint, CDC checks',
+    'Strong analytical and problem‑solving skills'
+  ],
+  postedDate: 'April 29, 2025',
+  applyUrl: 'https://www.amazon.jobs/en/jobs/2968674/asic-design-engineer-cloud-scale-machine-learning-acceleration-team'
+},
+  3: {
+    id: 3,
     title: 'Data Center Engineering Operations Technician',
     categoryId: 8,
     location: 'Northern Virginia, USA',
@@ -103,11 +123,11 @@ const JOBS = {
     salary: { min: 75000, max: 110000, currency: 'USD' },
     description: 'Manage and maintain mission-critical infrastructure in AWS data centers.',
     requirements: ['2+ years data center experience', 'Electrical/mechanical systems knowledge'],
-    postedDate: '2024-12-20',
+    postedDate: 'July 8, 2025',
     applyUrl: 'https://www.amazon.jobs/en/jobs/3023072/data-center-engineering-operations-technician',
   },
-  3: {
-    id: 3,
+  4: {
+    id: 4,
     title: 'Integration Change Engineer, Robotic Integration',
     categoryId: 9,
     location: 'Boston, MA',
@@ -116,11 +136,11 @@ const JOBS = {
     salary: { min: 130000, max: 170000, currency: 'USD' },
     description: 'Drive integration and change management in robotic systems at Amazon warehouses.',
     requirements: ['Robotics/Engineering degree', '3+ years robotic systems experience'],
-    postedDate: '2024-12-18',
+    postedDate: 'July 8, 2025',
     applyUrl: 'https://www.amazon.jobs/en/jobs/3037312/integ-change-engineer-robotic-integration-change',
   },
-  4: {
-    id: 4,
+  5: {
+    id: 5,
     title: 'Application Developer – Professional Services',
     categoryId: 1,
     location: 'Various US Locations',
@@ -129,11 +149,11 @@ const JOBS = {
     salary: { min: 110000, max: 160000, currency: 'USD' },
     description: 'Build scalable applications and solutions as part of AWS Professional Services.',
     requirements: ['3+ years software development', 'Cloud technologies experience', 'Multiple programming languages'],
-    postedDate: '2024-12-22',
+    postedDate: 'July 8, 2025',
     applyUrl: 'https://www.amazon.jobs/en/jobs/3021186/application-developer-professional-services',
   },
-  5: {
-    id: 5,
+  6: {
+    id: 6,
     title: 'Frontend Developer (React/JavaScript)',
     categoryId: 5,
     location: 'Bangkok, Thailand',
@@ -145,8 +165,8 @@ const JOBS = {
     postedDate: '2024-12-10',
     applyUrl: 'https://www.th.nexty-ele.com/job-detail?WP=oH9axUF5nrO4pUNzoGM3ARjkoH9axUF5nrO4Ljo7o3Qo7o3Q',
   },
-  6: {
-    id: 6,
+  7: {
+    id: 7,
     title: 'Senior Software Engineer – Remote',
     categoryId: 1,
     location: 'Remote (Global)',
@@ -155,21 +175,8 @@ const JOBS = {
     salary: { min: 80000, max: 140000, currency: 'USD' },
     description: 'Work with top-tier clients to develop cutting-edge software solutions.',
     requirements: ['5+ years software development', 'Multiple programming languages', 'Remote collaboration skills'],
-    postedDate: '2024-12-25',
+    postedDate: 'July 8, 2025',
     applyUrl: 'https://applicants.bairesdev.com/job/1/281122/apply',
-  },
-  7: {
-    id: 7,
-    title: 'Data Scientist - Machine Learning',
-    categoryId: 2,
-    location: 'San Francisco, CA',
-    type: 'Full-time',
-    experience: 'Senior',
-    salary: { min: 140000, max: 200000, currency: 'USD' },
-    description: 'Build and deploy machine learning models for recommendation systems.',
-    requirements: ['PhD in Data Science/ML', 'Python/R expertise', 'Big data technologies'],
-    postedDate: '2024-12-28',
-    applyUrl: 'https://example.com/job/7',
   },
  
   8:{
@@ -210,26 +217,20 @@ const JOBS = {
   postedDate: 'July 8, 2025',
   applyUrl: 'https://www.amazon.jobs/en/jobs/3030146/software-development-manager-rds-proxy-rds-proxy-controlpane'
 },
-10:{
-  id: 10,
-  
-  title: 'ASIC Design Engineer, Cloud‑Scale Machine Learning Acceleration team',
-  categoryId: 4, // adjust to your internal mapping
-  location: 'Cupertino, CA, USA / Austin, TX, USA',
-  type: 'Full-time',
-  experience: 'Mid-level',
-  salary: { min: 129800, max: 212800, currency: 'USD' },
-  description: 'Develop and implement high‑performance, power‑ and area‑efficient RTL designs for AWS custom SoCs like Inferentia.',
-  requirements: [
-    'Bachelor’s degree or equivalent',
-    '3+ years ASIC design/architecture experience',
-    'Proficiency in SystemVerilog and RTL design',
-    'Experience with synthesis, timing, lint, CDC checks',
-    'Strong analytical and problem‑solving skills'
-  ],
-  postedDate: 'April 29, 2025',
-  applyUrl: 'https://www.amazon.jobs/en/jobs/2968674/asic-design-engineer-cloud-scale-machine-learning-acceleration-team'
-}
+ 10: {
+    id: 10,
+    title: 'Data Scientist - Machine Learning',
+    categoryId: 2,
+    location: 'San Francisco, CA',
+    type: 'Full-time',
+    experience: 'Senior',
+    salary: { min: 140000, max: 200000, currency: 'USD' },
+    description: 'Build and deploy machine learning models for recommendation systems.',
+    requirements: ['PhD in Data Science/ML', 'Python/R expertise', 'Big data technologies'],
+    postedDate: '2024-12-28',
+    applyUrl: 'https://example.com/job/7',
+  },
+ 
 
 
 
