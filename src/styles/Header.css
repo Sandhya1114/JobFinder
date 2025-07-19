@@ -102,3 +102,86 @@
     border-radius: 35px;
     /* padding: 4px 15px; */
 }
+
+.header-container {
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: auto;
+  background-color: white;
+  box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
+  padding: 0px 10px;
+}
+
+.header-options a {
+  margin: 0px 30px;
+  text-decoration: none;
+  color: black;
+}
+
+.logo {
+  margin-left: 33px;
+}
+
+.accounts-btn button {
+  background: black;
+  color: white;
+  font-size: 17px;
+  border: none;
+  padding: 15px 35px;
+  margin: 0px 5px;
+  border-radius: 35px;
+}
+
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  background-color: #1a18188d;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.user-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  /* color: black; */
+  background: rgb(255, 255, 255);
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-menu button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  color: black;
+}
+
+.user-menu button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}

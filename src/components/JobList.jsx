@@ -123,11 +123,21 @@ const JobList = () => {
     dispatch(clearFilters());
   };
 
-  const formatSalary = (salary) => {
-    if (!salary) return 'Salary not specified';
-    return `${salary.currency} ${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
-  };
-
+  // const formatSalary = (salary) => {
+  //   if (!salary) return 'Salary not specified';
+  //   return `${salary.currency} ${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+  // };
+const formatSalary = (salary) => {
+  // Check if salary object exists
+  if (!salary) return 'Salary not specified';
+  
+  // Check if min and max values exist and are not null
+  if (salary.min === null || salary.max === null) {
+    return 'Salary not specified';
+  }
+  
+  return `${salary.currency} ${salary.min.toLocaleString()} - ${salary.max.toLocaleString()}`;
+};
   if (loading) return <div className="loading">Loading jobs...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 

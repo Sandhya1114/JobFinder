@@ -80,6 +80,7 @@ const CATEGORIES = {
 
 // Jobs - normalized by ID with category reference
 const JOBS = {
+  
   1: {
     id: 1,
     title: 'SOC Support Engineer III – AWS SOC Security Support Engineer',
@@ -153,18 +154,28 @@ const JOBS = {
     applyUrl: 'https://www.amazon.jobs/en/jobs/3021186/application-developer-professional-services',
   },
   6: {
-    id: 6,
-    title: 'Frontend Developer (React/JavaScript)',
-    categoryId: 5,
-    location: 'Bangkok, Thailand',
-    type: 'Full-time',
-    experience: 'Mid-level',
-    salary: { min: 800000, max: 1200000, currency: 'THB' },
-    description: 'Develop and maintain front-end applications with modern JavaScript frameworks.',
-    requirements: ['2+ years React.js experience', 'JavaScript/TypeScript skills', 'Modern frontend tooling'],
-    postedDate: '2024-12-10',
-    applyUrl: 'https://www.th.nexty-ele.com/job-detail?WP=oH9axUF5nrO4pUNzoGM3ARjkoH9axUF5nrO4Ljo7o3Qo7o3Q',
-  },
+  id: 6,
+  title: 'Full Stack Developer',
+  categoryId: 3,
+  location: 'North Delhi, Delhi, India',
+  type: 'Full-time',
+  experience: 'Mid–Senior (4–8 years)',
+  salary: { min: 1000000, max: 2500000, currency: 'INR' },
+  description: 'Lead and mentor full-stack projects, architect and build scalable .NET based solutions, collaborate with cross-functional teams through the full software development lifecycle, and drive process & performance improvements.',
+  requirements: [
+    '4–8 years of overall full-stack development experience',
+    'Proficient in C#, .NET Framework, ASP.NET MVC, and Web API',
+    'Strong JavaScript skills and experience with AngularJS or React.js',
+    'Experience with NoSQL and MongoDB',
+    'Familiarity with AWS and Azure cloud platforms',
+    'Skilled in SQL databases and query optimization',
+    'Knowledge of DevOps, CI/CD pipelines, version control (Git)',
+    'Proven leadership or mentoring experience in development teams'
+  ],
+  postedDate: 'June 22, 2025',
+  applyUrl: 'https://www.sourcingxpress.com/jobs/e6edc57f-0e59-40e2-9843-91046c24e874'
+},
+
   7: {
     id: 7,
     title: 'Senior Software Engineer – Remote',
@@ -230,7 +241,7 @@ const JOBS = {
     postedDate: '2024-12-28',
     applyUrl: 'https://example.com/job/7',
   },
- 
+  
 
 
 
