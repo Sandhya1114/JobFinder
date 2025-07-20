@@ -15,7 +15,7 @@ function Footer() {
               <li>About / Press</li>
               <li>Blog</li>
               <li>Contact Us</li>
-              <li>Grievance Officer – India</li>
+              <li>– India</li>
             </ul>
           </div>
           <div>
