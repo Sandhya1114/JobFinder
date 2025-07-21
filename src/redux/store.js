@@ -35,6 +35,10 @@ const jobSlice = createSlice({
       selectedCategory: null,
       selectedCompany: null,
       searchQuery: '',
+      selectedExperience: null, // New filter
+      selectedLocation: null, // New filter
+      selectedType: null, // New filter
+      selectedSalary: null, // New filter
     },
   },
   reducers: {
@@ -65,11 +69,27 @@ const jobSlice = createSlice({
     setSearchQuery(state, action) {
       state.filters.searchQuery = action.payload;
     },
+     setSelectedExperience(state, action) {
+      state.filters.selectedExperience = action.payload;
+    },
+    setSelectedLocation(state, action) {
+      state.filters.selectedLocation = action.payload;
+    },
+    setSelectedType(state, action) {
+      state.filters.selectedType = action.payload;
+    },
+    setSelectedSalary(state, action) {
+      state.filters.selectedSalary = action.payload;
+    },
     clearFilters(state) {
       state.filters = {
         selectedCategory: null,
         selectedCompany: null,
         searchQuery: '',
+        selectedExperience: null,
+        selectedLocation: null,
+        selectedType: null,
+        selectedSalary: null,
       };
     },
   },
@@ -84,6 +104,10 @@ export const {
   setSelectedCategory,
   setSelectedCompany,
   setSearchQuery,
+  setSelectedExperience, 
+  setSelectedLocation, 
+  setSelectedType,
+  setSelectedSalary, 
   clearFilters
 } = jobSlice.actions;
 
