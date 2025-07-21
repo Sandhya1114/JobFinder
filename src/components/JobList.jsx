@@ -132,7 +132,7 @@ const JobList = () => {
 
             <div className="filter-group">
               <h4>Experience (yrs)</h4>
-              {['Fresher', '1 yr', '2 yrs', '3 yrs', '4 yrs'].map((level) => (
+              {['Fresher', '1 yr', '2 yrs', '3 yrs', '4 yrs','5 yrs'].map((level) => (
                 <label key={level} className="filter-checkbox">
                   <input
                     type="checkbox"
