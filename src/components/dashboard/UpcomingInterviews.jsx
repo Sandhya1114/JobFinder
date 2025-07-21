@@ -1,5 +1,3 @@
-import React from "react";
-
 const UpcomingInterviews = ({ interviews }) => (
   <div style={{ marginBottom: "30px" }}>
     <h3>Upcoming Interviews</h3>
