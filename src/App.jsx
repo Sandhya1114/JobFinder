@@ -79,7 +79,7 @@ import Hero from "./components/Hero";
 import Main from "./components/Main";
 import Footer from "./components/Footer";
 import JobList from "./components/JobList"; // Import JobList
-import Dashboard from "./components/Dashboard"; // Import your Dashboard component
+import Dashboard from "./components/dashboard/Dashboard"; // Import your Dashboard component
 import AuthForm from "./components/AuthForm"; // Import AuthForm
 import { supabase } from "./supabaseClient";
 import { makeServer } from "./services/mirage/server";
@@ -116,7 +116,7 @@ function App() {
           <Route path="/jobs" element={<><JobList /><Footer /></>} />
           <Route path="/auth" element={<AuthForm onAuthSuccess={() => setUser (true)} />} />
             
-          <Route path="/dashboard" element={<><Dashboard /><Footer /></>} />
+          <Route path="/dashboard" element={<><Dashboard/><Footer /></>} />
           <Route path="/footer" element={<><Footer /></>} />
         </Routes>
         

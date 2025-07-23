@@ -142,9 +142,10 @@
 }
 
 .user-avatar {
-  width: 35px;
-  height: 35px;
-  background-color: #1a18188d;
+  margin-right: 3vw;
+  width: 45px;
+  height: 45px;
+  background-color: #040404;
   color: white;
   border-radius: 50%;
   display: flex;

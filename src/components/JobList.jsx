@@ -309,6 +309,7 @@ import {
   clearFilters,
 } from '../redux/store'; // Assuming your Redux store actions are correctly defined here
 import './Joblist.css'; // Your CSS file
+import { saveJob } from '../redux/savedJobsSlice';
 
 const JobList = () => {
   const dispatch = useDispatch();
@@ -668,9 +669,19 @@ const JobList = () => {
                       <span className="posted-date">
                         Posted: {new Date(job.postedDate).toLocaleDateString()}
                       </span>
-                      <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                      {/* <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
                         <button className="apply-btn">Apply Now</button>
-                      </a>
+                      </a> */}
+                     <div className="job-actions">
+                        <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+                        <button className="apply-btn">Apply Now</button>
+                         </a>
+                        <button onClick={() => dispatch(saveJob(job))} className="save-btn">
+                          Save Job
+                        </button>
+                    </div> 
+                      
+                      
                     </div>
                   </div>
                 </div>

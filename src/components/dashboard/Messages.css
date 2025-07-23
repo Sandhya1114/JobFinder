@@ -1,0 +1,10 @@
+.messages {
+  margin-bottom: 40px;
+}
+.message-item {
+  background: #f9f9f9;
+  padding: 12px;
+  border-left: 4px solid orange;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}

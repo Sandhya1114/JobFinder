@@ -1317,6 +1317,22 @@ export function makeServer() {
   return createServer({
     routes() {
       this.namespace = 'api';
+this.post('/upload-resume', (schema, request) => {
+  const formData = JSON.parse(request.requestBody); // since real file can't be handled
+  const fakeUrl = `https://fakecdn.com/uploads/${formData.filename}`;
+  
+  return { message: 'Mock upload success', filePath: fakeUrl };
+});
+
+
+      this.get('/profile', () => {
+        return {
+          name: 'Abhishek Deshwal',
+          email: 'abhishek@example.com',
+          resume: 'https://example.com/resume.pdf',
+          skills: ['React', 'Java Script', 'Redux', 'HTML', 'CSS']
+        };
+      });
 
       // Get all jobs (your JobList.jsx fetches all jobs and filters client-side)
       this.get('/jobs', () => {
