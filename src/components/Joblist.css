@@ -30,7 +30,7 @@ h1 {
   color: #555;
 }
 
-.apply-btn {
+/* .apply-btn {
   background-color: #231f2d;
   color: white;
   padding: 10px 16px;
@@ -40,11 +40,11 @@ h1 {
   margin-top: 10px;
   transition: background-color 0.3s ease;
   font-weight: bold;
-}
+} */
 
-.apply-btn:hover {
+/* .apply-btn:hover {
   background-color: #090710;
-}
+} */
 .job-list-container {
  background-color: #f9f9f985;
   margin: 0 auto;
@@ -357,7 +357,7 @@ h1 {
   width: 100%;
  
 }
-
+/* 
 .filters-sidebar {
   width: 280px;
   padding: 20px;
@@ -365,7 +365,7 @@ h1 {
   border-right: 1px solid #eee;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
+} */
 
 .filters-section {
   display: flex;
@@ -528,9 +528,9 @@ h1 {
   font-weight: bold;
 } */
 
-.apply-btn:hover {
+/* .apply-btn:hover {
   background-color:#8473ab;
-}
+} */
 
 .no-jobs {
   padding: 20px;
@@ -592,14 +592,16 @@ h1 {
 /* abhi */
 
 .save-btn {
-  padding: 8px 14px;
-  background-color: rgba(150, 132, 192);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  margin: 0px 5px;
+  margin-left: 10px;
+    color: rgb(21, 20, 20);
+    background-color:#ECEBDE;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s;
 }
 
 .remove-btn {
@@ -614,57 +616,6 @@ h1 {
 }
 
 .save-btn:hover {
-  background-color: #7b6c9e;
-}
-.no-jobs {
-  padding: 20px;
-  background-color: #fff3cd;
-  border: 1px solid #ffeeba;
-  border-radius: 6px;
-  color: #856404;
-  text-align: center;
-}
-.filter-group {
-  margin-bottom: 20px;
-}
-
-.filter-group h4 {
-  margin-bottom: 10px;
-  font-size: 16px;
-  color: #222;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 6px;
-}
-
-.filter-checkbox {
-  display: block;
-  margin: 6px 0;
-  font-size: 14px;
-  color: #333;
-}
-
-.filters-sidebar {
-  width: 329px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  height: auto;
-  overflow-y: auto;
-  max-height: 100vh;
-  scrollbar-width: thin;              /* Firefox */
-  scrollbar-color: #ccc transparent;  /* Firefox */
-}
-/* Chrome, Edge, Safari */
-.filters-sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.filters-sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.filters-sidebar::-webkit-scrollbar-thumb {
-  background-color: #ccc;
-  border-radius: 6px;
+  background-color:#D7D3BF;
+  color: #fff;
 }
