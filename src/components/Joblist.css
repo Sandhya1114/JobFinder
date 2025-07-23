@@ -397,9 +397,7 @@ h1 {
   margin-right: 8px;
   cursor: pointer;
 }
-.filter-checkbox input:active{
-  color: #9684C0;
-}
+
 .clear-filters-btn {
   padding: 10px 14px;
   background-color:#9684C0;
@@ -531,7 +529,7 @@ h1 {
 } */
 
 .apply-btn:hover {
-  background-color: #388e3c;
+  background-color:#8473ab;
 }
 
 .no-jobs {
