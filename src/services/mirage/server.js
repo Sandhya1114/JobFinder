@@ -1218,6 +1218,486 @@ const JOBS = {
     postedDate: 'July 2025',
     applyUrl: 'https://careers.icf.com/us/en/job/IIIIIIUSR2501063EXTERNALENUS/Senior-Consultant-Power-Markets'
   },
+  31: {
+  id: 31,
+  title: 'Senior Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Delhi, India',
+  type: 'Full-time',
+  experience: 'Mid-Senior', // Equivalent to 3‑5 years
+  salary: { min: null, max: null, currency: 'INR' }, // Salary not specified
+  description:
+    'Develop fast, responsive, and intuitive web interfaces. Implement mobile‑responsive web pages and web forms with CRM integration. Work on API integrations for dynamic communications, and translate UI/UX mockups into high‑quality frontend code. Ensure cross‑browser/platform compatibility, performance, and maintainability.',
+  requirements: [
+    'Associate degree in technology-related field (bachelor’s preferred)',
+    '3+ years of frontend development experience in a startup or similar environment',
+    'Hands-on with Angular 2+, React.js or React Native',
+    'Strong JS proficiency and production-grade HTML/CSS/SASS skills',
+    'Familiarity with web standards and accessibility (W3C, s508)',
+    'Good understanding of web app architecture and cross-browser/platform constraints',
+    'Experience with unit test frameworks (Karma, Jasmine, Mocha, Chai)',
+    'Excellent problem-solving, communication, and collaboration skills',
+    'Ability to multitask and work to deadlines in fast-paced environments'
+  ],
+  postedDate: 'June 29, 2025',
+  applyUrl: 'https://www.hirist.tech/j/senior-frontend-developer-1504263'
+},
+
+32: {
+  id: 32,
+  title: 'Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Delhi NCR, India',
+  type: 'Full-time',
+  experience: 'Mid‑Senior', // 4–6 years
+  salary: { min: 500000, max: 900000, currency: 'INR' },
+  description:
+    'Join Techjockey.com to develop front-end applications at scale. Work closely with designers and back-end developers to optimize UI performance, implement responsive, SEO/accessibility-conscious web interfaces, and maintain high code quality standards.',
+  requirements: [
+    '4–6 years of Front‑end development experience at scale',
+    'Strong skills in JavaScript, CSS, Angular, AJAX, jQuery, React, Node.js',
+    'Experience with CSS preprocessors (SASS/LESS), Bootstrap',
+    'In-depth understanding of web development process, cross‑browser/device compatibility, SEO',
+    'Familiar with WordPress theme integration and template customization',
+    'Ability to write W3C‑validated, SEO‑friendly code'
+  ],
+  postedDate: 'July 2025',
+  applyUrl: 'https://cutshort.io/job/Frontend-Developer-Delhi-NCR-Delhi-Gurgaon-Noida-Techjockey-com-qokceGof'
+},
+
+33: {
+  id: 33,
+  title: 'Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Remote, Delhi NCR (Delhi | Gurgaon | Noida), India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // 2+ years
+  salary: { min: 600000, max: 800000, currency: 'INR' },
+  description:
+    'Build reusable, high‑performance frontend components and responsive web apps using modern JS frameworks. Optimize for mobile, maintain brand consistency, and collaborate through code reviews and automation.',
+  requirements: [
+    '2+ years experience in OO JavaScript and frontend frameworks',
+    'Expertise in HTML5, CSS3, JavaScript',
+    'Familiar with SASS/Bootstrap, CSS Grid',
+    'Proficient with React, AngularJS, jQuery',
+    'Good understanding of async requests, AJAX, partial page updates',
+    'Experience with webpack, gulp (module bundlers)',
+    'Skilled in graphic UI tools (Figma, Sketch, Adobe XD, PSD to HTML)',
+    'Experience with version control (Git, Mercurial, SVN)',
+    'Nice to have: knowledge of Node.js, Python, isomorphic React'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://cutshort.io/job/Frontend-Developer-NCR-Delhi-Gurgaon-Noida-Clickpost-lkwNBO9l'
+},
+
+34: {
+  id: 34,
+  title: 'Sr. Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Delhi NCR (Delhi | Gurgaon | Noida), India',
+  type: 'Full-time',
+  experience: 'Senior', // 3–6 years
+  salary: { min: 1500000, max: 2500000, currency: 'INR' },
+  description:
+    'Design and build efficient, reusable, high-performance frontend applications. Translate UI/UX wireframes into quality code, optimize across devices, write tests and documentation, and contribute to frontend architecture.',
+  requirements: [
+    '3–6 years frontend development experience',
+    'Proficient in HTML5, CSS3, JavaScript (ES6+)',
+    'Strong React.js and Redux skills',
+    'Experience with asynchronous programming (Redux Saga/Thunk)',
+    'Familiarity with REST APIs and error handling',
+    'Performance optimization techniques',
+    'Proficient with Webpack/Babel and Git',
+    'Excellent problem‑solving and communication',
+    'Bachelor’s or Master’s in CS/Engineering or related'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://cutshort.io/job/Sr-Frontend-Developer-NCR-Delhi-Gurgaon-Noida-Roadzen-Technologies-mMgrPAuS'
+},
+
+
+35: {
+  id: 35,
+  title: 'Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Remote, Delhi NCR (Delhi | Gurgaon | Noida), India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // 2–4 years
+  salary: { min: null, max: null, currency: 'INR' }, // "Best in industry" — exact numbers not specified
+  description:
+    'Develop enterprise‑grade, standards‑compliant frontend applications. Translate wireframes into code, build reusable JS libraries and prototypes, optimize performance, and collaborate across teams to shape GUI architecture.',
+  requirements: [
+    '2–4 years of professional frontend development experience',
+    'Expert JavaScript, HTML5, and CSS3 skills',
+    'At least 1 year of React.js experience',
+    'Hands-on with JavaScript frameworks (e.g., jQuery)',
+    'Understanding of design patterns, cross-browser/CSS standards',
+    'Experience with REST APIs, DOM, caching, page rendering',
+    'Adept at performance optimization and test-driven development',
+    'Comfortable in Linux environments and Agile/SCRUM workflows',
+    'Strong attention to detail, dedication, and problem-solving'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://cutshort.io/job/Frontend-Developer-NCR-Delhi-Gurgaon-Noida-Kvantum-Inc--f3FurLnE'
+},
+
+36: {
+  id: 36,
+  title: 'Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Remote, Delhi NCR (Delhi | Gurgaon | Noida), India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // 1–2 years
+  salary: { min: 600000, max: 800000, currency: 'INR' },
+  description:
+    'Join MikeLegal to scale and modernize frontend systems for its legal-tech product. Build responsive UIs, handle API integration, and work closely with designers and backend stakeholders to deliver high-quality web applications.',
+  requirements: [
+    '1–2 years of Frontend Web development experience',
+    'Expertise in JavaScript, HTML5, CSS3',
+    'Hands-on with frameworks like React.js and AngularJS (1.x)',
+    'Experience with jQuery, Bootstrap, responsive design',
+    'UI/UX awareness and ability to translate designs into code'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://cutshort.io/job/Frontend-Developer-NCR-Delhi-Gurgaon-Noida-MikeLegal-jg2lqFbp'
+},
+
+37: {
+  id: 37,
+  title: 'Sr. Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Faridabad, NCR (Delhi | Gurgaon | Noida), India',
+  type: 'Full-time',
+  experience: 'Senior', // 5–8 years
+  salary: { min: 800000, max: 1200000, currency: 'INR' },
+  description:
+    'Lead frontend development of scalable React/Redux applications, optimize UI performance, ensure technical feasibility of designs, and build efficient, maintainable codebases.',
+  requirements: [
+    '5–8 years of overall frontend development experience',
+    '2+ years of ReactJS and Redux experience (including SSR)',
+    'Proficient in HTML5, CSS3, LESS/SASS',
+    'Deep understanding of asynchronous requests, AJAX, DOM, cross-browser compatibility',
+    'Experience with Git/SVN',
+    'Familiarity with Preact and charting frameworks (Highcharts, D3JS) a plus',
+    'Bachelor’s degree in CS, MCA, or equivalent'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://cutshort.io/job/Frontend-Developer-Faridabad-NCR-Delhi-Gurgaon-Noida-Cerebry-59bK6prl'
+},
+
+38: {
+  id: 38,
+  title: 'Frontend Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Noida, Uttar Pradesh, India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // Estimated: 2–5 years
+  salary: { min: 600000, max: 1000000, currency: 'INR' }, // Approx range
+  description:
+    'We are seeking a skilled Frontend Developer to join our team. You will be responsible for building and optimizing responsive web interfaces using modern JavaScript frameworks. Work closely with backend engineers and designers to deliver high-quality user experiences.',
+  requirements: [
+    '2–5 years of experience in frontend development',
+    'Strong proficiency in JavaScript, HTML5, and CSS3',
+    'Hands-on experience with React.js, Angular, or Vue.js',
+    'Experience with RESTful APIs and asynchronous request handling',
+    'Familiarity with Git, Webpack, and responsive design principles',
+    'Good understanding of cross-browser compatibility issues',
+    'Bachelor’s degree in Computer Science or related field'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://www.timesjobs.com/candidate/JobDetailView.html?from=submit&adId=71130659'
+},
+
+39: {
+  id: 39,
+  title: 'Full Stack Developer (MERN, LLMs)',
+  categoryId: 1, // Software Engineering
+  location: 'New Delhi, India (Remote)',
+  type: 'Full-time',
+  experience: 'Mid‑Senior', // 2+ years
+  salary: { min: 1500000, max: 5000000, currency: 'INR' }, // ₹15–50 LPA
+  description:
+    'Join M32 Labs (Wing) as a founding Full Stack Developer in a fast-paced R&D environment. Work on AI-powered talent management platforms, building responsive interfaces and backend APIs, integrating with LLMs, and contributing to DevOps and system design.',
+  requirements: [
+    '2+ years of experience in Full Stack or Software Engineering roles',
+    'Proficient in front-end tech: JavaScript/TypeScript + React, Vue, etc.',
+    'Backend experience building APIs with Node.js, Python, or similar',
+    'Hands-on with LLM APIs (e.g. GPT, Anthropic)',
+    'Experience with databases (SQL or NoSQL)',
+    'Familiar with Docker/Kubernetes and CI/CD pipelines',
+    'Skilled with cloud platforms (AWS, GCP, Azure)',
+    'Comfortable with Linux CLI and server setups',
+    'Familiarity with PHP, GraphQL, Terraform is a plus',
+    'Strong communication, problem-solving, and rapid iteration mindset'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://jobs.lever.co/getwingapp/020c14c7-2f64-463f-849d-a8bd63fb1850/apply'
+},
+
+40: {
+  id: 40,
+  title: 'Software Engineer – Full Stack Development',
+  categoryId: 1, // Software Engineering
+  location: 'Waltham, MA, USA',
+  type: 'Full-time',
+  experience: 'Mid‑Senior', // 5–10+ years
+  salary: { min: null, max: null, currency: 'USD' }, // Not disclosed
+  description:
+    'Join a fast-paced, highly collaborative engineering team. Prototype, design, develop, deploy, and support scalable full-stack applications. Contribute to technical direction, code standards, and scrum-based development.',
+  requirements: [
+    '5–10+ years of software engineering experience',
+    'Design scalable distributed systems',
+    'Expert in Object-Oriented development and design principles',
+    'Experience designing technical solutions from scratch',
+    'Proficient with Agile processes and scrum practices',
+    'Advanced problem-solving and clear technical communication',
+    'BSCS or MSCS (or equivalent)'
+  ],
+  postedDate: 'June 2025',
+  applyUrl:
+    'https://www.linkedin.com/jobs/view/software-engineer-full-stack-development-1032388-at-hitachi-vantara'
+},
+
+41: {
+  id: 41,
+  title: 'Senior Software Engineer I – Java React JS',
+  categoryId: 1, // Software Engineering
+  location: 'New Delhi, Delhi, India',
+  type: 'Full-time',
+  experience: 'Senior', // 5+ years
+  salary: { min: null, max: null, currency: 'INR' }, // Not disclosed
+  description:
+    'Build scalable, secure, high-performance applications supporting Optum’s healthcare platforms. Work full stack using ReactJS for UI and Java Spring Boot microservices, integrate messaging systems, deploy on Kubernetes, and maintain observability.',
+  requirements: [
+    '5+ years of Full Stack development using Java and ReactJS',
+    'Experience building microservices with Spring Boot and Kafka',
+    'Hands-on with Kubernetes, Docker, GitHub Actions for CI/CD',
+    'Proficiency in SQL and NoSQL databases (PostgreSQL, MongoDB)',
+    'Strong grasp of HTML, CSS, JavaScript, and modern ReactJS',
+    'Familiar with monitoring/observability tools like Grafana, Dynatrace, Splunk',
+    'Ability to write unit/integration tests (JUnit, Mockito)',
+    'Bachelor’s or Master’s in CS, Engineering, or related'
+  ],
+  postedDate: 'June 19, 2025',
+  applyUrl:
+    'https://careers.unitedhealthgroup.com/job/22220526/senior-software-engineer-i-java-react-js-new-delhi-in/'
+},
+
+42: {
+  id: 42,
+  title: 'Compensation & Benefits Specialist',
+  categoryId: 2, // Human Resources
+  location: 'Jasola, New Delhi, India',
+  type: 'Full-time',
+  experience: 'Senior', // 5+ years
+  salary: { min: null, max: null, currency: 'INR' }, // Not disclosed
+  description:
+    'Design, implement, and manage competitive global compensation and benefits programs. Provide strategic insights, ensure legal compliance, and collaborate with HR and business stakeholders to support talent retention and mobility.',
+  requirements: [
+    'Master’s degree in HR, Business Administration, or related field',
+    '5+ years experience in compensation and/or benefits in a global or multinational setting',
+    'Strong knowledge of international compensation practices and benefits regulations',
+    'Proficiency with HRIS systems and data analytics tools (e.g., Excel, Workday, SAP SuccessFactors)',
+    'Excellent analytical, communication, and project‑management skills',
+    'Certification such as CCP or CEBS is a plus',
+    'Preferred: experience across multiple regions (India, Americas, Europe)'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://osv-chegg.wd5.myworkdayjobs.com/Chegg/job/Jasola-New-Delhi/Compensation---Benefits-Specialist_R4926-1'
+},
+
+43: {
+  id: 43,
+  title: 'US Travel Sales (Voice Process)',
+  categoryId: 3, // Sales / Call Center
+  location: 'Gurugram, Haryana, India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // 2–6 years
+  salary: { min: null, max: 600000, currency: 'INR' }, // Up to ₹6 LPA (~₹42k/month)
+  description:
+    'Urgent hiring for US Travel Sales agents handling PPC-based voice sales leads. Engage with US market clients, convert leads into bookings, and upsell travel products while maintaining customer satisfaction.',
+  requirements: [
+    'Minimum 2 years experience in US travel sales (PPC inbound/outbound calls)',
+    'Excellent spoken English and persuasion skills',
+    'Goal-oriented with proven sales conversion track record'
+  ],
+  postedDate: 'June–July 2025',
+  applyUrl:
+    'https://www.shine.com/jobs/us-travel-sales/sharda-consultancy-services/16965216'
+},
+
+44: {
+  id: 44,
+  title: 'Senior Software Engineer',
+  categoryId: 1, // Software Engineering
+  location: 'Princeton, New Jersey, USA',
+  type: 'Full-time',
+  experience: 'Mid‑Senior', // 2+ years post-Master’s
+  salary: { min: 106000, max: 135300, currency: 'USD' }, // Fully disclosed salary range
+  description:
+    'Design, develop, and operate scalable cloud-native solutions on AWS. Build full-stack software using Java, Python, JavaScript. Own CI/CD pipelines, monitor systems, and collaborate in an Agile environment to support ETS’s education and assessment platforms.',
+  requirements: [
+    'Master’s degree in Computer Science, Engineering, or related, plus 2+ years post-baccalaureate full-stack development experience',
+    'Hands-on experience with AWS (CDK, CloudFormation, serverless architectures)',
+    'Proficient in Java, Python (NumPy, Pandas), JavaScript, Spring/Hibernate',
+    'Experience with RESTful web services, UNIX shell scripting, XML/JSON/YAML',
+    'Unit testing expertise (JUnit) and Infrastructure as Code',
+    'Knowledge of monitoring, incident troubleshooting, and agile practices'
+  ],
+  postedDate: 'July 2025', // approx. based on "2 weeks ago" around late July
+  applyUrl:
+    'https://www.linkedin.com/jobs/view/software-developer-senior-at-ets-4246118460'
+},
+
+45: {
+  id: 45,
+  title: 'Territory Business Manager – Quantus',
+  categoryId: 3, // Sales / Field Role
+  location: 'Mumbai (Vasai to Virar), Maharashtra, India',
+  type: 'Full-time',
+  experience: 'Associate/Specialist', // Entry-level to mid-level
+  salary: { min: null, max: null, currency: 'INR' }, // Not disclosed
+  description:
+    'Drive business development in the Quantus territory. Conduct market research and feasibility studies, analyze sales and competitive data, and prepare materials for client and partner engagement to support strategic decision-making.',
+  requirements: [
+    'Associate degree or equivalent',
+    'Market research and analytical skills',
+    'Ability to compile and analyze financial, sales, and competitive data',
+    'Strong presentation and documentation capabilities',
+    'Willingness to travel within territory and stand for extended periods',
+    'Excellent communication and interpersonal skills'
+  ],
+  postedDate: 'April–June 2025', // based on timeline from multiple sources
+  applyUrl:
+    'https://www.jobs.abbott/us/en/job/31120912/Territory-Business-Manager---Quantus---Mumbai--Vasai-to-Virar-_31120912-4'
+},
+
+46: {
+  id: 46,
+  title: 'Software Engineer – Full Stack Developer',
+  categoryId: 1, // Software Engineering
+  location: 'Hyderabad, Telangana, India',
+  type: 'Full-time',
+  experience: 'Mid‑Level', // 3–5 years
+  salary: { min: 800000, max: 1400000, currency: 'INR' }, // Approximate range
+  description:
+    'We are hiring a Full Stack Software Engineer to join our product development team. You will be responsible for developing modern web applications, collaborating with cross-functional teams, and delivering scalable and maintainable code.',
+  requirements: [
+    '3+ years of experience with JavaScript frameworks like React.js or Angular',
+    'Hands-on experience in backend technologies like Node.js, Java, or Python',
+    'Proficiency in REST APIs and database systems (MySQL, MongoDB)',
+    'Strong understanding of HTML5, CSS3, and responsive design principles',
+    'Familiar with CI/CD pipelines, version control (Git), and Agile methodologies',
+    'Bachelor’s degree in Computer Science or related discipline'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=1967b8dd-0f7b-4982-9500-7ead01d3a132&jobId=974397'
+},
+
+47: {
+  id: 47,
+  title: 'Frontend Web Developer (MERN)',
+  categoryId: 1, // Software Engineering
+  location: 'New Delhi, India (Remote)',
+  type: 'Full-time',
+  experience: 'Mid‑Senior', // 2+ years
+  salary: { min: 1200000, max: 2500000, currency: 'INR' }, // ₹12–25 LPA
+  description:
+    'Join M32 Labs at Wing as a Frontend Web Developer contributing to AI-powered talent management platforms. Build responsive, performant, and accessible interfaces, rapidly prototype features in short cycles, and work closely with AI engineers, product managers, and UX designers in a high-impact, low-bureaucracy environment.',
+  requirements: [
+    'Bachelor’s or Master’s in CS, Software Engineering, or equivalent experience',
+    '2+ years of professional frontend development with MERN stack (React, Node.js)',
+    'Proficiency in JavaScript/TypeScript, React/Vue, Tailwind/CSS',
+    'Experience building from 0→1 in agile/hackathon-style settings',
+    'Familiarity with backend integration (Node.js, REST/GraphQL APIs)',
+    'Knowledge of Git workflows, rapid iteration, and remote collaboration',
+    'Excellent communication, problem-solving, and product-minded engineering skills'
+  ],
+  postedDate: 'July 2025',
+  applyUrl:
+    'https://jobs.lever.co/getwingapp/0af28d14-097e-4612-a225-94bb519c700d/apply'
+},
+
+48: {
+  id: 48,
+  title: 'Senior Full Stack Developer',
+  categoryId: 1, // Software Engineering
+  location: 'North Delhi, Delhi, India',
+  type: 'Full-time',
+  experience: 'Senior', // 5–10 years
+  salary: { min: 1200000, max: 3000000, currency: 'INR' }, // ₹12–30 LPA
+  description:
+    'Join TeknoBloom as part of a cross-functional team to design and develop scalable front-end and back-end solutions, APIs, responsive UIs, and manage database systems. Ensure software performance, security, and code quality through end-to-end testing and collaboration.',
+  requirements: [
+    '5+ years experience (or 3+ with Master’s) in full-stack development',
+    'Strong proficiency in C#, .NET Framework, ASP.NET MVC, Web API',
+    'Hands-on experience with front-end frameworks like Angular or React, plus HTML, CSS, JavaScript',
+    'Database experience with SQL Server, MongoDB, or Cosmos DB',
+    'Experience with DevOps practices, Git, and CI/CD pipelines',
+    'Skilled in writing resilient APIs, responsive UI, and technical documentation',
+    'Excellent problem-solving, communication, and teamwork skills',
+    'Bachelor’s or Master’s in Computer Science or related field'
+  ],
+  postedDate: 'April–June 2025', // ~87 days ago (April 2025)
+  applyUrl:
+    'https://www.sourcingxpress.com/jobs/e2b57ca2-5afb-4c3c-88b5-8f8eb599dd30?utm_source=linkedin&utm_medium=job_board&utm_campaign=careers_2025'
+},
+
+49: {
+  id: 49,
+  title: 'Senior Software Engineer – Azure Storage DPU',
+  categoryId: 1, // Software Engineering
+  location: 'Multiple Locations, India',
+  type: 'Full-time',
+  experience: 'Senior', // 8+ years
+  salary: { min: 119800, max: 258000, currency: 'USD' }, // U.S. base range (global role) 
+  description:
+    'Design and develop next-generation cloud storage backend infrastructure leveraging Fungible DPUs. Work across the full software lifecycle—design, implementation, testing, deployment, and support—to drive innovation in Azure’s massively scalable storage solutions.',
+  requirements: [
+    'Bachelor’s or Master’s in CS or related technical field',
+    '8+ years of experience in systems programming (C, C++, C#, Java, JavaScript, or Python)',
+    'Experience with low-level systems development (e.g., networking, drivers)',
+    'Strong skills in distributed systems, hardware/software integration, and scalability',
+    'Ability to serve as a Designated Responsible Individual (DRI) and lead on-call responsibilities',
+    'Familiarity with cloud infrastructure and performance/efficiency tooling'
+  ],
+  postedDate: 'June 2025',
+  applyUrl:
+    'https://jobs.careers.microsoft.com/us/en/job/1826981/Senior-Software-Engineer'
+},
+
+50: {
+  id: 50,
+  title: 'Senior Software Engineer – Full Stack Technologies',
+  categoryId: 1, // Software Engineering
+  location: 'Gurgaon, Haryana, India (3 PM–12 AM IST)',
+  type: 'Full-time',
+  experience: 'Senior', // 5+ years
+  salary: { min: null, max: null, currency: 'INR' }, // Not disclosed
+  description:
+    'Join Avive’s R&D team to design, develop, deploy, and maintain end-to-end web and mobile-facing systems on the public cloud. Build reusable frontend and backend components, optimize UI performance, bridge wireframes with backend services, and deliver robust technical documentation.',
+  requirements: [
+    '5+ years delivering consumer‑facing web apps',
+    '2+ years deep expertise with Angular or React, HTML, CSS, JavaScript (ES6+)',
+    '3+ years using Git',
+    'Experience with RESTful APIs (Postman, Swagger) and CI/CD tooling (Selenium, CodeBuild, GitHub Actions)',
+    'Proficient with Docker and public cloud environments',
+    'BS in CS or Engineering (or equivalent experience)',
+    'Optional skills: Python/Django, MySQL, MongoDB/NoSQL, React Native, Agile/Scrum'
+  ],
+  postedDate: 'June 9, 2025',
+  applyUrl:
+    'https://www.hirist.tech/j/trans-org-analytics-senior-software-engineer-full-stack-technologies-1492858'
+}
 };
 
 // Companies - mapping to job IDs
@@ -1226,7 +1706,7 @@ const COMPANIES = {
     id: 'amazon',
     name: 'Amazon',
     logo: 'https://logo.clearbit.com/amazon.com',
-    jobs: [1, 2, 3, 4, 5, 8, 9], // Updated job IDs
+    jobs: [1, 2, 3, 4, 5, 8, 9,31], // Updated job IDs
   },
   sourcingxpress: {
     id: 'sourcingxpress',
@@ -1288,6 +1768,125 @@ const COMPANIES = {
     logo: 'https://logo.clearbit.com/bain.com',
     jobs: [22],
   },
+  icf: {
+  id: 'icf',
+  name: 'ICF',
+  logo: 'https://logo.clearbit.com/icf.com',
+  jobs: [30]
+},
+
+
+techjockey: {
+  id: 'techjockey',
+  name: 'Techjockey',
+  logo: 'https://logo.clearbit.com/techjockey.com',
+  jobs: [32]
+},
+
+clickpost: {
+  id: 'clickpost',
+  name: 'Clickpost',
+  logo: 'https://logo.clearbit.com/clickpost.in',
+  jobs: [33]
+},
+
+roadzen: {
+  id: 'roadzen',
+  name: 'Roadzen Technologies',
+  logo: 'https://logo.clearbit.com/roadzen.io',
+  jobs: [34]
+},
+
+kvantum: {
+  id: 'kvantum',
+  name: 'Kvantum Inc.',
+  logo: 'https://logo.clearbit.com/kvantuminc.com',
+  jobs: [35]
+},
+
+mikelegal: {
+  id: 'mikelegal',
+  name: 'MikeLegal',
+  logo: 'https://logo.clearbit.com/mikelegal.com',
+  jobs: [36]
+},
+
+cerebry: {
+  id: 'cerebry',
+  name: 'Cerebry',
+  logo: 'https://logo.clearbit.com/cerebry.co',
+  jobs: [37]
+},
+
+unitedhealthgroup: {
+  id: 'unitedhealthgroup',
+  name: 'UnitedHealth Group',
+  logo: 'https://logo.clearbit.com/unitedhealthgroup.com',
+  jobs: [38]
+},
+
+chegg: {
+  id: 'chegg',
+  name: 'Chegg',
+  logo: 'https://logo.clearbit.com/chegg.com',
+  jobs: [39]
+},
+
+sharda: {
+  id: 'sharda',
+  name: 'Sharda Consultancy Services',
+  logo: 'https://logo.clearbit.com/shine.com',
+  jobs: [40]
+},
+
+ets: {
+  id: 'ets',
+  name: 'ETS',
+  logo: 'https://logo.clearbit.com/ets.org',
+  jobs: [44]
+},
+
+abbott: {
+  id: 'abbott',
+  name: 'Abbott',
+  logo: 'https://logo.clearbit.com/abbott.com',
+  jobs: [45]
+},
+
+adp: {
+  id: 'adp',
+  name: 'ADP',
+  logo: 'https://logo.clearbit.com/adp.com',
+  jobs: [46]
+},
+
+wing: {
+  id: 'wing',
+  name: 'Wing (M32 Labs)',
+  logo: 'https://logo.clearbit.com/getwingapp.com',
+  jobs: [47]
+},
+
+teknobloom: {
+  id: 'teknobloom',
+  name: 'TeknoBloom',
+  logo: 'https://logo.clearbit.com/sourcingxpress.com',
+  jobs: [48]
+},
+
+microsoft: {
+  id: 'microsoft',
+  name: 'Microsoft',
+  logo: 'https://logo.clearbit.com/microsoft.com',
+  jobs: [49]
+},
+
+transorg: {
+  id: 'transorg',
+  name: 'TransOrg Analytics',
+  logo: 'https://logo.clearbit.com/transorg.com',
+  jobs: [50]
+},
   restroworks: {
     id: 'restroworks',
     name: 'RestroWorks',
