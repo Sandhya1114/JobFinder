@@ -37,18 +37,20 @@
   border-radius: 4px;
 } */
 .job-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-  max-width: 1100px;
-  margin: 40px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 20px;
 }
 .card {
-  background-color: #fffcfc;
+  background-color: #f9f9f9;
   border: 1px solid #ddd;
-  padding: 20px;
   border-radius: 8px;
-  text-align: left;
+  padding: 15px;
+  margin: 10px;
+  width: calc(30% - 20px); /* Adjust width as needed */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
 }
 
 .card:hover {
@@ -57,13 +59,20 @@
 
 .type {
   display: inline-block;
-  background-color:#9684C0;
+  background-color:#9684c072;
   color: white;
   padding: 5px 10px;
   border-radius: 30px;
   font-size: 0.9em;
 }
-
+.btnForApply{
+   
+  background-color:#9684c0;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+}
 h3 {
   margin: 10px 0;
   font-size: 1.2em;
@@ -80,7 +89,7 @@ p {
 }
 
 .more-jobs button {
-  background-color: #007bff;
+   background-color:#9684c0;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -90,5 +99,5 @@ p {
 }
 
 .more-jobs button:hover {
-  background-color: #0056b3;
+   background-color:#9684c0;
 }

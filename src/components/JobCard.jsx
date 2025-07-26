@@ -87,10 +87,11 @@ const JobCards = () => {
     <div className="job-cards">
       {jobs.slice(0, visibleJobs).map((job) => (
         <div key={job.id} className="card">
-          <span className="type">{job.type}</span>
+          
           <h3>{job.title}</h3>
+          <span className="type">{job.type}</span>
           <p>{job.location}</p>
-          <button onClick={() => window.open(job.applyUrl, "_blank")}>Browse Job</button>
+          <button className="btnForApply" onClick={() => window.open(job.applyUrl, "_blank")}>Apply Job</button>
         </div>
       ))}
       {visibleJobs < jobs.length && (
