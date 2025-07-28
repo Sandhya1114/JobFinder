@@ -202,8 +202,8 @@ export default function Header({ user }) {
           <a href="/">Home</a>
           <a href="/footer">About</a>
           <a href="/jobs">Jobs</a>
-          <a href="/candidates">Candidates</a>
-          <a href="/footer">Contact Us</a>
+          <a href="/footer">Candidates</a>
+          <a href="/contact">Contact Us</a>
         </div>
 
         <div className="accounts-btn">
