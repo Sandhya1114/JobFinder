@@ -84,6 +84,8 @@ const JobCards = () => {
   };
 
   return (
+    <>
+    <div><h1>Browse Jobs</h1></div>
     <div className="job-cards">
       {jobs.slice(0, visibleJobs).map((job) => (
         <div key={job.id} className="card">
@@ -100,6 +102,7 @@ const JobCards = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
