@@ -108,34 +108,94 @@
 //     </header>
 //   );
 // }
-import { useState } from "react";
+// import { useState } from "react";
+// import "../styles/Header.css";
+// import { supabase } from "../supabaseClient";
+// import { useNavigate } from "react-router-dom";
+
+// export default function Header({ user }) {
+//   const [showMenu, setShowMenu] = useState(false);
+//   const navigate = useNavigate();
+
+//   const handleSignOut = async () => {
+//     await supabase.auth.signOut();
+//     setShowMenu(false);
+//   };
+
+//   const handleDashboard = () => {
+//     navigate("/dashboard");
+//     setShowMenu(false);
+//   };
+
+//   const toggleMenu = () => {
+//     setShowMenu((prev) => !prev);
+//   };
+
+//   return (
+//     <header>
+//       <div className="header-container">
+//         <div className="logo">
+//           <h3>JOBS FINDER</h3>
+//         </div>
+
+//         <div className="header-options">
+//           <a href="/">Home</a>
+//           <a href="/footer">About</a>
+//           <a href="/jobs">Jobs</a>
+//           <a href="/candidates">Candidates</a>
+//           <a href="/footer">Contact Us</a>
+//         </div>
+
+//         <div className="accounts-btn">
+//           {user ? (
+//             <div className="user-info">
+//               <div className="user-avatar" onClick={toggleMenu}>
+//                 {user.email.charAt(0).toUpperCase()}
+//               </div>
+//               {showMenu && (
+//                 <div className="user-menu">
+//                   <button onClick={handleDashboard}>Dashboard</button>
+//                   <button onClick={handleSignOut}>Sign Out</button>
+//                 </div>
+//               )}
+//             </div>
+//           ) : (
+//             <button onClick={() => navigate("/auth")}>Sign In / Sign Up</button>
+//           )}
+//         </div>
+//       </div>
+//     </header>
+//   );
+// }
+import { useState, useEffect } from "react";
 import "../styles/Header.css";
-import { supabase } from "../supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function Header({ user }) {
   const [showMenu, setShowMenu] = useState(false);
+  const [isShrunk, setIsShrunk] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    setShowMenu(false);
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      setIsShrunk(scrollTop > 0); // shrink if NOT at top
+    };
 
-  const handleDashboard = () => {
-    navigate("/dashboard");
-    setShowMenu(false);
-  };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // initial check on load
 
-  const toggleMenu = () => {
-    setShowMenu((prev) => !prev);
-  };
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header>
+    <header className={isShrunk ? "shrink" : ""}>
       <div className="header-container">
         <div className="logo">
-          <h3>JOBS FINDER</h3>
+          <h3>
+            JOBS<span>FINDER</span>
+          </h3>
         </div>
 
         <div className="header-options">
@@ -149,13 +209,18 @@ export default function Header({ user }) {
         <div className="accounts-btn">
           {user ? (
             <div className="user-info">
-              <div className="user-avatar" onClick={toggleMenu}>
+              <div className="user-avatar" onClick={() => setShowMenu(!showMenu)}>
                 {user.email.charAt(0).toUpperCase()}
               </div>
               {showMenu && (
                 <div className="user-menu">
-                  <button onClick={handleDashboard}>Dashboard</button>
-                  <button onClick={handleSignOut}>Sign Out</button>
+                  <button onClick={() => navigate("/dashboard")}>Dashboard</button>
+                  <button onClick={async () => {
+                    await supabase.auth.signOut();
+                    setShowMenu(false);
+                  }}>
+                    Sign Out
+                  </button>
                 </div>
               )}
             </div>
@@ -167,3 +232,4 @@ export default function Header({ user }) {
     </header>
   );
 }
+

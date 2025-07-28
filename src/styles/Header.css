@@ -62,25 +62,25 @@
   color: #10131d;
   border: 1px solid #10131d;
 } */
-.header-container {
+/* .header-container {
    height: 10vh;
     display: flex;
     justify-content:space-between;
-    align-items: center;
+    align-items: center; */
     /* width: 90%; */
-    margin: auto;
-    background-color: white;
+    /* margin: auto;
+    background-color: white; */
     /* border-radius: 30px; */
-    box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
-    padding: 0px 10px;
+    /* box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
+    padding: 0px 10px; */
     /* margin-top: 15px; */
-}
+/* } */
 
 /* .header-options {
     padding-top: 20px;
 } */
 
-.header-options a {
+/* .header-options a {
     margin: 0px 30px;
     text-decoration: none;
     color: black;
@@ -88,9 +88,9 @@
 .logo{
   margin-left: 33px;
 }
-.accounts-btn {
+.accounts-btn { */
     /* padding-top: 16px; */
-}
+/* }
 
 .accounts-btn button {
     background:black;
@@ -99,9 +99,9 @@
     border: none;
     padding: 15px 35px ;
     margin: 0px 5px;
-    border-radius: 35px;
+    border-radius: 35px; */
     /* padding: 4px 15px; */
-}
+/* }
 
 .header-container {
   height: 10vh;
@@ -112,8 +112,8 @@
   background-color: white;
   box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
   padding: 0px 10px;
-}
-
+} */
+/* 
 .header-options a {
   margin: 0px 30px;
   text-decoration: none;
@@ -160,13 +160,140 @@
 .user-menu {
   position: absolute;
   top: 45px;
-  right: 0;
+  right: 0; */
   /* color: black; */
-  background: rgb(255, 255, 255);
+  /* background: rgb(255, 255, 255);
   color: black;
   border: 1px solid #ccc;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+} */
+/* 
+.user-menu button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  color: black;
+}
+
+.user-menu button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+} */
+/* Header base styles */
+header {
+  padding: 10px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 7vh;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(8px); /* Optional: for nice glass effect */
+}
+
+/* When scrolling down: shrink width */
+header.shrink {
+  padding: 5px 0;
+  height: 5.5vh;
+}
+
+/* Header container */
+.header-container {
+  height: 10vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%; /* Default full width */
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 35px;
+  box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
+  padding: 0px 10px;
+  margin-top: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Shrinked state on scroll down */
+header.shrink .header-container {
+  width: 55%;
+  height: 9vh;
+}
+
+/* Navigation links */
+.header-options a {
+  margin: 0px 30px;
+  text-decoration: none;
+  color: black;
+  font-size: 18px;
+}
+
+header.shrink .header-options a {
+  margin: 0px 15px;
+  font-size: 16px;
+}
+
+/* Logo */
+.logo {
+  margin-left: 33px;
+  font-family: monospace;
+  font-size: 20px;
+}
+
+.logo span {
+  color: rgb(132, 36, 132);
+}
+
+/* Button for auth */
+.accounts-btn button {
+  background: black;
+  color: white;
+  font-size: 17px;
+  border: none;
+  padding: 10px 35px;
+  margin: 0px 5px;
+  border-radius: 35px;
+  cursor: pointer;
+}
+
+/* User avatar + menu */
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  background-color: #1a18188d;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 2rem;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* Dropdown user menu */
+.user-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: rgb(255, 255, 255);
+  color: black;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
   display: flex;
   flex-direction: column;
@@ -186,3 +313,4 @@
   background-color: #f0f0f0;
   color: #000;
 }
+
