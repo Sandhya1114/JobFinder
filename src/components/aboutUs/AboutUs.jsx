@@ -7,7 +7,7 @@ const AboutUs = () => {
       {/* Hero Section */}
       <div className="heroSection">
         <div className="glass-hero-content">
-          <h1>About JobPortal Pro</h1>
+          <h1>About JobFinder </h1>
           <p>Your Ultimate Job Search Companion</p>
         </div>
       </div>
