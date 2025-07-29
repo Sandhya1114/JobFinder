@@ -211,9 +211,10 @@ header.shrink {
   align-items: center;
   width: 80%; /* Default full width */
   margin: auto;
-  background-color: rgba(255, 255, 255, 0.84);
+  background-color: rgba(255, 255, 255, 0.42);
+  border:1px solid white;
   border-radius: 35px;
-  box-shadow: rgba(255, 255, 255, 0.92) 2px 2px 15px;
+  /* box-shadow: rgba(255, 255, 255, 0.92) 2px 2px 5px; */
   padding: 0px 10px;
   margin-top: 10px;
   transition: all 0.5s ease-in-out;

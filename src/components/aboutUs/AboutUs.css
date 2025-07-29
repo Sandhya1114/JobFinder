@@ -138,6 +138,7 @@
 
 /* Steps Section */
 .steps-section {
+  margin: auto;
   padding: 30px;
   margin-bottom: 50px;
 }

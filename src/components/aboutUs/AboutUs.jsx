@@ -106,17 +106,17 @@ const AboutUs = () => {
         <h2>Meet Our Team</h2>
         <div className="team-grid">
           <div className="team-member glass-card">
-            <img src="https://placehold.co/200x200" alt="Professional portrait of Sarah Johnson, CEO with dark brown hair in business attire smiling confidently" />
+            {/* <img src="https://placehold.co/200x200" alt="Professional portrait of Sarah Johnson, CEO with dark brown hair in business attire smiling confidently" /> */}
             <h3>Mr. Rahul Rajput</h3>
             <p>CEO & Founder</p>
           </div>
           <div className="team-member glass-card">
-            <img src="https://placehold.co/200x200" alt="Professional portrait of Michael Chen, CTO with glasses and short black hair in a tech company t-shirt" />
+            {/* <img src="https://placehold.co/200x200" alt="Professional portrait of Michael Chen, CTO with glasses and short black hair in a tech company t-shirt" /> */}
             <h3>Mr. Rahul Rajput</h3>
             <p>CTO</p>
           </div>
           <div className="team-member glass-card">
-            <img src="https://placehold.co/200x200" alt="Professional portrait of David Rodriguez, Product Lead with beard and casual blazer standing in office environment" />
+            {/* <img src="https://placehold.co/200x200" alt="Professional portrait of David Rodriguez, Product Lead with beard and casual blazer standing in office environment" /> */}
             <h3>Mr. Rahul Rajput </h3>
             <p>Product Lead</p>
           </div>
