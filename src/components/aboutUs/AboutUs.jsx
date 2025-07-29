@@ -16,9 +16,9 @@ const AboutUs = () => {
       <div className="glass-grid">
         {/* Feature 1 */}
         <div className="glass-card">
-          <div className="feature-icon">
-            <img src="https://placehold.co/100x100" alt="Magnifying glass icon with advanced filters visualization representing powerful search capabilities" />
-          </div>
+          {/* <div className="feature-icon">
+            <img src="./job.jpg" alt="Magnifying glass icon with advanced filters visualization representing powerful search capabilities" />
+          </div> */}
           <h3>Powerful Search Filters</h3>
           <p>
             Find your dream job with our advanced filtering system. Narrow down by:
@@ -34,9 +34,9 @@ const AboutUs = () => {
 
         {/* Feature 2 */}
         <div className="glass-card">
-          <div className="feature-icon">
+          {/* <div className="feature-icon">
             <img src="https://placehold.co/100x100" alt="Bookmark icon with document symbol representing job saving functionality" />
-          </div>
+          </div> */}
           <h3>Save & Track Jobs</h3>
           <p>
             Our platform allows you to:
@@ -51,9 +51,9 @@ const AboutUs = () => {
 
         {/* Feature 3 */}
         <div className="glass-card">
-          <div className="feature-icon">
+          {/* <div className="feature-icon">
             <img src="https://placehold.co/100x100" alt="Lightning bolt with document symbol representing quick apply feature" />
-          </div>
+          </div> */}
           <h3>1-Click Apply</h3>
           <p>
             Streamline your applications with:
@@ -67,9 +67,9 @@ const AboutUs = () => {
         </div>
         {/* Feature 1 */}
         <div className="glass-card">
-          <div className="feature-icon">
+          {/* <div className="feature-icon">
             <img src="https://placehold.co/100x100" alt="Magnifying glass icon with advanced filters visualization representing powerful search capabilities" />
-          </div>
+          </div> */}
           <h3>Powerful Search Filters</h3>
           <p>
             Find your dream job with our advanced filtering system. Narrow down by:
@@ -84,9 +84,9 @@ const AboutUs = () => {
         </div>
         {/* Feature 4 */}
         <div className="glass-card">
-          <div className="feature-icon">
+          {/* <div className="feature-icon">
             <img src="https://placehold.co/100x100" alt="Globe with search interface representing multi-site job search" />
-          </div>
+          </div> */}
           <h3>Multi-Site Search</h3>
           <p>
             We aggregate opportunities from:

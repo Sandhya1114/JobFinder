@@ -78,10 +78,8 @@ button:focus-visible {
 background: linear-gradient(90deg, #7DA9B9 29%, #F3B781 100%); */
 /* background: #D8DADB;
 background: linear-gradient(90deg, rgba(216, 218, 219, 1) 3%, rgba(176, 131, 159, 1) 49%, rgba(144, 93, 124, 1) 89%); */
-/* background: #E8E2E6;
-background: linear-gradient(90deg, rgba(232, 226, 230, 1) 3%, rgba(150, 132, 192, 1) 89%); */
-background: #E4E4E4;
-background: linear-gradient(90deg, rgba(228, 228, 228, 1) 5%, rgba(19, 77, 83, 1) 95%);
+background: #E8E2E6;
+background: linear-gradient(90deg, rgba(232, 226, 230, 1) 3%, rgba(150, 132, 192, 1) 89%);
  
      box-sizing:border-box;
  }
