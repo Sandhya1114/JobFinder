@@ -229,10 +229,10 @@ const AboutUs = () => {
   ];
 
   const teamMembers = [
-    { name: "Mr. Rahul Rajput", role: "CEO & Founder", specialty: "Visionary Leadership", initial: "R" },
-    { name: "Ms. Priya Sharma", role: "CTO", specialty: "Tech Innovation", initial: "P" },
-    { name: "Mr. Arjun Patel", role: "Product Lead", specialty: "User Experience", initial: "A" },
-    { name: "Ms. Sneha Gupta", role: "Head of Marketing", specialty: "Growth Strategy", initial: "S" }
+    { name: "Mr. xyz", role: "CEO & Founder", specialty: "Visionary Leadership", initial: "M"},
+    { name: "Mr. xyz", role: "CTO", specialty: "Tech Innovation", initial: "M" },
+    { name: "Mr. xyz", role: "Product Lead", specialty: "User Experience", initial: "M" },
+    { name: "Mr. xyz", role: "Head of Marketing", specialty: "Growth Strategy", initial: "M" }
   ];
 
   const steps = [
