@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
 import {
   setJobs,
   setCategories,
@@ -17,11 +18,14 @@ import {
 } from '../redux/store';
 import './JobList.css';
 import { saveJob } from '../redux/savedJobsSlice';
+import { useLocation } from 'react-router-dom';
 
 const JobList = () => {
   const dispatch = useDispatch();
   const { jobs, categories, companies, loading, error, filters } = useSelector((state) => state.jobs);
   const [toast, setToast] = useState(null);
+  const location = useLocation();
+  const isJobPage = location.pathname === '/jobs';
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
@@ -319,8 +323,11 @@ const JobList = () => {
         </div>
 
         <div className="jobs-content">
+         
+  
           {/* Search Bar in JobList */}
-          <div className="search-bar">
+           {isJobPage && (
+            <div className="search-bar sticky-search-bar">
             <div className="search-field">
               <span className="icon"><a href="#" className="search fa fa-search"></a></span>
               <input
@@ -376,7 +383,7 @@ const JobList = () => {
               }}
             />
             <button className="search-btn" onClick={() => dispatch(setSearchQuery(filters.searchQuery))}>Search</button>
-          </div>
+          </div>)}
 
           <div className="results-count">Showing {filteredJobs.length} jobs</div>
 

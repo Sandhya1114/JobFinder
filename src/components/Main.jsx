@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/Main.css";
 import Categories3DRing from "./rotate";
-import JobCards from "./JobCard";
+import JobCards from "./jobCard/JobCard";
 
 function Main() {
   const categories = ["IT Jobs", "Marketing", "Finance", "Engineering", "Remote Jobs"];

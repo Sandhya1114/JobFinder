@@ -10,7 +10,7 @@ const ContactUs = () => {
 
   return (
     <div className="contact-container">
-      <div className="glass-card">
+      <div className="glasCard">
         <h2 className="contact-title">Contact Us</h2>
         <p className="contact-description">
           Have questions? Reach out to our team for assistance with your job search or employer needs.

@@ -47,7 +47,7 @@ function Footer() {
       </div>
 
       <div className="footer-middle">
-        <div className="app-links">
+        {/* <div className="app-links">
           <span>Download the App</span>
           
            <a href="#" class="fa fa-android"></a>
@@ -62,7 +62,21 @@ function Footer() {
           <a href="#" class="fa fa-twitter"></a>
            <a href="#" class="fa fa-instagram"></a>
           
-        </div>
+        </div> */}
+        <div className="app-links">
+  <span>Download the App</span>
+  <a href="#"><i className="fab fa-google-play"></i></a>
+  <a href="#"><i className="fab fa-app-store-ios"></i></a>
+</div>
+
+<div className="social-icons">
+  <a href="#"><i className="fab fa-linkedin"></i></a>
+  <a href="#"><i className="fab fa-pinterest"></i></a>
+  <a href="#"><i className="fab fa-reddit"></i></a>
+  <a href="#"><i className="fab fa-youtube"></i></a>
+  <a href="#"><i className="fab fa-twitter"></i></a>
+  <a href="#"><i className="fab fa-instagram"></i></a>
+</div>
         {/* <div className="country-select">
           <select>
             <option>India</option>

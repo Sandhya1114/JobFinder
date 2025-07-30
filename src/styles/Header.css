@@ -1,203 +1,24 @@
-/* .header {
-  background: #fff;
-  border-bottom: 1px solid #ddd;
-  padding: 10px 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-radius: 30px;
-    margin: auto;
-    width: 90vw;
-    height: 7vh;
-}
-
-.header-container {
-  max-width: 1200px;
-  margin: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #10131d;
-}
-
-.search-login {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.search-box {
-  padding: 17px 15%;
-  border: 1px solid #ccc;
-  border-radius: 30px;
-}
-
-.btn {
-  padding: 6px 12px;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  border-radius: 30px;
-}
-
-.login {
-  font-size: 14px;
-    
-    padding: 17px 34px;
-  background: #10131d;
-  color: white;
-}
-
-.register {
-  font-size: 14px;
-   
-    padding: 17px 34px;
-  background: white;
-  color: #10131d;
-  border: 1px solid #10131d;
-} */
-/* .header-container {
-   height: 10vh;
-    display: flex;
-    justify-content:space-between;
-    align-items: center; */
-    /* width: 90%; */
-    /* margin: auto;
-    background-color: white; */
-    /* border-radius: 30px; */
-    /* box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
-    padding: 0px 10px; */
-    /* margin-top: 15px; */
-/* } */
-
-/* .header-options {
-    padding-top: 20px;
-} */
-
-/* .header-options a {
-    margin: 0px 30px;
-    text-decoration: none;
-    color: black;
-}
-.logo{
-  margin-left: 33px;
-}
-.accounts-btn { */
-    /* padding-top: 16px; */
-/* }
-
-.accounts-btn button {
-    background:black;
-    color: white;
-    font-size: 17px;
-    border: none;
-    padding: 15px 35px ;
-    margin: 0px 5px;
-    border-radius: 35px; */
-    /* padding: 4px 15px; */
-/* }
-
-.header-container {
-  height: 10vh;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: auto;
-  background-color: white;
-  box-shadow: rgba(9, 9, 9, 0.35) 0px 8px 20px;
-  padding: 0px 10px;
-} */
-/* 
-.header-options a {
-  margin: 0px 30px;
-  text-decoration: none;
-  color: black;
-}
-
-.logo {
-  margin-left: 33px;
-}
-
-.accounts-btn button {
-  background: black;
-  color: white;
-  font-size: 17px;
-  border: none;
-  padding: 15px 35px;
-  margin: 0px 5px;
-  border-radius: 35px;
-}
-
-.user-info {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-avatar {
-  margin-right: 3vw;
-  width: 45px;
-  height: 45px;
-  background-color: #040404;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1rem;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-.user-menu {
-  position: absolute;
-  top: 45px;
-  right: 0; */
-  /* color: black; */
-  /* background: rgb(255, 255, 255);
-  color: black;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-} */
-/* 
-.user-menu button {
-  background: none;
-  border: none;
-  padding: 0.75rem 1rem;
-  text-align: left;
-  cursor: pointer;
-  width: 100%;
-  color: black;
-}
-
-.user-menu button:hover {
-  background-color: #f0f0f0;
-  color: #000;
-} */
-/* Header base styles */
+/* Base header styles */
 header {
   padding: 10px 0;
-  position: sticky;
   top: 0;
   z-index: 100;
   height: 12vh;
   transition: all 0.3s ease-in-out;
-  backdrop-filter: blur(30px); /* Optional: for nice glass effect */
+  backdrop-filter: blur(30px);
 }
 
-/* When scrolling down: shrink width */
+/* Sticky behavior enabled */
+header.sticky {
+  position: sticky;
+}
+
+/* Sticky disabled */
+header.non-sticky {
+  position: static;
+}
+
+/* Shrinking on scroll */
 header.shrink {
   padding: 5px 0;
   height: 5.5vh;
@@ -209,18 +30,17 @@ header.shrink {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 80%; /* Default full width */
+  width: 80%;
   margin: auto;
   background-color: rgba(255, 255, 255, 0.42);
-  border:1px solid white;
+  border: 1px solid white;
   border-radius: 35px;
-  /* box-shadow: rgba(255, 255, 255, 0.92) 2px 2px 5px; */
   padding: 0px 10px;
   margin-top: 10px;
   transition: all 0.5s ease-in-out;
 }
 
-/* Shrinked state on scroll down */
+/* Shrinked header container */
 header.shrink .header-container {
   width: 55%;
   height: 9vh;
@@ -232,19 +52,18 @@ header.shrink .header-container {
   text-decoration: none;
   color: black;
   font-size: 20px;
-  font-weight:600;
+  font-weight: 600;
   font-family: monospace;
- 
 }
 
+/* Shrinked nav links */
 header.shrink .header-options a {
   margin: 0px 15px;
   font-size: 18px;
-   font-weight:900px;
-  
+  font-weight: 900;
 }
 
-/* Logo */
+/* Logo styles */
 .logo {
   margin-left: 33px;
   font-family: monospace;
@@ -255,7 +74,7 @@ header.shrink .header-options a {
   color: rgb(132, 36, 132);
 }
 
-/* Button for auth */
+/* Sign-in button */
 .accounts-btn button {
   background: black;
   color: white;
@@ -279,7 +98,6 @@ header.shrink .header-options a {
   width: 50px;
   height: 50px;
   background-color: #020202be;
-  /* border:1px solid white; */
   color: white;
   border-radius: 50%;
   display: flex;
@@ -289,11 +107,11 @@ header.shrink .header-options a {
   font-size: 2rem;
   text-transform: uppercase;
   cursor: pointer;
-  margin-right:10px;
+  margin-right: 10px;
   box-shadow: rgba(7, 7, 7, 0.92) 2px 2px 5px;
 }
 
-/* Dropdown user menu */
+/* User menu dropdown */
 .user-menu {
   position: absolute;
   top: 45px;
@@ -322,4 +140,3 @@ header.shrink .header-options a {
   background-color: #f0f0f0;
   color: #000;
 }
-
