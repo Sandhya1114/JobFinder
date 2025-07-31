@@ -87,24 +87,9 @@ background: linear-gradient(90deg, rgba(232, 226, 230, 1) 3%, rgba(150, 132, 192
             opacity: 0.9;
         }
 
-        .fa-linkedin {
-            background: #007bb5;
-            color: white;
-        }
-
-        .fa-pinterest {
-            background: #cb2027;
-            color: white;
-        }
-
-        .fa-reddit {
-            background: #ff5700;
-            color: white;
-        }
-
         .fa {
-            padding: 20px;
-            font-size: 40px;
+           padding: -2px;
+           font-size: 26px;
             width: 30px;
             text-decoration: none;
             /* margin: 5px 80px; */
@@ -112,6 +97,9 @@ background: linear-gradient(90deg, rgba(232, 226, 230, 1) 3%, rgba(150, 132, 192
             border-radius: 50%;
             background-color: transparent;
             color: black;
+             display: flex;
+              justify-content: center;
+              align-items: center;
         }
         body{
   margin:0px;

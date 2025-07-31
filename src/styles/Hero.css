@@ -443,10 +443,10 @@
   transition: all 0.2s ease;
 }
 
-@media (hover: hover) {
+/* @media (hover: hover) {
   .search-field:hover,
   .experience-dropdown:hover,
   .location-input:hover {
     background-color: rgba(255, 255, 255, 0.2);
   }
-}
+} */
