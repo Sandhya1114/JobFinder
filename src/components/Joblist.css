@@ -441,7 +441,7 @@ h1 {
 }
 
 .save-btn {
-  padding: 12px 21px;
+  /* padding: 12px 21px; */
   background-color: rgba(150, 132, 192);
   color: white;
   border: none;

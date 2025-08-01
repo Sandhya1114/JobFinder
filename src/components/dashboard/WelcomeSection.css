@@ -1,0 +1,223 @@
+/* WelcomeSection.css */
+.welcome-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.8s ease-out;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.welcome-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-text {
+  flex: 1;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 12px 0;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.welcome-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 20px 0;
+  font-weight: 400;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.welcome-email {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.email-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+}
+
+.welcome-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInRight 0.8s ease-out 0.3s both;
+}
+
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: float 3s ease-in-out infinite, avatarGlow 2s ease-in-out infinite alternate;
+}
+
+.avatar-icon {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.welcome-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  animation: float 6s ease-in-out infinite;
+}
+
+.bg-circle-1 {
+  width: 150px;
+  height: 150px;
+  top: -75px;
+  right: -75px;
+  animation-delay: 0s;
+}
+
+.bg-circle-2 {
+  width: 100px;
+  height: 100px;
+  bottom: -50px;
+  left: -50px;
+  animation-delay: 2s;
+}
+
+.bg-circle-3 {
+  width: 60px;
+  height: 60px;
+  top: 50%;
+  right: 20%;
+  animation-delay: 4s;
+}
+
+/* Animations */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+@keyframes avatarGlow {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .welcome-section {
+    padding: 30px 20px;
+  }
+  
+  .welcome-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .welcome-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .avatar-container {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .avatar-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .bg-circle-1 {
+    width: 100px;
+    height: 100px;
+    top: -50px;
+    right: -50px;
+  }
+  
+  .bg-circle-2 {
+    width: 80px;
+    height: 80px;
+    bottom: -40px;
+    left: -40px;
+  }
+}

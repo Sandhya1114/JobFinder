@@ -66,7 +66,7 @@ function Footer() {
         <div className="app-links">
   <span>Download the App</span>
   <a href="#"><i className="fab fa-google-play"></i></a>
-  <a href="#"><i className="fab fa-app-store-ios"></i></a>
+  <a href="#"><i className="fab fa-apple"></i></a>
 </div>
 
 <div className="social-icons">
