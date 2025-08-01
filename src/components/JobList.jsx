@@ -946,7 +946,7 @@ const JobList = () => {
                       </span>
                       <div className="job-actions">
                         <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
-                          <button className="apply-btn">Apply Now</button>
+                          <button className="apply-btn">Apply</button>
                         </a>
                         <button
                           onClick={() => {

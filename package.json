@@ -12,6 +12,8 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
     "@supabase/supabase-js": "^2.52.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "gsap": "^3.13.0",
     "miragejs": "^0.1.48",
     "react": "^19.1.0",

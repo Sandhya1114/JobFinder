@@ -30,6 +30,7 @@ h1 {
 }
 
 .job-list-container {
+  
  background-color: #f9f9f985;
   margin: 0 auto;
   padding: 20px;
@@ -222,7 +223,7 @@ h1 {
   background: #9684C0;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 25px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
@@ -263,6 +264,7 @@ h1 {
 }
 
 .job-list-container {
+  margin-top: 3vh;
   display: flex;
   justify-content: center;
   padding: 20px;
