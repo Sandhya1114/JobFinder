@@ -1,0 +1,101 @@
+-- -- Create categories table
+-- CREATE TABLE categories (
+--     id SERIAL PRIMARY KEY,
+--     name VARCHAR(255) NOT NULL,
+--     slug VARCHAR(255) NOT NULL UNIQUE,
+--     created_at TIMESTAMP DEFAULT NOW()
+-- );
+
+-- -- Create companies table
+-- CREATE TABLE companies (
+--     id VARCHAR(50) PRIMARY KEY,
+--     name VARCHAR(255) NOT NULL,
+--     logo VARCHAR(500),
+--     created_at TIMESTAMP DEFAULT NOW()
+-- );
+
+-- -- Create jobs table
+-- CREATE TABLE jobs (
+--     id SERIAL PRIMARY KEY,
+--     title VARCHAR(500) NOT NULL,
+--     category_id INTEGER REFERENCES categories(id),
+--     company_id VARCHAR(50) REFERENCES companies(id),
+--     location VARCHAR(255),
+--     type VARCHAR(100),
+--     experience VARCHAR(100),
+--     salary_min INTEGER,
+--     salary_max INTEGER,
+--     salary_currency VARCHAR(10) DEFAULT 'USD',
+--     description TEXT,
+--     requirements TEXT[],
+--     posted_date DATE,
+--     apply_url VARCHAR(1000),
+--     created_at TIMESTAMP DEFAULT NOW()
+-- );
+
+-- -- Create profiles table
+-- CREATE TABLE profiles (
+--     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+--     name VARCHAR(255),
+--     email VARCHAR(255),
+--     resume_url VARCHAR(500),
+--     skills TEXT[],
+--     created_at TIMESTAMP DEFAULT NOW()
+-- );
+
+-- -- Insert categories
+-- INSERT INTO categories (id, name, slug) VALUES
+-- (1, 'Software Engineering', 'software-engineering'),
+-- (2, 'Data Science', 'data-science'),
+-- (3, 'Security', 'security'),
+-- (4, 'DevOps', 'devops'),
+-- (5, 'Frontend Development', 'frontend'),
+-- (6, 'Backend Development', 'backend'),
+-- (7, 'Mobile Development', 'mobile'),
+-- (8, 'Infrastructure', 'infrastructure'),
+-- (9, 'Robotics', 'robotics'),
+-- (10, 'Cloud Engineering', 'cloud'),
+-- (11, 'Human Resources', 'human-resources'),
+-- (12, 'Sales & Business Development', 'sales-business'),
+-- (13, 'Medical & Healthcare', 'medical-healthcare'),
+-- (14, 'Operations & Management', 'operations-management'),
+-- (15, 'Consulting', 'consulting');
+
+-- -- Insert companies
+-- INSERT INTO companies (id, name, logo) VALUES
+-- ('amazon', 'Amazon', 'https://logo.clearbit.com/amazon.com'),
+-- ('microsoft', 'Microsoft', 'https://logo.clearbit.com/microsoft.com'),
+-- ('google', 'Google', 'https://logo.clearbit.com/google.com'),
+-- ('sourcingxpress', 'SourcingXpress', 'https://logo.clearbit.com/sourcingxpress.com'),
+-- ('bairesdev', 'BairesDev', 'https://logo.clearbit.com/bairesdev.com'),
+-- ('techjockey', 'Techjockey', 'https://logo.clearbit.com/techjockey.com'),
+-- ('wing', 'Wing (M32 Labs)', 'https://logo.clearbit.com/getwingapp.com'),
+-- ('ntt', 'NTT', 'https://logo.clearbit.com/ntt.com'),
+-- ('fedex', 'FedEx', 'https://logo.clearbit.com/fedex.com'),
+-- ('qualcomm', 'Qualcomm', 'https://logo.clearbit.com/qualcomm.com');
+
+-- -- Insert sample jobs
+-- INSERT INTO jobs (id, title, category_id, company_id, location, type, experience, salary_min, salary_max, salary_currency, description, requirements, posted_date, apply_url) VALUES
+-- (1, 'SOC Support Engineer III – AWS SOC Security Support Engineer', 3, 'amazon', 'Seattle, WA (or remote)', 'Full-time', 'Senior', 120000, 180000, 'USD', 'Support AWS Security Operations Center to maintain a secure cloud environment.', ARRAY['3+ years security operations', 'AWS security knowledge', 'SIEM tools experience'], '2025-07-08', 'https://www.amazon.jobs/en/jobs/2988485/soc-support-engineer-iii-aws-soc-security-support-engineer'),
+
+-- (2, 'ASIC Design Engineer, Cloud‑Scale Machine Learning Acceleration team', 8, 'amazon', 'Cupertino, CA, USA / Austin, TX, USA', 'Full-time', 'Mid-level', 129800, 212800, 'USD', 'Develop and implement high‑performance, power‑ and area‑efficient RTL designs for AWS custom SoCs like Inferentia.', ARRAY['Bachelor''s degree or equivalent', '3+ years ASIC design/architecture experience', 'Proficiency in SystemVerilog and RTL design'], '2025-04-29', 'https://www.amazon.jobs/en/jobs/2968674/asic-design-engineer-cloud-scale-machine-learning-acceleration-team'),
+
+-- (3, 'Data Center Engineering Operations Technician', 8, 'amazon', 'Northern Virginia, USA', 'Full-time', 'Mid-level', 75000, 110000, 'USD', 'Manage and maintain mission-critical infrastructure in AWS data centers.', ARRAY['2+ years data center experience', 'Electrical/mechanical systems knowledge'], '2025-07-08', 'https://www.amazon.jobs/en/jobs/3023072/data-center-engineering-operations-technician'),
+
+-- (4, 'Senior Software Engineer – Remote', 1, 'bairesdev', 'Remote (Global)', 'Full-time', 'Senior', 80000, 140000, 'USD', 'Work with top-tier clients to develop cutting-edge software solutions.', ARRAY['5+ years software development', 'Multiple programming languages', 'Remote collaboration skills'], '2025-07-08', 'https://applicants.bairesdev.com/job/1/281122/apply'),
+
+-- (5, 'Data Scientist - Machine Learning', 2, 'google', 'San Francisco, CA', 'Full-time', 'Senior', 140000, 200000, 'USD', 'Build and deploy machine learning models for recommendation systems.', ARRAY['PhD in Data Science/ML', 'Python/R expertise', 'Big data technologies'], '2024-12-28', 'https://example.com/job/7'),
+
+-- (6, 'Full Stack Developer', 1, 'sourcingxpress', 'North Delhi, Delhi, India', 'Full-time', 'Mid–Senior (4–8 years)', 1000000, 2500000, 'INR', 'Lead and mentor full-stack projects, architect and build scalable .NET based solutions.', ARRAY['4–8 years of overall full-stack development experience', 'Proficient in C#, .NET Framework, ASP.NET MVC', 'Strong JavaScript skills and experience with AngularJS or React.js'], '2025-06-22', 'https://www.sourcingxpress.com/jobs/e6edc57f-0e59-40e2-9843-91046c24e874'),
+
+-- (7, 'Frontend Developer', 5, 'techjockey', 'Delhi NCR (Delhi / Gurgaon / Noida)', 'Full-time', 'Mid-Senior', 600000, 1200000, 'INR', 'Develop pixel-perfect, performance-optimized web applications.', ARRAY['2–5 years of experience in frontend development', 'Strong proficiency in HTML, CSS, JavaScript', 'Expertise in React.js and modern JavaScript frameworks'], '2025-07-15', 'https://cutshort.io/job/Frontend-Developer-Delhi-NCR-Delhi-Gurgaon-Noida-Techjockey-com-qokceGof'),
+
+-- (8, 'Technical Specialist – MS Systems', 8, 'ntt', 'New Delhi, India', 'Full-time', 'Mid–Senior (5+ years)', NULL, NULL, 'USD', 'Provide specialized Microsoft systems support within NTT''s global services framework.', ARRAY['5+ years hands-on experience with Microsoft server technologies', 'Expertise in system deployment, configuration, and management', 'Strong troubleshooting skills for complex technical issues'], '2025-07-01', 'https://careers.services.global.ntt/global/en/job/R-113682/apply'),
+
+-- (9, 'Manager, Business Operations', 14, 'qualcomm', 'New Delhi, India', 'Full-time', 'Senior (8+ years)', NULL, NULL, 'USD', 'Lead business operations initiatives across engineering and operations teams at Qualcomm India.', ARRAY['8+ years in business operations, program or project management', 'Experience in global tech/semiconductor environments', 'Strong analytical and problem-solving skills'], '2025-07-01', 'https://careers.qualcomm.com/careers/job/446706361287'),
+
+-- (10, 'Senior Frontend Developer', 5, 'wing', 'New Delhi, India (Remote)', 'Full-time', 'Mid‑Senior', 1200000, 2500000, 'INR', 'Join M32 Labs at Wing to build AI-powered talent management platforms.', ARRAY['2+ years of professional frontend development with MERN stack', 'Proficiency in JavaScript/TypeScript, React/Vue, Tailwind/CSS', 'Experience building from 0→1 in agile/hackathon-style settings'], '2025-07-01', 'https://jobs.lever.co/getwingapp/0af28d14-097e-4612-a225-94bb519c700d/apply');
+
+-- -- Insert sample profile
+-- INSERT INTO profiles (name, email, resume_url, skills) VALUES
+-- ('Abhishek Deshwal', 'abhishek@example.com', 'https://example.com/resume.pdf', ARRAY['React', 'JavaScript', 'Redux', 'HTML', 'CSS']);
