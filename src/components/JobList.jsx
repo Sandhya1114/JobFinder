@@ -1591,7 +1591,1251 @@
 // };
 
 // export default JobList;
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { api } from '../services/api';
+
+// import {
+//   setJobs,
+//   setCategories,
+//   setCompanies,
+//   setLoading,
+//   setError,
+//   setSelectedCategory,
+//   setSelectedCompany,
+//   setSearchQuery,
+//   setSelectedExperience,
+//   setSelectedLocation,
+//   setSelectedType,
+//   setSelectedSalary,
+//   clearFilters,
+// } from '../redux/store';
+// import './JobList.css';
+// import { saveJob } from '../redux/savedJobsSlice';
+// import { useLocation } from 'react-router-dom';
+
+// const JobList = () => {
+//   const dispatch = useDispatch();
+//   const { jobs, categories, companies, loading, error, filters } = useSelector((state) => state.jobs);
+//   const [toast, setToast] = useState(null);
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+//   const location = useLocation();
+//   const isJobPage = location.pathname === '/jobs';
+  
+//   const showToast = (message) => {
+//     setToast(message);
+//     setTimeout(() => setToast(null), 3000);
+//   };
+
+//   // Local state for search inputs
+//   const [locationSearchInput, setLocationSearchInput] = useState('');
+
+//   // Update local state when Redux filters change (from Hero component)
+//   useEffect(() => {
+//     if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+//       setLocationSearchInput(filters.selectedLocation[0]);
+//     }
+//   }, [filters.selectedLocation]);
+
+//   // Close sidebar when clicking outside on mobile
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
+//         setIsSidebarOpen(false);
+//       }
+//     };
+
+//     if (isSidebarOpen) {
+//       document.addEventListener('mousedown', handleClickOutside);
+//       document.body.style.overflow = 'hidden';
+//     } else {
+//       document.body.style.overflow = 'unset';
+//     }
+
+//     return () => {
+//       document.removeEventListener('mousedown', handleClickOutside);
+//       document.body.style.overflow = 'unset';
+//     };
+//   }, [isSidebarOpen]);
+
+//   // Close sidebar on window resize to desktop size
+//   useEffect(() => {
+//     const handleResize = () => {
+//       if (window.innerWidth > 768 && isSidebarOpen) {
+//         setIsSidebarOpen(false);
+//       }
+//     };
+
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, [isSidebarOpen]);
+  
+//   // Reprocess jobs when categories or companies data changes
+//   useEffect(() => {
+//     if (jobs.length > 0 && categories.length > 0 && companies.length > 0) {
+//       // Check if jobs need reprocessing (if they don't have proper company/category data)
+//       const needsReprocessing = jobs.some(job => 
+//         !job.company || job.company.name === 'Company not specified' ||
+//         !job.category || job.category.name === 'Category not specified'
+//       );
+
+//       if (needsReprocessing) {
+//         console.log('🔄 Reprocessing jobs with updated categories and companies...');
+//         const rawJobs = jobs.map(job => ({
+//           ...job,
+//           // Remove the processed company/category objects to get back to raw data
+//           company: undefined,
+//           category: undefined
+//         }));
+        
+//         const reprocessedJobs = processJobsWithMapping(rawJobs, categories, companies);
+//         dispatch(setJobs(reprocessedJobs));
+//       }
+//     }
+//   }, [categories, companies]); // Only run when categories or companies change
+
+//   // Fetch initial data
+//   useEffect(() => {
+//     const fetchInitialData = async () => {
+//       dispatch(setLoading(true));
+//       dispatch(setError(null));
+      
+//       try {
+//         console.log('🔄 Starting to fetch data...');
+        
+//         const [jobsData, categoriesData, companiesData] = await Promise.all([
+//           api.fetchJobs(),
+//           api.fetchCategories(),
+//           api.fetchCompanies(),
+//         ]);
+
+//         console.log('📦 Raw data received:');
+//         console.log('jobsData:', jobsData);
+//         console.log('categoriesData:', categoriesData);
+//         console.log('companiesData:', companiesData);
+
+//         // Validate data structure
+//         if (!jobsData || !jobsData.jobs || !Array.isArray(jobsData.jobs)) {
+//           throw new Error('Invalid jobs data structure');
+//         }
+        
+//         if (!categoriesData || !categoriesData.categories || !Array.isArray(categoriesData.categories)) {
+//           throw new Error('Invalid categories data structure');
+//         }
+        
+//         if (!companiesData || !companiesData.companies || !Array.isArray(companiesData.companies)) {
+//           throw new Error('Invalid companies data structure');
+//         }
+
+//         // First set the raw data in Redux
+//         dispatch(setCategories(categoriesData.categories));
+//         dispatch(setCompanies(companiesData.companies));
+
+//         // Wait a tick to ensure Redux state is updated
+//         await new Promise(resolve => setTimeout(resolve, 0));
+
+//         // Then process jobs with the updated data
+//         const processedJobs = processJobsWithMapping(jobsData.jobs, categoriesData.categories, companiesData.companies);
+
+//         console.log('\n📊 Processing Summary:');
+//         console.log(`Total jobs processed: ${processedJobs.length}`);
+//         console.log(`Jobs with companies: ${processedJobs.filter(j => j.company?.name !== 'Company not specified').length}`);
+//         console.log(`Jobs with categories: ${processedJobs.filter(j => j.category?.name !== 'Category not specified').length}`);
+//         console.log(`Jobs with apply URLs: ${processedJobs.filter(j => j.applyUrl).length}`);
+
+//         dispatch(setJobs(processedJobs));
+        
+//       } catch (err) {
+//         console.error("❌ Error fetching initial data:", err);
+//         dispatch(setError(`Failed to fetch data: ${err.message}`));
+//       } finally {
+//         dispatch(setLoading(false));
+//       }
+//     };
+
+//     fetchInitialData();
+//   }, [dispatch]);
+
+//   // Separate function to process jobs with mapping
+//   const processJobsWithMapping = (jobs, categories, companies) => {
+//     console.log('🔧 Processing jobs with mapping...');
+    
+//     // Create lookup maps for better performance
+//     const categoryMap = new Map();
+//     const companyMap = new Map();
+//     const companyNameMap = new Map(); // For string-based lookups
+
+//     // Build category map
+//     categories.forEach(cat => {
+//       categoryMap.set(cat.id, cat);
+//       console.log(`📋 Category mapped: ID ${cat.id} -> ${cat.name}`);
+//     });
+
+//     // Build company maps (both ID and name/slug based)
+//     companies.forEach(comp => {
+//       companyMap.set(comp.id, comp);
+//       // Also map by name/slug for string-based company_id lookups
+//       if (comp.name) {
+//         companyNameMap.set(comp.name.toLowerCase(), comp);
+//       }
+//       if (comp.slug) {
+//         companyNameMap.set(comp.slug.toLowerCase(), comp);
+//       }
+//       // Handle potential company identifiers like 'amazon', 'google', etc.
+//       const possibleIds = [comp.name, comp.slug, comp.code].filter(Boolean);
+//       possibleIds.forEach(identifier => {
+//         if (identifier) {
+//           companyNameMap.set(identifier.toLowerCase(), comp);
+//         }
+//       });
+//       console.log(`🏢 Company mapped: ID ${comp.id} -> ${comp.name}`);
+//     });
+
+//     // Process each job
+//     return jobs.map((job, index) => {
+//       console.log(`\n🔄 Processing job ${index + 1}/${jobs.length}: ${job.title}`);
+
+//       let category = null;
+//       let company = null;
+
+//       // Find category
+//       if (job.category_id) {
+//         category = categoryMap.get(job.category_id);
+//         console.log(`📋 Found category for ID ${job.category_id}:`, category?.name);
+//       }
+
+//       // Find company
+//       if (job.company_id) {
+//         // Try string-based lookup first (since company_id appears to be strings like 'amazon')
+//         company = companyNameMap.get(job.company_id.toLowerCase()) || companyMap.get(job.company_id);
+//         console.log(`🏢 Found company for ID "${job.company_id}":`, company?.name);
+//       }
+
+//       // Check for apply URL
+//       const applyUrl = job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link || null;
+
+//       const processedJob = {
+//         ...job,
+//         category: category || { name: 'Category not specified', id: null },
+//         company: company || { name: 'Company not specified', id: null },
+//         applyUrl: applyUrl
+//       };
+
+//       return processedJob;
+//     });
+//   };
+
+//   // Client-side filtering logic with better error handling
+//   const filteredJobs = jobs.filter((job) => {
+//     try {
+//       if (!job) {
+//         console.warn('Null job found, skipping');
+//         return false;
+//       }
+
+//       // 1. Category Filter
+//       if (filters.selectedCategory && filters.selectedCategory.length > 0) {
+//         const jobCategoryId = job.categoryId || job.category_id || (job.category && job.category.id);
+//         if (jobCategoryId && !filters.selectedCategory.includes(jobCategoryId)) {
+//           return false;
+//         }
+//       }
+
+//       // 2. Company Filter
+//       if (filters.selectedCompany && filters.selectedCompany.length > 0) {
+//         const jobCompanyId = job.companyId || job.company_id || (job.company && job.company.id);
+//         if (jobCompanyId && !filters.selectedCompany.includes(jobCompanyId)) {
+//           return false;
+//         }
+//       }
+
+//       // 3. Experience Filter
+//       if (filters.selectedExperience && filters.selectedExperience.length > 0 && job.experience) {
+//         const jobExperienceLower = job.experience.toLowerCase();
+//         const match = filters.selectedExperience.some(filterExp => {
+//           const filterExpLower = filterExp.toLowerCase();
+//           if (filterExpLower === 'fresher' && (jobExperienceLower.includes('entry') || jobExperienceLower.includes('junior') || jobExperienceLower.includes('fresher'))) {
+//             return true;
+//           }
+//           if (filterExpLower.includes('yr')) {
+//             const filterYears = parseInt(filterExpLower);
+//             if (jobExperienceLower.includes('mid') && filterYears >= 2 && filterYears <= 5) return true;
+//             if (jobExperienceLower.includes('senior') && filterYears >= 5) return true;
+//           }
+//           return jobExperienceLower.includes(filterExpLower);
+//         });
+//         if (!match) return false;
+//       }
+
+//       // 4. Location Filter
+//       if (filters.selectedLocation && filters.selectedLocation.length > 0 && job.location) {
+//         const jobLocationLower = job.location.toLowerCase();
+//         const match = filters.selectedLocation.some(filterLoc => {
+//           const filterLocLower = filterLoc.toLowerCase();
+//           return jobLocationLower.includes(filterLocLower);
+//         });
+//         if (!match) return false;
+//       }
+
+//       // 5. Type Filter
+//       if (filters.selectedType && filters.selectedType.length > 0 && job.type &&
+//           !filters.selectedType.includes(job.type)) {
+//         return false;
+//       }
+
+//       // 6. Salary Filter
+//       if (filters.selectedSalary && filters.selectedSalary.length > 0) {
+//         const jobMinSalary = job.salary ? job.salary.min : null;
+//         const jobMaxSalary = job.salary ? job.salary.max : null;
+
+//         if (jobMinSalary === null || jobMaxSalary === null) {
+//           return false;
+//         }
+
+//         const match = filters.selectedSalary.some(rangeStr => {
+//           const [minFilter, maxFilter] = rangeStr.split('-').map(Number);
+//           return (jobMinSalary >= minFilter && jobMinSalary <= maxFilter) ||
+//                  (jobMaxSalary >= minFilter && jobMaxSalary <= maxFilter) ||
+//                  (minFilter >= jobMinSalary && maxFilter <= jobMaxSalary);
+//         });
+//         if (!match) return false;
+//       }
+
+//       // 7. Search Query Filter (text search)
+//       if (filters.searchQuery) {
+//         const query = filters.searchQuery.toLowerCase();
+//         const titleMatch = job.title && job.title.toLowerCase().includes(query);
+//         const companyNameMatch = job.company && job.company.name && job.company.name.toLowerCase().includes(query);
+//         const locationMatch = job.location && job.location.toLowerCase().includes(query);
+//         const descriptionMatch = job.description && job.description.toLowerCase().includes(query);
+//         const categoryNameMatch = job.category && job.category.name && job.category.name.toLowerCase().includes(query);
+
+//         return titleMatch || companyNameMatch || locationMatch || descriptionMatch || categoryNameMatch;
+//       }
+
+//       return true;
+//     } catch (filterError) {
+//       console.error('Error filtering job:', job, filterError);
+//       return false;
+//     }
+//   });
+
+//   const formatSalary = (salary) => {
+//     if (!salary || salary.min === null || salary.max === null) return 'Salary not specified';
+//     const formatter = new Intl.NumberFormat('en-US', {
+//       style: 'currency',
+//       currency: salary.currency || 'USD',
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     });
+//     return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
+//   };
+
+//   const handleClearFilters = () => {
+//     dispatch(clearFilters());
+//     setLocationSearchInput('');
+//   };
+
+//   const toggleSidebar = () => {
+//     setIsSidebarOpen(!isSidebarOpen);
+//   };
+
+//   // Debug logging
+//   console.log('🎛️ Current state:', { 
+//     jobs: jobs.length, 
+//     filteredJobs: filteredJobs.length, 
+//     loading, 
+//     error, 
+//     filters 
+//   });
+
+//   if (loading) return <div className="loading">Loading jobs...</div>;
+//   if (error) return <div className="error">Error: {error}</div>;
+
+//   // Define filter options for rendering
+//   const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs', 'Mid–Senior (4–8 years)', 'Senior (10+ years)'];
+//   const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Northern Virginia, USA', 'Boston, MA', 'Various US Locations', 'Redmond, WA, USA', 'Bellevue, WA, USA', 'San Francisco, CA', 'Gurugram (New Delhi region), India', 'Delhi, India', 'North Delhi, Delhi, India', 'Delhi NCR (Delhi / Gurgaon / Noida)', 'NCR (Delhi / Gurgaon / Noida)'];
+//   const typeOptions = ['Full-time', 'Part-time', 'Contract'];
+//   const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000', '300001-500000', '500001-1000000', '1000001-2500000'];
+
+//   return (
+//     <div className="job-list-container">
+//       {/* Mobile filter toggle button */}
+//       <button className="filter-toggle" onClick={toggleSidebar}>
+//         <i className="fa fa-filter"></i> Filters
+//       </button>
+
+//       {/* Sidebar overlay for mobile */}
+//       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+
+//       <div className="job-list-layout">
+//         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+//           <div className="filters-section">
+//             <div className="filter-group">
+//               <h4>Category</h4>
+//               {categories.map((category) => (
+//                 <label key={category.id} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedCategory?.includes(category.id)}
+//                     onChange={() => {
+//                       const current = filters.selectedCategory || [];
+//                       const updated = current.includes(category.id)
+//                         ? current.filter((id) => id !== category.id)
+//                         : [...current, category.id];
+//                       dispatch(setSelectedCategory(updated));
+//                     }}
+//                   />
+//                   {category.name}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Company</h4>
+//               {companies.map((company) => (
+//                 <label key={company.id} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedCompany?.includes(company.id)}
+//                     onChange={() => {
+//                       const current = filters.selectedCompany || [];
+//                       const updated = current.includes(company.id)
+//                         ? current.filter((id) => id !== company.id)
+//                         : [...current, company.id];
+//                       dispatch(setSelectedCompany(updated));
+//                     }}
+//                   />
+//                   {company.name}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Experience</h4>
+//               {experienceOptions.map((level) => (
+//                 <label key={level} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedExperience?.includes(level)}
+//                     onChange={() => {
+//                       const current = filters.selectedExperience || [];
+//                       const updated = current.includes(level)
+//                         ? current.filter((e) => e !== level)
+//                         : [...current, level];
+//                       dispatch(setSelectedExperience(updated));
+//                     }}
+//                   />
+//                   {level}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Location</h4>
+//               {locationOptions.map((location) => (
+//                 <label key={location} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedLocation?.includes(location)}
+//                     onChange={() => {
+//                       const current = filters.selectedLocation || [];
+//                       const updated = current.includes(location)
+//                         ? current.filter((l) => l !== location)
+//                         : [...current, location];
+//                       dispatch(setSelectedLocation(updated));
+//                     }}
+//                   />
+//                   {location}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Type</h4>
+//               {typeOptions.map((type) => (
+//                 <label key={type} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedType?.includes(type)}
+//                     onChange={() => {
+//                       const current = filters.selectedType || [];
+//                       const updated = current.includes(type)
+//                         ? current.filter((t) => t !== type)
+//                         : [...current, type];
+//                       dispatch(setSelectedType(updated));
+//                     }}
+//                   />
+//                   {type}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Salary Range</h4>
+//               {salaryRangeOptions.map((range) => (
+//                 <label key={range} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedSalary?.includes(range)}
+//                     onChange={() => {
+//                       const current = filters.selectedSalary || [];
+//                       const updated = current.includes(range)
+//                         ? current.filter((r) => r !== range)
+//                         : [...current, range];
+//                       dispatch(setSelectedSalary(updated));
+//                     }}
+//                   />
+//                   {range}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <button onClick={handleClearFilters} className="clear-filters-btn">
+//               Clear Filters
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="jobs-content">
+//           {/* Search Bar in JobList */}
+//           {isJobPage && (
+//             <div className="search-bar sticky-search-bar">
+//               <div className="search-field">
+//                 <span className="icon"><i className="fa fa-search"></i></span>
+//                 <input
+//                   type="text"
+//                   placeholder="Enter skills / designations / companies"
+//                   value={filters.searchQuery || ''}
+//                   onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+//                 />
+//               </div>
+//               <div className="divider" />
+//               <select
+//                 className="experience-dropdown"
+//                 value=""
+//                 onChange={(e) => {
+//                   const selectedExp = e.target.value;
+//                   if (selectedExp) {
+//                     const current = filters.selectedExperience || [];
+//                     const updated = current.includes(selectedExp)
+//                       ? current.filter((exp) => exp !== selectedExp)
+//                       : [...current, selectedExp];
+//                     dispatch(setSelectedExperience(updated));
+//                   }
+//                 }}
+//               >
+//                 <option value="">Select experience</option>
+//                 {experienceOptions.map((exp) => (
+//                   <option key={exp} value={exp}>{exp}</option>
+//                 ))}
+//               </select>
+//               <div className="divider" />
+//               <input
+//                 type="text"
+//                 className="location-input"
+//                 placeholder="Enter location"
+//                 value={locationSearchInput}
+//                 onChange={(e) => {
+//                   const locationValue = e.target.value;
+//                   setLocationSearchInput(locationValue);
+                  
+//                   if (locationValue.trim()) {
+//                     dispatch(setSelectedLocation([locationValue.trim()]));
+//                   } else {
+//                     dispatch(setSelectedLocation([]));
+//                   }
+//                 }}
+//                 onKeyPress={(e) => {
+//                   if (e.key === 'Enter') {
+//                     const locationValue = e.target.value.trim();
+//                     if (locationValue) {
+//                       dispatch(setSelectedLocation([locationValue]));
+//                     }
+//                   }
+//                 }}
+//               />
+//               <button className="search-btn" onClick={() => dispatch(setSearchQuery(filters.searchQuery))}>
+//                 Search
+//               </button>
+//             </div>
+//           )}
+
+//           <div className="results-count">Showing {filteredJobs.length} jobs</div>
+
+//           <div className="jobs-grid">
+//             {filteredJobs.length === 0 ? (
+//               <div className="no-jobs">
+//                 {jobs.length === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
+//               </div>
+//             ) : (
+//               filteredJobs.map((job) => (
+//                 <div key={job.id} className="job-card">
+//                   <div className="job-header">
+//                     <h2 className="job-title">{job.title || 'No Title'}</h2>
+//                     <div className="job-meta">
+//                       <span className="company-name">{job.company?.name || 'Company not specified'}</span>
+//                       <span className="job-location">{job.location || 'Location not specified'}</span>
+//                     </div>
+//                   </div>
+
+//                   <div className="job-details">
+//                     <div className="job-category">
+//                       <span className="category-badge">{job.category?.name || 'Category not specified'}</span>
+//                     </div>
+
+//                     <div className="job-info">
+//                       <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
+//                       <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
+//                       <p><strong>Salary:</strong> {formatSalary(job.salary)}</p>
+//                     </div>
+
+//                     <div className="job-description">
+//                       <p>{job.description || 'No description available'}</p>
+//                     </div>
+
+//                     {job.requirements && job.requirements.length > 0 && (
+//                       <div className="job-requirements">
+//                         <h4>Requirements:</h4>
+//                         <ul>
+//                           {job.requirements.map((req, index) => (
+//                             <li key={index}>{req}</li>
+//                           ))}
+//                         </ul>
+//                       </div>
+//                     )}
+
+//                     <div className="job-footer">
+//                       <span className="posted-date">
+//                         Posted: {job.postedDate ? new Date(job.postedDate).toLocaleDateString() : 'Date not available'}
+//                       </span>
+//                       <div className="job-actions">
+//                         {/* Always show Apply button, with different behavior based on applyUrl */}
+//                         {job.applyUrl ? (
+//                           <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+//                             <button className="apply-btn">Apply Now</button>
+//                           </a>
+//                         ) : (
+//                           <button 
+//                             className="apply-btn disabled"
+//                             onClick={() => showToast("Application link not available for this job")}
+//                             title="Application link not available"
+//                           >
+//                             Apply
+//                           </button>
+//                         )}
+//                         <button
+//                           onClick={() => {
+//                             dispatch(saveJob(job));
+//                             showToast("Job saved successfully!");
+//                             if (window.innerWidth <= 768) {
+//                               setIsSidebarOpen(false);
+//                             }
+//                           }}
+//                           className="save-btn"
+//                         >
+//                           Save Job
+//                         </button>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+//         </div>
+//       </div>
+      
+//       {toast && <div className="toast-popup">{toast}</div>}
+//     </div>
+//   );
+// };
+
+// export default JobList;
+// import { useEffect, useState, useMemo, useCallback } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
+// import { api } from '../services/api';
+
+// import {
+//   setJobs,
+//   setCategories,
+//   setCompanies,
+//   setLoading,
+//   setError,
+//   setSelectedCategory,
+//   setSelectedCompany,
+//   setSearchQuery,
+//   setSelectedExperience,
+//   setSelectedLocation,
+//   setSelectedType,
+//   setSelectedSalary,
+//   clearFilters,
+// } from '../redux/store';
+// import './JobList.css';
+// import { saveJob } from '../redux/savedJobsSlice';
+// import { useLocation } from 'react-router-dom';
+
+// const JobList = () => {
+//   const dispatch = useDispatch();
+//   const { jobs, categories, companies, loading, error, filters } = useSelector((state) => state.jobs);
+//   const [toast, setToast] = useState(null);
+//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+//   const location = useLocation();
+//   const isJobPage = location.pathname === '/jobs';
+//   const [locationSearchInput, setLocationSearchInput] = useState('');
+
+//   // Create lookup maps only when data changes (memoized)
+//   const lookupMaps = useMemo(() => {
+//     console.log('🔧 Building lookup maps...');
+    
+//     const categoryMap = new Map();
+//     const companyMap = new Map();
+//     const companyNameMap = new Map();
+
+//     // Build category map
+//     categories.forEach(cat => {
+//       categoryMap.set(cat.id, cat);
+//     });
+
+//     // Build company maps
+//     companies.forEach(comp => {
+//       companyMap.set(comp.id, comp);
+//       if (comp.name) {
+//         companyNameMap.set(comp.name.toLowerCase(), comp);
+//       }
+//       if (comp.slug) {
+//         companyNameMap.set(comp.slug.toLowerCase(), comp);
+//       }
+//       if (comp.code) {
+//         companyNameMap.set(comp.code.toLowerCase(), comp);
+//       }
+//     });
+
+//     return { categoryMap, companyMap, companyNameMap };
+//   }, [categories, companies]);
+
+//   // Process jobs with memoization to avoid reprocessing
+//   const processedJobs = useMemo(() => {
+//     if (!jobs.length || !categories.length || !companies.length) {
+//       return jobs;
+//     }
+
+//     console.log('🔄 Processing jobs with mapping...');
+//     const { categoryMap, companyMap, companyNameMap } = lookupMaps;
+
+//     return jobs.map(job => {
+//       // Skip if already processed
+//       if (job.company && typeof job.company === 'object' && job.company.name !== 'Company not specified') {
+//         return job;
+//       }
+
+//       let category = null;
+//       let company = null;
+
+//       // Find category (optimized lookup)
+//       if (job.category_id) {
+//         category = categoryMap.get(job.category_id);
+//       }
+
+//       // Find company (optimized lookup)
+//       if (job.company_id) {
+//         company = companyNameMap.get(job.company_id.toLowerCase()) || companyMap.get(job.company_id);
+//       }
+
+//       return {
+//         ...job,
+//         category: category || { name: 'Category not specified', id: null },
+//         company: company || { name: 'Company not specified', id: null },
+//         applyUrl: job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link || null
+//       };
+//     });
+//   }, [jobs, lookupMaps]);
+
+//   // Optimized filtering with memoization
+//   const filteredJobs = useMemo(() => {
+//     if (!processedJobs.length) return [];
+
+//     return processedJobs.filter((job) => {
+//       // Category Filter
+//       if (filters.selectedCategory?.length > 0) {
+//         const jobCategoryId = job.categoryId || job.category_id || job.category?.id;
+//         if (jobCategoryId && !filters.selectedCategory.includes(jobCategoryId)) {
+//           return false;
+//         }
+//       }
+
+//       // Company Filter
+//       if (filters.selectedCompany?.length > 0) {
+//         const jobCompanyId = job.companyId || job.company_id || job.company?.id;
+//         if (jobCompanyId && !filters.selectedCompany.includes(jobCompanyId)) {
+//           return false;
+//         }
+//       }
+
+//       // Experience Filter (simplified)
+//       if (filters.selectedExperience?.length > 0 && job.experience) {
+//         const jobExp = job.experience.toLowerCase();
+//         const match = filters.selectedExperience.some(filterExp => {
+//           const filterExpLower = filterExp.toLowerCase();
+//           return jobExp.includes(filterExpLower) || 
+//                  (filterExpLower === 'fresher' && (jobExp.includes('entry') || jobExp.includes('junior')));
+//         });
+//         if (!match) return false;
+//       }
+
+//       // Location Filter (simplified)
+//       if (filters.selectedLocation?.length > 0 && job.location) {
+//         const jobLoc = job.location.toLowerCase();
+//         const match = filters.selectedLocation.some(filterLoc => 
+//           jobLoc.includes(filterLoc.toLowerCase())
+//         );
+//         if (!match) return false;
+//       }
+
+//       // Type Filter
+//       if (filters.selectedType?.length > 0 && job.type && !filters.selectedType.includes(job.type)) {
+//         return false;
+//       }
+
+//       // Salary Filter (simplified)
+//       if (filters.selectedSalary?.length > 0 && job.salary?.min && job.salary?.max) {
+//         const match = filters.selectedSalary.some(rangeStr => {
+//           const [minFilter, maxFilter] = rangeStr.split('-').map(Number);
+//           return job.salary.min <= maxFilter && job.salary.max >= minFilter;
+//         });
+//         if (!match) return false;
+//       }
+
+//       // Search Query Filter (optimized)
+//       if (filters.searchQuery) {
+//         const query = filters.searchQuery.toLowerCase();
+//         const searchableText = [
+//           job.title,
+//           job.company?.name,
+//           job.location,
+//           job.category?.name
+//         ].filter(Boolean).join(' ').toLowerCase();
+        
+//         return searchableText.includes(query);
+//       }
+
+//       return true;
+//     });
+//   }, [processedJobs, filters]);
+
+//   const showToast = useCallback((message) => {
+//     setToast(message);
+//     setTimeout(() => setToast(null), 3000);
+//   }, []);
+
+//   // Update local state when Redux filters change
+//   useEffect(() => {
+//     if (filters.selectedLocation?.length > 0) {
+//       setLocationSearchInput(filters.selectedLocation[0]);
+//     }
+//   }, [filters.selectedLocation]);
+
+//   // Sidebar management effects
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
+//         setIsSidebarOpen(false);
+//       }
+//     };
+
+//     if (isSidebarOpen) {
+//       document.addEventListener('mousedown', handleClickOutside);
+//       document.body.style.overflow = 'hidden';
+//     } else {
+//       document.body.style.overflow = 'unset';
+//     }
+
+//     return () => {
+//       document.removeEventListener('mousedown', handleClickOutside);
+//       document.body.style.overflow = 'unset';
+//     };
+//   }, [isSidebarOpen]);
+
+//   useEffect(() => {
+//     const handleResize = () => {
+//       if (window.innerWidth > 768 && isSidebarOpen) {
+//         setIsSidebarOpen(false);
+//       }
+//     };
+
+//     window.addEventListener('resize', handleResize);
+//     return () => window.removeEventListener('resize', handleResize);
+//   }, [isSidebarOpen]);
+
+//   // Optimized data fetching
+//   useEffect(() => {
+//     const fetchInitialData = async () => {
+//       dispatch(setLoading(true));
+//       dispatch(setError(null));
+      
+//       try {
+//         console.log('🔄 Starting to fetch data...');
+        
+//         // Fetch all data in parallel
+//         const [jobsData, categoriesData, companiesData] = await Promise.all([
+//           api.fetchJobs(),
+//           api.fetchCategories(),
+//           api.fetchCompanies(),
+//         ]);
+
+//         // Validate data structure
+//         if (!jobsData?.jobs || !Array.isArray(jobsData.jobs)) {
+//           throw new Error('Invalid jobs data structure');
+//         }
+//         if (!categoriesData?.categories || !Array.isArray(categoriesData.categories)) {
+//           throw new Error('Invalid categories data structure');
+//         }
+//         if (!companiesData?.companies || !Array.isArray(companiesData.companies)) {
+//           throw new Error('Invalid companies data structure');
+//         }
+
+//         // Set all data at once to minimize re-renders
+//         dispatch(setCategories(categoriesData.categories));
+//         dispatch(setCompanies(companiesData.companies));
+//         dispatch(setJobs(jobsData.jobs));
+
+//         console.log('✅ Data loaded successfully');
+        
+//       } catch (err) {
+//         console.error("❌ Error fetching initial data:", err);
+//         dispatch(setError(`Failed to fetch data: ${err.message}`));
+//       } finally {
+//         dispatch(setLoading(false));
+//       }
+//     };
+
+//     fetchInitialData();
+//   }, [dispatch]);
+
+//   // Memoized salary formatter
+//   const formatSalary = useCallback((salary) => {
+//     if (!salary?.min || !salary?.max) return 'Salary not specified';
+//     const formatter = new Intl.NumberFormat('en-US', {
+//       style: 'currency',
+//       currency: salary.currency || 'USD',
+//       minimumFractionDigits: 0,
+//       maximumFractionDigits: 0,
+//     });
+//     return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
+//   }, []);
+
+//   const handleClearFilters = useCallback(() => {
+//     dispatch(clearFilters());
+//     setLocationSearchInput('');
+//   }, [dispatch]);
+
+//   const toggleSidebar = useCallback(() => {
+//     setIsSidebarOpen(prev => !prev);
+//   }, []);
+
+//   if (loading) return <div className="loading">Loading jobs...</div>;
+//   if (error) return <div className="error">Error: {error}</div>;
+
+//   // Static filter options (consider moving to constants file)
+//   const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
+//   const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'];
+//   const typeOptions = ['Full-time', 'Part-time', 'Contract'];
+//   const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'];
+
+//   return (
+//     <div className="job-list-container">
+//       {/* Mobile filter toggle button */}
+//       <button className="filter-toggle" onClick={toggleSidebar}>
+//         <i className="fa fa-filter"></i> Filters
+//       </button>
+
+//       {/* Sidebar overlay for mobile */}
+//       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+
+//       <div className="job-list-layout">
+//         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+//           <div className="filters-section">
+//             <div className="filter-group">
+//               <h4>Category</h4>
+//               {categories.map((category) => (
+//                 <label key={category.id} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedCategory?.includes(category.id)}
+//                     onChange={() => {
+//                       const current = filters.selectedCategory || [];
+//                       const updated = current.includes(category.id)
+//                         ? current.filter((id) => id !== category.id)
+//                         : [...current, category.id];
+//                       dispatch(setSelectedCategory(updated));
+//                     }}
+//                   />
+//                   {category.name}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Company</h4>
+//               {companies.map((company) => (
+//                 <label key={company.id} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedCompany?.includes(company.id)}
+//                     onChange={() => {
+//                       const current = filters.selectedCompany || [];
+//                       const updated = current.includes(company.id)
+//                         ? current.filter((id) => id !== company.id)
+//                         : [...current, company.id];
+//                       dispatch(setSelectedCompany(updated));
+//                     }}
+//                   />
+//                   {company.name}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Experience</h4>
+//               {experienceOptions.map((level) => (
+//                 <label key={level} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedExperience?.includes(level)}
+//                     onChange={() => {
+//                       const current = filters.selectedExperience || [];
+//                       const updated = current.includes(level)
+//                         ? current.filter((e) => e !== level)
+//                         : [...current, level];
+//                       dispatch(setSelectedExperience(updated));
+//                     }}
+//                   />
+//                   {level}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Location</h4>
+//               {locationOptions.map((location) => (
+//                 <label key={location} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedLocation?.includes(location)}
+//                     onChange={() => {
+//                       const current = filters.selectedLocation || [];
+//                       const updated = current.includes(location)
+//                         ? current.filter((l) => l !== location)
+//                         : [...current, location];
+//                       dispatch(setSelectedLocation(updated));
+//                     }}
+//                   />
+//                   {location}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Type</h4>
+//               {typeOptions.map((type) => (
+//                 <label key={type} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedType?.includes(type)}
+//                     onChange={() => {
+//                       const current = filters.selectedType || [];
+//                       const updated = current.includes(type)
+//                         ? current.filter((t) => t !== type)
+//                         : [...current, type];
+//                       dispatch(setSelectedType(updated));
+//                     }}
+//                   />
+//                   {type}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <div className="filter-group">
+//               <h4>Salary Range</h4>
+//               {salaryRangeOptions.map((range) => (
+//                 <label key={range} className="filter-checkbox">
+//                   <input
+//                     type="checkbox"
+//                     checked={filters.selectedSalary?.includes(range)}
+//                     onChange={() => {
+//                       const current = filters.selectedSalary || [];
+//                       const updated = current.includes(range)
+//                         ? current.filter((r) => r !== range)
+//                         : [...current, range];
+//                       dispatch(setSelectedSalary(updated));
+//                     }}
+//                   />
+//                   {range}
+//                 </label>
+//               ))}
+//             </div>
+
+//             <button onClick={handleClearFilters} className="clear-filters-btn">
+//               Clear Filters
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="jobs-content">
+//           {/* Search Bar in JobList */}
+//           {isJobPage && (
+//             <div className="search-bar sticky-search-bar">
+//               <div className="search-field">
+//                 <span className="icon"><i className="fa fa-search"></i></span>
+//                 <input
+//                   type="text"
+//                   placeholder="Enter skills / designations / companies"
+//                   value={filters.searchQuery || ''}
+//                   onChange={(e) => dispatch(setSearchQuery(e.target.value))}
+//                 />
+//               </div>
+//               <div className="divider" />
+//               <select
+//                 className="experience-dropdown"
+//                 value=""
+//                 onChange={(e) => {
+//                   const selectedExp = e.target.value;
+//                   if (selectedExp) {
+//                     const current = filters.selectedExperience || [];
+//                     const updated = current.includes(selectedExp)
+//                       ? current.filter((exp) => exp !== selectedExp)
+//                       : [...current, selectedExp];
+//                     dispatch(setSelectedExperience(updated));
+//                   }
+//                 }}
+//               >
+//                 <option value="">Select experience</option>
+//                 {experienceOptions.map((exp) => (
+//                   <option key={exp} value={exp}>{exp}</option>
+//                 ))}
+//               </select>
+//               <div className="divider" />
+//               <input
+//                 type="text"
+//                 className="location-input"
+//                 placeholder="Enter location"
+//                 value={locationSearchInput}
+//                 onChange={(e) => {
+//                   const locationValue = e.target.value;
+//                   setLocationSearchInput(locationValue);
+                  
+//                   if (locationValue.trim()) {
+//                     dispatch(setSelectedLocation([locationValue.trim()]));
+//                   } else {
+//                     dispatch(setSelectedLocation([]));
+//                   }
+//                 }}
+//                 onKeyPress={(e) => {
+//                   if (e.key === 'Enter') {
+//                     const locationValue = e.target.value.trim();
+//                     if (locationValue) {
+//                       dispatch(setSelectedLocation([locationValue]));
+//                     }
+//                   }
+//                 }}
+//               />
+//               <button className="search-btn" onClick={() => dispatch(setSearchQuery(filters.searchQuery))}>
+//                 Search
+//               </button>
+//             </div>
+//           )}
+
+//           <div className="results-count">Showing {filteredJobs.length} jobs</div>
+
+//           <div className="jobs-grid">
+//             {filteredJobs.length === 0 ? (
+//               <div className="no-jobs">
+//                 {processedJobs.length === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
+//               </div>
+//             ) : (
+//               filteredJobs.map((job) => (
+//                 <div key={job.id} className="job-card">
+//                   <div className="job-header">
+//                     <h2 className="job-title">{job.title || 'No Title'}</h2>
+//                     <div className="job-meta">
+//                       <span className="company-name">{job.company?.name || 'Company not specified'}</span>
+//                       <span className="job-location">{job.location || 'Location not specified'}</span>
+//                     </div>
+//                   </div>
+
+//                   <div className="job-details">
+//                     <div className="job-category">
+//                       <span className="category-badge">{job.category?.name || 'Category not specified'}</span>
+//                     </div>
+
+//                     <div className="job-info">
+//                       <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
+//                       <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
+//                       <p><strong>Salary:</strong> {formatSalary(job.salary)}</p>
+//                     </div>
+
+//                     <div className="job-description">
+//                       <p>{job.description || 'No description available'}</p>
+//                     </div>
+
+//                     {job.requirements?.length > 0 && (
+//                       <div className="job-requirements">
+//                         <h4>Requirements:</h4>
+//                         <ul>
+//                           {job.requirements.map((req, index) => (
+//                             <li key={index}>{req}</li>
+//                           ))}
+//                         </ul>
+//                       </div>
+//                     )}
+
+//                     <div className="job-footer">
+//                       <span className="posted-date">
+//                         Posted: {job.postedDate ? new Date(job.postedDate).toLocaleDateString() : 'Date not available'}
+//                       </span>
+//                       <div className="job-actions">
+//                         {job.applyUrl ? (
+//                           <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
+//                             <button className="apply-btn">Apply Now</button>
+//                           </a>
+//                         ) : (
+//                           <button 
+//                             className="apply-btn disabled"
+//                             onClick={() => showToast("Application link not available for this job")}
+//                             title="Application link not available"
+//                           >
+//                             Apply
+//                           </button>
+//                         )}
+//                         <button
+//                           onClick={() => {
+//                             dispatch(saveJob(job));
+//                             showToast("Job saved successfully!");
+//                             if (window.innerWidth <= 768) {
+//                               setIsSidebarOpen(false);
+//                             }
+//                           }}
+//                           className="save-btn"
+//                         >
+//                           Save Job
+//                         </button>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+//         </div>
+//       </div>
+      
+//       {toast && <div className="toast-popup">{toast}</div>}
+//     </div>
+//   );
+// };
+
+// export default JobList;
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { api } from '../services/api';
 
@@ -1614,6 +2858,88 @@ import './JobList.css';
 import { saveJob } from '../redux/savedJobsSlice';
 import { useLocation } from 'react-router-dom';
 
+// Pagination Component
+const Pagination = ({ currentPage, totalPages, onPageChange, totalJobs, jobsPerPage }) => {
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      if (currentPage <= 3) {
+        pages.push(1, 2, 3, 4, '...', totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      } else {
+        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      }
+    }
+    
+    return pages;
+  };
+
+  const startIndex = (currentPage - 1) * jobsPerPage + 1;
+  const endIndex = Math.min(currentPage * jobsPerPage, totalJobs);
+
+  return (
+    <div className="pagination-container">
+      <div className="pagination-info">
+        Showing {startIndex}-{endIndex} of {totalJobs} jobs
+      </div>
+      
+      <div className="pagination-controls">
+        <button
+          className={`pagination-btn ${currentPage === 1 ? 'disabled' : ''}`}
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          <i className="fa fa-chevron-left"></i> Previous
+        </button>
+
+        <div className="pagination-numbers">
+          {getPageNumbers().map((page, index) => (
+            <button
+              key={index}
+              className={`pagination-number ${page === currentPage ? 'active' : ''} ${page === '...' ? 'dots' : ''}`}
+              onClick={() => typeof page === 'number' && onPageChange(page)}
+              disabled={page === '...'}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+
+        <button
+          className={`pagination-btn ${currentPage === totalPages ? 'disabled' : ''}`}
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next <i className="fa fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <div className="jobs-per-page">
+        <label>
+          Jobs per page:
+          <select
+            value={jobsPerPage}
+            onChange={(e) => onPageChange(1, parseInt(e.target.value))}
+            className="jobs-per-page-select"
+          >
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+          </select>
+        </label>
+      </div>
+    </div>
+  );
+};
+
 const JobList = () => {
   const dispatch = useDispatch();
   const { jobs, categories, companies, loading, error, filters } = useSelector((state) => state.jobs);
@@ -1621,23 +2947,194 @@ const JobList = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const isJobPage = location.pathname === '/jobs';
-  
-  const showToast = (message) => {
-    setToast(message);
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  // Local state for search inputs
   const [locationSearchInput, setLocationSearchInput] = useState('');
 
-  // Update local state when Redux filters change (from Hero component)
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [jobsPerPage, setJobsPerPage] = useState(20);
+
+  // Create lookup maps only when data changes (memoized)
+  const lookupMaps = useMemo(() => {
+    console.log('🔧 Building lookup maps...');
+    
+    const categoryMap = new Map();
+    const companyMap = new Map();
+    const companyNameMap = new Map();
+
+    // Build category map
+    categories.forEach(cat => {
+      categoryMap.set(cat.id, cat);
+    });
+
+    // Build company maps
+    companies.forEach(comp => {
+      companyMap.set(comp.id, comp);
+      if (comp.name) {
+        companyNameMap.set(comp.name.toLowerCase(), comp);
+      }
+      if (comp.slug) {
+        companyNameMap.set(comp.slug.toLowerCase(), comp);
+      }
+      if (comp.code) {
+        companyNameMap.set(comp.code.toLowerCase(), comp);
+      }
+    });
+
+    return { categoryMap, companyMap, companyNameMap };
+  }, [categories, companies]);
+
+  // Process jobs with memoization to avoid reprocessing
+  const processedJobs = useMemo(() => {
+    if (!jobs.length || !categories.length || !companies.length) {
+      return jobs;
+    }
+
+    console.log('🔄 Processing jobs with mapping...');
+    const { categoryMap, companyMap, companyNameMap } = lookupMaps;
+
+    return jobs.map(job => {
+      // Skip if already processed
+      if (job.company && typeof job.company === 'object' && job.company.name !== 'Company not specified') {
+        return job;
+      }
+
+      let category = null;
+      let company = null;
+
+      // Find category (optimized lookup)
+      if (job.category_id) {
+        category = categoryMap.get(job.category_id);
+      }
+
+      // Find company (optimized lookup)
+      if (job.company_id) {
+        company = companyNameMap.get(job.company_id.toLowerCase()) || companyMap.get(job.company_id);
+      }
+
+      return {
+        ...job,
+        category: category || { name: 'Category not specified', id: null },
+        company: company || { name: 'Company not specified', id: null },
+        applyUrl: job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link || null
+      };
+    });
+  }, [jobs, lookupMaps]);
+
+  // Optimized filtering with memoization
+  const filteredJobs = useMemo(() => {
+    if (!processedJobs.length) return [];
+
+    return processedJobs.filter((job) => {
+      // Category Filter
+      if (filters.selectedCategory?.length > 0) {
+        const jobCategoryId = job.categoryId || job.category_id || job.category?.id;
+        if (jobCategoryId && !filters.selectedCategory.includes(jobCategoryId)) {
+          return false;
+        }
+      }
+
+      // Company Filter
+      if (filters.selectedCompany?.length > 0) {
+        const jobCompanyId = job.companyId || job.company_id || job.company?.id;
+        if (jobCompanyId && !filters.selectedCompany.includes(jobCompanyId)) {
+          return false;
+        }
+      }
+
+      // Experience Filter (simplified)
+      if (filters.selectedExperience?.length > 0 && job.experience) {
+        const jobExp = job.experience.toLowerCase();
+        const match = filters.selectedExperience.some(filterExp => {
+          const filterExpLower = filterExp.toLowerCase();
+          return jobExp.includes(filterExpLower) || 
+                 (filterExpLower === 'fresher' && (jobExp.includes('entry') || jobExp.includes('junior')));
+        });
+        if (!match) return false;
+      }
+
+      // Location Filter (simplified)
+      if (filters.selectedLocation?.length > 0 && job.location) {
+        const jobLoc = job.location.toLowerCase();
+        const match = filters.selectedLocation.some(filterLoc => 
+          jobLoc.includes(filterLoc.toLowerCase())
+        );
+        if (!match) return false;
+      }
+
+      // Type Filter
+      if (filters.selectedType?.length > 0 && job.type && !filters.selectedType.includes(job.type)) {
+        return false;
+      }
+
+      // Salary Filter (simplified)
+      if (filters.selectedSalary?.length > 0 && job.salary?.min && job.salary?.max) {
+        const match = filters.selectedSalary.some(rangeStr => {
+          const [minFilter, maxFilter] = rangeStr.split('-').map(Number);
+          return job.salary.min <= maxFilter && job.salary.max >= minFilter;
+        });
+        if (!match) return false;
+      }
+
+      // Search Query Filter (optimized)
+      if (filters.searchQuery) {
+        const query = filters.searchQuery.toLowerCase();
+        const searchableText = [
+          job.title,
+          job.company?.name,
+          job.location,
+          job.category?.name
+        ].filter(Boolean).join(' ').toLowerCase();
+        
+        return searchableText.includes(query);
+      }
+
+      return true;
+    });
+  }, [processedJobs, filters]);
+
+  // Pagination calculations
+  const totalJobs = filteredJobs.length;
+  const totalPages = Math.ceil(totalJobs / jobsPerPage);
+  
+  // Get current page jobs
+  const currentJobs = useMemo(() => {
+    const startIndex = (currentPage - 1) * jobsPerPage;
+    const endIndex = startIndex + jobsPerPage;
+    return filteredJobs.slice(startIndex, endIndex);
+  }, [filteredJobs, currentPage, jobsPerPage]);
+
+  // Reset to page 1 when filters change
   useEffect(() => {
-    if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
+  const handlePageChange = useCallback((newPage, newJobsPerPage = null) => {
+    if (newJobsPerPage) {
+      setJobsPerPage(newJobsPerPage);
+      setCurrentPage(1); // Reset to first page when changing jobs per page
+    } else {
+      setCurrentPage(newPage);
+    }
+  }, []);
+
+  const showToast = useCallback((message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  // Update local state when Redux filters change
+  useEffect(() => {
+    if (filters.selectedLocation?.length > 0) {
       setLocationSearchInput(filters.selectedLocation[0]);
     }
   }, [filters.selectedLocation]);
 
-  // Close sidebar when clicking outside on mobile
+  // Sidebar management effects
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
@@ -1658,7 +3155,6 @@ const JobList = () => {
     };
   }, [isSidebarOpen]);
 
-  // Close sidebar on window resize to desktop size
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768 && isSidebarOpen) {
@@ -1669,32 +3165,8 @@ const JobList = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [isSidebarOpen]);
-  
-  // Reprocess jobs when categories or companies data changes
-  useEffect(() => {
-    if (jobs.length > 0 && categories.length > 0 && companies.length > 0) {
-      // Check if jobs need reprocessing (if they don't have proper company/category data)
-      const needsReprocessing = jobs.some(job => 
-        !job.company || job.company.name === 'Company not specified' ||
-        !job.category || job.category.name === 'Category not specified'
-      );
 
-      if (needsReprocessing) {
-        console.log('🔄 Reprocessing jobs with updated categories and companies...');
-        const rawJobs = jobs.map(job => ({
-          ...job,
-          // Remove the processed company/category objects to get back to raw data
-          company: undefined,
-          category: undefined
-        }));
-        
-        const reprocessedJobs = processJobsWithMapping(rawJobs, categories, companies);
-        dispatch(setJobs(reprocessedJobs));
-      }
-    }
-  }, [categories, companies]); // Only run when categories or companies change
-
-  // Fetch initial data
+  // Optimized data fetching
   useEffect(() => {
     const fetchInitialData = async () => {
       dispatch(setLoading(true));
@@ -1703,47 +3175,30 @@ const JobList = () => {
       try {
         console.log('🔄 Starting to fetch data...');
         
+        // Fetch all data in parallel
         const [jobsData, categoriesData, companiesData] = await Promise.all([
           api.fetchJobs(),
           api.fetchCategories(),
           api.fetchCompanies(),
         ]);
 
-        console.log('📦 Raw data received:');
-        console.log('jobsData:', jobsData);
-        console.log('categoriesData:', categoriesData);
-        console.log('companiesData:', companiesData);
-
         // Validate data structure
-        if (!jobsData || !jobsData.jobs || !Array.isArray(jobsData.jobs)) {
+        if (!jobsData?.jobs || !Array.isArray(jobsData.jobs)) {
           throw new Error('Invalid jobs data structure');
         }
-        
-        if (!categoriesData || !categoriesData.categories || !Array.isArray(categoriesData.categories)) {
+        if (!categoriesData?.categories || !Array.isArray(categoriesData.categories)) {
           throw new Error('Invalid categories data structure');
         }
-        
-        if (!companiesData || !companiesData.companies || !Array.isArray(companiesData.companies)) {
+        if (!companiesData?.companies || !Array.isArray(companiesData.companies)) {
           throw new Error('Invalid companies data structure');
         }
 
-        // First set the raw data in Redux
+        // Set all data at once to minimize re-renders
         dispatch(setCategories(categoriesData.categories));
         dispatch(setCompanies(companiesData.companies));
+        dispatch(setJobs(jobsData.jobs));
 
-        // Wait a tick to ensure Redux state is updated
-        await new Promise(resolve => setTimeout(resolve, 0));
-
-        // Then process jobs with the updated data
-        const processedJobs = processJobsWithMapping(jobsData.jobs, categoriesData.categories, companiesData.companies);
-
-        console.log('\n📊 Processing Summary:');
-        console.log(`Total jobs processed: ${processedJobs.length}`);
-        console.log(`Jobs with companies: ${processedJobs.filter(j => j.company?.name !== 'Company not specified').length}`);
-        console.log(`Jobs with categories: ${processedJobs.filter(j => j.category?.name !== 'Category not specified').length}`);
-        console.log(`Jobs with apply URLs: ${processedJobs.filter(j => j.applyUrl).length}`);
-
-        dispatch(setJobs(processedJobs));
+        console.log('✅ Data loaded successfully');
         
       } catch (err) {
         console.error("❌ Error fetching initial data:", err);
@@ -1756,172 +3211,9 @@ const JobList = () => {
     fetchInitialData();
   }, [dispatch]);
 
-  // Separate function to process jobs with mapping
-  const processJobsWithMapping = (jobs, categories, companies) => {
-    console.log('🔧 Processing jobs with mapping...');
-    
-    // Create lookup maps for better performance
-    const categoryMap = new Map();
-    const companyMap = new Map();
-    const companyNameMap = new Map(); // For string-based lookups
-
-    // Build category map
-    categories.forEach(cat => {
-      categoryMap.set(cat.id, cat);
-      console.log(`📋 Category mapped: ID ${cat.id} -> ${cat.name}`);
-    });
-
-    // Build company maps (both ID and name/slug based)
-    companies.forEach(comp => {
-      companyMap.set(comp.id, comp);
-      // Also map by name/slug for string-based company_id lookups
-      if (comp.name) {
-        companyNameMap.set(comp.name.toLowerCase(), comp);
-      }
-      if (comp.slug) {
-        companyNameMap.set(comp.slug.toLowerCase(), comp);
-      }
-      // Handle potential company identifiers like 'amazon', 'google', etc.
-      const possibleIds = [comp.name, comp.slug, comp.code].filter(Boolean);
-      possibleIds.forEach(identifier => {
-        if (identifier) {
-          companyNameMap.set(identifier.toLowerCase(), comp);
-        }
-      });
-      console.log(`🏢 Company mapped: ID ${comp.id} -> ${comp.name}`);
-    });
-
-    // Process each job
-    return jobs.map((job, index) => {
-      console.log(`\n🔄 Processing job ${index + 1}/${jobs.length}: ${job.title}`);
-
-      let category = null;
-      let company = null;
-
-      // Find category
-      if (job.category_id) {
-        category = categoryMap.get(job.category_id);
-        console.log(`📋 Found category for ID ${job.category_id}:`, category?.name);
-      }
-
-      // Find company
-      if (job.company_id) {
-        // Try string-based lookup first (since company_id appears to be strings like 'amazon')
-        company = companyNameMap.get(job.company_id.toLowerCase()) || companyMap.get(job.company_id);
-        console.log(`🏢 Found company for ID "${job.company_id}":`, company?.name);
-      }
-
-      // Check for apply URL
-      const applyUrl = job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link || null;
-
-      const processedJob = {
-        ...job,
-        category: category || { name: 'Category not specified', id: null },
-        company: company || { name: 'Company not specified', id: null },
-        applyUrl: applyUrl
-      };
-
-      return processedJob;
-    });
-  };
-
-  // Client-side filtering logic with better error handling
-  const filteredJobs = jobs.filter((job) => {
-    try {
-      if (!job) {
-        console.warn('Null job found, skipping');
-        return false;
-      }
-
-      // 1. Category Filter
-      if (filters.selectedCategory && filters.selectedCategory.length > 0) {
-        const jobCategoryId = job.categoryId || job.category_id || (job.category && job.category.id);
-        if (jobCategoryId && !filters.selectedCategory.includes(jobCategoryId)) {
-          return false;
-        }
-      }
-
-      // 2. Company Filter
-      if (filters.selectedCompany && filters.selectedCompany.length > 0) {
-        const jobCompanyId = job.companyId || job.company_id || (job.company && job.company.id);
-        if (jobCompanyId && !filters.selectedCompany.includes(jobCompanyId)) {
-          return false;
-        }
-      }
-
-      // 3. Experience Filter
-      if (filters.selectedExperience && filters.selectedExperience.length > 0 && job.experience) {
-        const jobExperienceLower = job.experience.toLowerCase();
-        const match = filters.selectedExperience.some(filterExp => {
-          const filterExpLower = filterExp.toLowerCase();
-          if (filterExpLower === 'fresher' && (jobExperienceLower.includes('entry') || jobExperienceLower.includes('junior') || jobExperienceLower.includes('fresher'))) {
-            return true;
-          }
-          if (filterExpLower.includes('yr')) {
-            const filterYears = parseInt(filterExpLower);
-            if (jobExperienceLower.includes('mid') && filterYears >= 2 && filterYears <= 5) return true;
-            if (jobExperienceLower.includes('senior') && filterYears >= 5) return true;
-          }
-          return jobExperienceLower.includes(filterExpLower);
-        });
-        if (!match) return false;
-      }
-
-      // 4. Location Filter
-      if (filters.selectedLocation && filters.selectedLocation.length > 0 && job.location) {
-        const jobLocationLower = job.location.toLowerCase();
-        const match = filters.selectedLocation.some(filterLoc => {
-          const filterLocLower = filterLoc.toLowerCase();
-          return jobLocationLower.includes(filterLocLower);
-        });
-        if (!match) return false;
-      }
-
-      // 5. Type Filter
-      if (filters.selectedType && filters.selectedType.length > 0 && job.type &&
-          !filters.selectedType.includes(job.type)) {
-        return false;
-      }
-
-      // 6. Salary Filter
-      if (filters.selectedSalary && filters.selectedSalary.length > 0) {
-        const jobMinSalary = job.salary ? job.salary.min : null;
-        const jobMaxSalary = job.salary ? job.salary.max : null;
-
-        if (jobMinSalary === null || jobMaxSalary === null) {
-          return false;
-        }
-
-        const match = filters.selectedSalary.some(rangeStr => {
-          const [minFilter, maxFilter] = rangeStr.split('-').map(Number);
-          return (jobMinSalary >= minFilter && jobMinSalary <= maxFilter) ||
-                 (jobMaxSalary >= minFilter && jobMaxSalary <= maxFilter) ||
-                 (minFilter >= jobMinSalary && maxFilter <= jobMaxSalary);
-        });
-        if (!match) return false;
-      }
-
-      // 7. Search Query Filter (text search)
-      if (filters.searchQuery) {
-        const query = filters.searchQuery.toLowerCase();
-        const titleMatch = job.title && job.title.toLowerCase().includes(query);
-        const companyNameMatch = job.company && job.company.name && job.company.name.toLowerCase().includes(query);
-        const locationMatch = job.location && job.location.toLowerCase().includes(query);
-        const descriptionMatch = job.description && job.description.toLowerCase().includes(query);
-        const categoryNameMatch = job.category && job.category.name && job.category.name.toLowerCase().includes(query);
-
-        return titleMatch || companyNameMatch || locationMatch || descriptionMatch || categoryNameMatch;
-      }
-
-      return true;
-    } catch (filterError) {
-      console.error('Error filtering job:', job, filterError);
-      return false;
-    }
-  });
-
-  const formatSalary = (salary) => {
-    if (!salary || salary.min === null || salary.max === null) return 'Salary not specified';
+  // Memoized salary formatter
+  const formatSalary = useCallback((salary) => {
+    if (!salary?.min || !salary?.max) return 'Salary not specified';
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: salary.currency || 'USD',
@@ -1929,34 +3221,26 @@ const JobList = () => {
       maximumFractionDigits: 0,
     });
     return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
-  };
+  }, []);
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     dispatch(clearFilters());
     setLocationSearchInput('');
-  };
+    setCurrentPage(1); // Reset to first page when clearing filters
+  }, [dispatch]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  // Debug logging
-  console.log('🎛️ Current state:', { 
-    jobs: jobs.length, 
-    filteredJobs: filteredJobs.length, 
-    loading, 
-    error, 
-    filters 
-  });
+  const toggleSidebar = useCallback(() => {
+    setIsSidebarOpen(prev => !prev);
+  }, []);
 
   if (loading) return <div className="loading">Loading jobs...</div>;
   if (error) return <div className="error">Error: {error}</div>;
 
-  // Define filter options for rendering
-  const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs', 'Mid–Senior (4–8 years)', 'Senior (10+ years)'];
-  const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Northern Virginia, USA', 'Boston, MA', 'Various US Locations', 'Redmond, WA, USA', 'Bellevue, WA, USA', 'San Francisco, CA', 'Gurugram (New Delhi region), India', 'Delhi, India', 'North Delhi, Delhi, India', 'Delhi NCR (Delhi / Gurgaon / Noida)', 'NCR (Delhi / Gurgaon / Noida)'];
+  // Static filter options (consider moving to constants file)
+  const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
+  const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'];
   const typeOptions = ['Full-time', 'Part-time', 'Contract'];
-  const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000', '300001-500000', '500001-1000000', '1000001-2500000'];
+  const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'];
 
   return (
     <div className="job-list-container">
@@ -2161,15 +3445,24 @@ const JobList = () => {
             </div>
           )}
 
-          <div className="results-count">Showing {filteredJobs.length} jobs</div>
+          {/* Pagination - Top */}
+          {totalJobs > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalJobs={totalJobs}
+              jobsPerPage={jobsPerPage}
+            />
+          )}
 
           <div className="jobs-grid">
-            {filteredJobs.length === 0 ? (
+            {currentJobs.length === 0 ? (
               <div className="no-jobs">
-                {jobs.length === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
+                {totalJobs === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
               </div>
             ) : (
-              filteredJobs.map((job) => (
+              currentJobs.map((job) => (
                 <div key={job.id} className="job-card">
                   <div className="job-header">
                     <h2 className="job-title">{job.title || 'No Title'}</h2>
@@ -2194,7 +3487,7 @@ const JobList = () => {
                       <p>{job.description || 'No description available'}</p>
                     </div>
 
-                    {job.requirements && job.requirements.length > 0 && (
+                    {job.requirements?.length > 0 && (
                       <div className="job-requirements">
                         <h4>Requirements:</h4>
                         <ul>
@@ -2210,7 +3503,6 @@ const JobList = () => {
                         Posted: {job.postedDate ? new Date(job.postedDate).toLocaleDateString() : 'Date not available'}
                       </span>
                       <div className="job-actions">
-                        {/* Always show Apply button, with different behavior based on applyUrl */}
                         {job.applyUrl ? (
                           <a href={job.applyUrl} target="_blank" rel="noopener noreferrer">
                             <button className="apply-btn">Apply Now</button>
@@ -2243,6 +3535,17 @@ const JobList = () => {
               ))
             )}
           </div>
+
+          {/* Pagination - Bottom */}
+          {totalJobs > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+              totalJobs={totalJobs}
+              jobsPerPage={jobsPerPage}
+            />
+          )}
         </div>
       </div>
       
