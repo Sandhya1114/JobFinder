@@ -123,6 +123,7 @@ app.post('/api/upload-resume', (req, res) => {
   });
 });
 
+
 // Stats
 app.get('/api/jobs/stats', async (req, res) => {
   try {
