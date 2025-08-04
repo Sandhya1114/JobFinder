@@ -15,24 +15,125 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // ============ API ROUTES ============
 
 // Get all jobs
+// app.get('/api/jobs', async (req, res) => {
+//   try {
+//     const { data: jobs, error } = await supabase
+//       .from('jobs')
+//       .select(`
+//         *,
+//         categories (id, name, slug),
+//         companies (id, name, logo)
+//       `)
+//       .order('created_at', { ascending: false });
+
+//     if (error) throw error;
+
+//     res.json({
+//       jobs: jobs || [],
+//       total: jobs?.length || 0
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 app.get('/api/jobs', async (req, res) => {
   try {
-    const { data: jobs, error } = await supabase
+    const {
+      page = 1,
+      limit = 20,
+      search,
+      category,
+      company,
+      location,
+      experience,
+      type,
+      salary_min,
+      salary_max
+    } = req.query;
+
+    // Convert to numbers
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    // Build the query
+    let query = supabase
       .from('jobs')
       .select(`
         *,
         categories (id, name, slug),
         companies (id, name, logo)
-      `)
-      .order('created_at', { ascending: false });
+      `, { count: 'exact' });
+
+    // Apply filters
+    if (search) {
+      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,companies.name.ilike.%${search}%`);
+    }
+
+    if (category) {
+      const categories = category.split(',').map(c => c.trim());
+      query = query.in('category_id', categories);
+    }
+
+    if (company) {
+      const companies = company.split(',').map(c => c.trim());
+      query = query.in('company_id', companies);
+    }
+
+    if (location) {
+      query = query.ilike('location', `%${location}%`);
+    }
+
+    if (experience) {
+      const experiences = experience.split(',').map(e => e.trim());
+      // Create OR condition for experience matching
+      const experienceFilters = experiences.map(exp => {
+        if (exp.toLowerCase() === 'fresher') {
+          return `experience.ilike.%entry%,experience.ilike.%junior%,experience.ilike.%fresher%`;
+        }
+        return `experience.ilike.%${exp}%`;
+      }).join(',');
+      query = query.or(experienceFilters);
+    }
+
+    if (type) {
+      const types = type.split(',').map(t => t.trim());
+      query = query.in('type', types);
+    }
+
+    if (salary_min) {
+      query = query.gte('salary_max', parseInt(salary_min));
+    }
+
+    if (salary_max) {
+      query = query.lte('salary_min', parseInt(salary_max));
+    }
+
+    // Apply pagination and ordering
+    const { data: jobs, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limitNum - 1);
 
     if (error) throw error;
 
+    const totalJobs = count || 0;
+    const totalPages = Math.ceil(totalJobs / limitNum);
+
     res.json({
       jobs: jobs || [],
-      total: jobs?.length || 0
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalJobs,
+        jobsPerPage: limitNum,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1,
+        startIndex: offset + 1,
+        endIndex: Math.min(offset + limitNum, totalJobs)
+      }
     });
   } catch (error) {
+    console.error('Error fetching jobs:', error);
     res.status(500).json({ error: error.message });
   }
 });
