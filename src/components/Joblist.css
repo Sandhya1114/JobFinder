@@ -1240,3 +1240,397 @@ h1 {
     color: #e2e8f0;
   }
 }
+
+/* FIXED: Infinite Scroll CSS Improvements */
+
+/* Ensure proper stacking and visibility for infinite scroll sentinel */
+.infinite-scroll-sentinel {
+  min-height: 100px !important;
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  margin: 30px auto;
+  background-color: rgba(150, 132, 192, 0.08);
+  border-radius: 12px;
+  border: 2px dashed rgba(150, 132, 192, 0.3);
+  position: relative;
+  z-index: 1;
+  /* Ensure it's visible and not hidden behind other elements */
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Add some padding to ensure intersection observer can detect it */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Enhanced jobs grid for better infinite scroll */
+.jobs-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  /* Ensure grid doesn't interfere with scroll detection */
+  position: relative;
+}
+
+/* FIXED: Job cards layout - single column for infinite scroll */
+.job-card {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0 auto;
+  position: relative;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* Loading spinner improvements */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 30px;
+  width: 100%;
+}
+
+.loading-spinner.loading-initial {
+  min-height: 300px;
+  justify-content: center;
+}
+
+.loading-spinner.loading-more {
+  padding: 20px;
+  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  border: 1px solid rgba(150, 132, 192, 0.2);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #9684C0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-more .spinner {
+  width: 30px;
+  height: 30px;
+  border-width: 3px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Job stats improvements */
+.job-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-bottom: 30px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  position: sticky;
+  top: 80px;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+  background: rgba(248, 249, 250, 0.95);
+}
+
+.stats-info {
+  font-size: 16px;
+  color: #495057;
+  font-weight: 600;
+}
+
+.more-available {
+  color: #9684C0;
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* End of results styling */
+.end-of-results {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  margin: 40px 0;
+}
+
+.end-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 40px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 2px dashed #9684C0;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(150, 132, 192, 0.1);
+}
+
+.end-message i {
+  font-size: 48px;
+  color: #28a745;
+  margin-bottom: 10px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.end-message span {
+  font-size: 18px;
+  color: #495057;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* No jobs state */
+.no-jobs {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 40px 20px;
+}
+
+.no-jobs-message {
+  text-align: center;
+  max-width: 500px;
+  padding: 60px 40px;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-radius: 16px;
+  border: 2px dashed #fd7e14;
+  box-shadow: 0 4px 20px rgba(253, 126, 20, 0.1);
+}
+
+.no-jobs-message i {
+  font-size: 64px;
+  color: #fd7e14;
+  margin-bottom: 20px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.no-jobs-message h3 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.no-jobs-message p {
+  color: #6c757d;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+/* Error handling */
+.load-more-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  margin: 30px 0;
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #f5c6cb;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.1);
+}
+
+.load-more-error p {
+  color: #721c24;
+  margin: 0;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.retry-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+}
+
+/* Back to top button */
+.back-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #9684C0 0%, #7b6d9c 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(150, 132, 192, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-to-top-btn:hover {
+  background: linear-gradient(135deg, #7b6d9c 0%, #6b5d8c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(150, 132, 192, 0.5);
+}
+
+/* MOBILE RESPONSIVE FIXES */
+@media (max-width: 768px) {
+  .jobs-grid {
+    padding: 0 10px;
+  }
+  
+  .job-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  .infinite-scroll-sentinel {
+    margin: 20px 10px;
+    min-height: 80px;
+    padding: 15px;
+  }
+  
+  .job-stats {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    top: auto;
+  }
+  
+  .back-to-top-btn {
+    bottom: 100px; /* Account for mobile navigation */
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+  }
+  
+  .end-message,
+  .no-jobs-message {
+    padding: 30px 20px;
+    margin: 20px 10px;
+  }
+  
+  .load-more-error {
+    margin: 20px 10px;
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-card {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  
+  .infinite-scroll-sentinel {
+    min-height: 60px;
+    padding: 10px;
+    margin: 15px 5px;
+  }
+  
+  .loading-spinner.loading-more {
+    padding: 15px;
+  }
+  
+  .job-stats {
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .stats-info {
+    font-size: 14px;
+  }
+}
+
+/* IMPORTANT: Ensure no CSS is hiding the sentinel */
+.infinite-scroll-sentinel * {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+/* Debug styles - remove in production */
+.infinite-scroll-sentinel.debug {
+  background-color: rgba(255, 0, 0, 0.1) !important;
+  border: 2px solid red !important;
+}
+
+.infinite-scroll-sentinel.debug::before {
+  content: 'SENTINEL DEBUG - Should trigger at 200px before visible';
+  position: absolute;
+  top: -30px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: red;
+  font-size: 12px;
+  font-weight: bold;
+}
