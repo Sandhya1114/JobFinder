@@ -175,7 +175,7 @@ function App() {
         <Header user={user} />
         <Routes>
           <Route path="/" element={<><Hero /><Main /><Footer /></>} />
-          <Route path="/jobs" element={<><JobList /><Footer /></>} />
+          <Route path="/jobs" element={<><JobList /></>} />
           <Route path="/auth" element={<AuthForm onAuthSuccess={() => setUser(true)} />} />
           <Route path="/about" element={<><AboutUs/><Footer /></>}/>
           <Route path="/contact" element={<><ContactUs/><Footer /></>}/>
