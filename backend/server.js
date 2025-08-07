@@ -207,6 +207,23 @@ app.get('/api/profile', async (req, res) => {
   }
 });
 
+// Get all users
+app.get('/api/users', async (req, res) => {
+  try {
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('id');
+
+    if (error) throw error;
+
+    res.status(200).json({ users });
+  } catch (error) {
+    console.error('Error fetching users:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Simple file upload (just return success message)
 app.post('/api/upload-resume', (req, res) => {
   res.json({ 
@@ -214,6 +231,37 @@ app.post('/api/upload-resume', (req, res) => {
     filePath: 'https://example.com/uploaded-resume.pdf' 
   });
 });
+// Create or update a user from dashboard
+app.post('/api/users', async (req, res) => {
+  try {
+    const { email, password_hash, role = 'job_seeker' } = req.body;
+
+    if (!email || !password_hash) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Insert or update user
+    const { data, error } = await supabase
+      .from('users')
+      .upsert([
+        {
+          email,
+          password_hash,
+          role,
+          created_at: new Date()
+        }
+      ])
+      .select(); // Return the inserted/updated user
+
+    if (error) throw error;
+
+    res.status(200).json({ message: 'User saved', user: data[0] });
+  } catch (error) {
+    console.error('Error saving user:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 // Stats
 app.get('/api/jobs/stats', async (req, res) => {
