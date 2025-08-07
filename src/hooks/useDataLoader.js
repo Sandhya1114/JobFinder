@@ -1,85 +1,54 @@
 // src/hooks/useDataLoader.js
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { api } from '../services/api';
 import {
   setJobsWithPagination,
-  appendJobsWithPagination,
   setCategories,
   setCompanies,
   setLoading,
-  setLoadingMore,
-  setError,
-  resetJobs
+  setError
 } from '../redux/store';
 
 export const useDataLoader = () => {
   const dispatch = useDispatch();
-  const { filters, pagination, sorting, loading, loadingMore } = useSelector((state) => state.jobs);
-  
-  // Track if a load more request is in progress
-  const loadMoreInProgress = useRef(false);
+  const { filters, pagination, sorting } = useSelector((state) => state.jobs);
 
-  const loadJobs = useCallback(async (customParams = {}, isLoadMore = false) => {
+  const loadJobs = useCallback(async (customParams = {}) => {
     try {
-      // Prevent multiple simultaneous load more requests
-      if (isLoadMore && loadMoreInProgress.current) {
-        console.log('Load more already in progress, skipping...');
-        return;
-      }
-
-      if (isLoadMore) {
-        loadMoreInProgress.current = true;
-        dispatch(setLoadingMore(true));
-      } else {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
-      }
+      dispatch(setLoading(true));
+      dispatch(setError(null));
 
       // Combine current state with custom parameters
       const params = {
-        page: isLoadMore ? pagination.currentPage + 1 : pagination.currentPage,
+        page: pagination.currentPage,
         limit: pagination.jobsPerPage,
-        category: filters.selectedCategory?.length ? filters.selectedCategory : undefined,
-        company: filters.selectedCompany?.length ? filters.selectedCompany : undefined,
-        experience: filters.selectedExperience?.length ? filters.selectedExperience : undefined,
-        location: filters.selectedLocation?.length ? filters.selectedLocation : undefined,
-        type: filters.selectedType?.length ? filters.selectedType : undefined,
-        salary: filters.selectedSalary?.length ? filters.selectedSalary : undefined,
-        search: filters.searchQuery?.trim() || undefined,
+        category: filters.selectedCategory,
+        company: filters.selectedCompany,
+        experience: filters.selectedExperience,
+        location: filters.selectedLocation,
+        type: filters.selectedType,
+        salary: filters.selectedSalary,
+        search: filters.searchQuery?.trim() || '', // Ensure search is properly trimmed
         sortBy: sorting.sortBy,
         sortOrder: sorting.sortOrder,
-        ...customParams
+        ...customParams // Override with any custom parameters
       };
 
-      // Clean up undefined values
-      Object.keys(params).forEach(key => {
-        if (params[key] === undefined || params[key] === '' || 
-            (Array.isArray(params[key]) && params[key].length === 0)) {
-          delete params[key];
-        }
-      });
+      // Remove empty search to avoid unnecessary filtering
+      if (!params.search) {
+        delete params.search;
+      }
 
-      console.log('Loading jobs with params:', params, 'isLoadMore:', isLoadMore);
+      console.log('Loading jobs with params:', params); // Debug log
 
       const response = await api.fetchJobs(params);
       
       if (response.jobs && response.pagination) {
-        if (isLoadMore) {
-          // Append new jobs to existing ones
-          console.log(`Appending ${response.jobs.length} new jobs to existing ${pagination.currentPage} pages`);
-          dispatch(appendJobsWithPagination({
-            jobs: response.jobs,
-            pagination: response.pagination
-          }));
-        } else {
-          // Replace jobs (first load or filter change)
-          console.log(`Loading ${response.jobs.length} jobs for page ${response.pagination.currentPage}`);
-          dispatch(setJobsWithPagination({
-            jobs: response.jobs,
-            pagination: response.pagination
-          }));
-        }
+        dispatch(setJobsWithPagination({
+          jobs: response.jobs,
+          pagination: response.pagination
+        }));
       } else {
         throw new Error('Invalid response structure');
       }
@@ -87,37 +56,9 @@ export const useDataLoader = () => {
       console.error('Failed to load jobs:', error);
       dispatch(setError(error.message));
     } finally {
-      if (isLoadMore) {
-        dispatch(setLoadingMore(false));
-        loadMoreInProgress.current = false;
-      } else {
-        dispatch(setLoading(false));
-      }
+      dispatch(setLoading(false));
     }
   }, [dispatch, filters, pagination.currentPage, pagination.jobsPerPage, sorting]);
-
-  const loadMoreJobs = useCallback(async () => {
-    console.log('🔄 loadMoreJobs called with:', {
-      hasNextPage: pagination.hasNextPage,
-      loadingMore: loadingMore,
-      loadMoreInProgress: loadMoreInProgress.current,
-      currentPage: pagination.currentPage,
-      totalPages: pagination.totalPages
-    });
-
-    // Only load more if there are more pages available and we're not already loading
-    if (pagination.hasNextPage && !loadingMore && !loading && !loadMoreInProgress.current) {
-      console.log('✅ Loading more jobs - conditions met');
-      return loadJobs({}, true);
-    } else {
-      console.log('❌ Not loading more jobs:', {
-        hasNextPage: pagination.hasNextPage,
-        loadingMore: loadingMore,
-        loading: loading,
-        loadMoreInProgress: loadMoreInProgress.current
-      });
-    }
-  }, [loadJobs, pagination.hasNextPage, loadingMore, loading]);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -142,32 +83,19 @@ export const useDataLoader = () => {
       loadCategories(),
       loadCompanies()
     ]);
-    // Load initial jobs
+    // Load jobs after categories and companies are loaded
     await loadJobs();
   }, [loadJobs, loadCategories, loadCompanies]);
 
   const refreshJobs = useCallback(() => {
-    // Reset jobs and load from page 1
-    loadMoreInProgress.current = false;
-    dispatch(resetJobs());
     return loadJobs();
-  }, [loadJobs, dispatch]);
-
-  // Handle filter changes
-  const handleFilterChange = useCallback(async () => {
-    // Reset to first page and clear existing jobs when filters change
-    loadMoreInProgress.current = false;
-    dispatch(resetJobs());
-    await loadJobs();
-  }, [loadJobs, dispatch]);
+  }, [loadJobs]);
 
   return {
     loadJobs,
-    loadMoreJobs,
     loadCategories,
     loadCompanies,
     loadAllData,
-    refreshJobs,
-    handleFilterChange
+    refreshJobs
   };
 };
