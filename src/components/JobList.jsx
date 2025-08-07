@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 import {
   setSelectedCategory,
@@ -10,114 +11,55 @@ import {
   setSelectedLocation,
   setSelectedType,
   setSelectedSalary,
-  setCurrentPage,
-  setJobsPerPage,
   clearFilters,
+  resetJobs,
 } from '../redux/store';
 import './JobList.css';
 import { saveJob } from '../redux/savedJobsSlice';
 import { useLocation } from 'react-router-dom';
 
-// Pagination Component
-const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
-  const { 
-    currentPage, 
-    totalPages, 
-    totalJobs, 
-    jobsPerPage, 
-    startIndex, 
-    endIndex,
-    hasNextPage,
-    hasPreviousPage
-  } = pagination;
-
-  const getPageNumbers = () => {
-    const pages = [];
-    const maxVisiblePages = 5;
-    
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      if (currentPage <= 3) {
-        pages.push(1, 2, 3, 4, '...', totalPages);
-      } else if (currentPage >= totalPages - 2) {
-        pages.push(1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
-      } else {
-        pages.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
-      }
-    }
-    
-    return pages;
-  };
-
-  return (
-    <div className="pagination-container">
-      <div className="pagination-info">
-        Showing {startIndex}-{endIndex} of {totalJobs} jobs
-      </div>
-      
-      <div className="pagination-controls">
-        <button
-          className={`pagination-btn ${!hasPreviousPage ? 'disabled' : ''}`}
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={!hasPreviousPage}
-        >
-          <i className="fa fa-chevron-left"></i> Previous
-        </button>
-
-        <div className="pagination-numbers">
-          {getPageNumbers().map((page, index) => (
-            <button
-              key={index}
-              className={`pagination-number ${page === currentPage ? 'active' : ''} ${page === '...' ? 'dots' : ''}`}
-              onClick={() => typeof page === 'number' && onPageChange(page)}
-              disabled={page === '...'}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className={`pagination-btn ${!hasNextPage ? 'disabled' : ''}`}
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={!hasNextPage}
-        >
-          Next <i className="fa fa-chevron-right"></i>
-        </button>
-      </div>
-
-      <div className="jobs-per-page">
-        <label>
-          Jobs per page:
-          <select
-            value={jobsPerPage}
-            onChange={(e) => onJobsPerPageChange(parseInt(e.target.value))}
-            className="jobs-per-page-select"
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </label>
-      </div>
-    </div>
-  );
-};
-
 const JobList = () => {
   const dispatch = useDispatch();
-  const { jobs, categories, companies, loading, error, filters, pagination } = useSelector((state) => state.jobs);
-  const { loadJobs, loadAllData } = useDataLoader();
+  const { 
+    jobs, 
+    categories, 
+    companies, 
+    loading, 
+    loadingMore,
+    error, 
+    filters, 
+    pagination 
+  } = useSelector((state) => state.jobs);
+  
+  const { loadMoreJobs, loadAllData, handleFilterChange } = useDataLoader();
   const [toast, setToast] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const isJobPage = location.pathname === '/jobs';
   const [locationSearchInput, setLocationSearchInput] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  
+  // Previous filters ref to detect changes
+  const prevFiltersRef = useRef();
+  
+  // Initialize infinite scroll
+  useInfiniteScroll(
+    loadMoreJobs, 
+    pagination.hasNextPage, 
+    loadingMore
+  );
+
+  // Debug pagination state
+  useEffect(() => {
+    console.log('Pagination State:', {
+      currentPage: pagination.currentPage,
+      totalPages: pagination.totalPages,
+      totalJobs: pagination.totalJobs,
+      hasNextPage: pagination.hasNextPage,
+      loadingMore: loadingMore,
+      jobsLoaded: jobs.length
+    });
+  }, [pagination, loadingMore, jobs.length]);
 
   // Debounce search input
   useEffect(() => {
@@ -125,7 +67,7 @@ const JobList = () => {
       if (searchInput !== filters.searchQuery) {
         dispatch(setSearchQuery(searchInput));
       }
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(debounceTimer);
   }, [searchInput, filters.searchQuery, dispatch]);
@@ -180,23 +122,39 @@ const JobList = () => {
     loadAllData();
   }, [loadAllData]);
 
-  // Reload jobs when filters or pagination change
+  // Handle filter changes - reset jobs and load fresh data
   useEffect(() => {
-    loadJobs();
-  }, [loadJobs]);
+    const currentFilters = {
+      selectedCategory: filters.selectedCategory,
+      selectedCompany: filters.selectedCompany,
+      searchQuery: filters.searchQuery,
+      selectedExperience: filters.selectedExperience,
+      selectedLocation: filters.selectedLocation,
+      selectedType: filters.selectedType,
+      selectedSalary: filters.selectedSalary,
+    };
 
-  // Scroll to top when page changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [pagination.currentPage]);
+    // Check if filters have changed (skip initial load)
+    if (prevFiltersRef.current) {
+      const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(currentFilters);
+      
+      if (filtersChanged) {
+        console.log('Filters changed, reloading jobs...');
+        handleFilterChange();
+      }
+    }
 
-  const handlePageChange = useCallback((newPage) => {
-    dispatch(setCurrentPage(newPage));
-  }, [dispatch]);
-
-  const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
-    dispatch(setJobsPerPage(newJobsPerPage));
-  }, [dispatch]);
+    prevFiltersRef.current = currentFilters;
+  }, [
+    filters.selectedCategory,
+    filters.selectedCompany,
+    filters.searchQuery,
+    filters.selectedExperience,
+    filters.selectedLocation,
+    filters.selectedType,
+    filters.selectedSalary,
+    handleFilterChange
+  ]);
 
   // Memoized salary formatter
   const formatSalary = useCallback((salary) => {
@@ -214,14 +172,20 @@ const JobList = () => {
     dispatch(clearFilters());
     setLocationSearchInput('');
     setSearchInput('');
+    // Clear filters will trigger a reload via the filters useEffect
   }, [dispatch]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  if (loading) return <div className="loading">Loading jobs...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading && jobs.length === 0) {
+    return <div className="loading">Loading jobs...</div>;
+  }
+  
+  if (error && jobs.length === 0) {
+    return <div className="error">Error: {error}</div>;
+  }
 
   // Static filter options
   const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
@@ -439,23 +403,21 @@ const JobList = () => {
             </div>
           )}
 
-          {/* Pagination - Top */}
-          {pagination.totalJobs > 0 && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onJobsPerPageChange={handleJobsPerPageChange}
-            />
+          {/* Results Count */}
+          {jobs.length > 0 && (
+            <div className="results-count">
+              Showing {jobs.length} of {pagination.totalJobs} jobs
+            </div>
           )}
 
           <div className="jobs-grid">
-            {jobs.length === 0 ? (
+            {jobs.length === 0 && !loading ? (
               <div className="no-jobs">
                 {pagination.totalJobs === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
               </div>
             ) : (
-              jobs.map((job) => (
-                <div key={job.id} className="job-card">
+              jobs.map((job, index) => (
+                <div key={`${job.id}-${index}`} className="job-card">
                   <div className="job-header">
                     <h2 className="job-title">{job.title || 'No Title'}</h2>
                     <div className="job-meta">
@@ -483,8 +445,8 @@ const JobList = () => {
                       <div className="job-requirements">
                         <h4>Requirements:</h4>
                         <ul>
-                          {job.requirements.map((req, index) => (
-                            <li key={index}>{req}</li>
+                          {job.requirements.map((req, reqIndex) => (
+                            <li key={reqIndex}>{req}</li>
                           ))}
                         </ul>
                       </div>
@@ -528,13 +490,48 @@ const JobList = () => {
             )}
           </div>
 
-          {/* Pagination - Bottom */}
-          {pagination.totalJobs > 0 && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onJobsPerPageChange={handleJobsPerPageChange}
-            />
+          {/* Debug Load More Button - Remove this in production */}
+          {pagination.hasNextPage && !loadingMore && (
+            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+              <button 
+                onClick={loadMoreJobs}
+                style={{
+                  background: '#9684C0',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                🧪 Debug: Load More Jobs (Page {pagination.currentPage + 1})
+              </button>
+            </div>
+          )}
+
+          {/* Loading More Indicator */}
+          {loadingMore && (
+            <div className="loading-more">
+              <div className="loading-spinner"></div>
+              <p>Loading more jobs...</p>
+            </div>
+          )}
+
+          {/* End of Results Indicator */}
+          {!pagination.hasNextPage && jobs.length > 0 && !loadingMore && (
+            <div className="end-of-results">
+              <p>🎉 You've reached the end! No more jobs to show.</p>
+            </div>
+          )}
+
+          {/* Error message for loading more */}
+          {error && jobs.length > 0 && (
+            <div className="load-more-error">
+              <p>Failed to load more jobs. Please try again.</p>
+              <button onClick={loadMoreJobs} className="retry-btn">
+                Retry
+              </button>
+            </div>
           )}
         </div>
       </div>
