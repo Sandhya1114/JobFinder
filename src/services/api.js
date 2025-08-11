@@ -1,4 +1,3 @@
-// api.js - Debug version with better error handling and logging
 const API_BASE_URL =  'http://localhost:5000/api';
 
 const buildQueryString = (params) => {

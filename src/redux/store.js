@@ -1,4 +1,3 @@
-// src/redux/store.js
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 
 // Create a slice for jobs

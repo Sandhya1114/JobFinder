@@ -1,4 +1,3 @@
-// src/hooks/useDataLoader.js
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { api } from '../services/api';
@@ -23,21 +22,40 @@ export const useDataLoader = () => {
       const params = {
         page: pagination.currentPage,
         limit: pagination.jobsPerPage,
-        category: filters.selectedCategory,
-        company: filters.selectedCompany,
-        experience: filters.selectedExperience,
-        location: filters.selectedLocation,
-        type: filters.selectedType,
-        salary: filters.selectedSalary,
-        search: filters.searchQuery?.trim() || '', // Ensure search is properly trimmed
         sortBy: sorting.sortBy,
         sortOrder: sorting.sortOrder,
-        ...customParams // Override with any custom parameters
+        ...customParams // Override with any custom parameters first
       };
 
-      // Remove empty search to avoid unnecessary filtering
-      if (!params.search) {
-        delete params.search;
+      // Add filters only if they have values
+      if (filters.selectedCategory && filters.selectedCategory.length > 0) {
+        params.category = filters.selectedCategory.join(',');
+      }
+      
+      if (filters.selectedCompany && filters.selectedCompany.length > 0) {
+        params.company = filters.selectedCompany.join(',');
+      }
+      
+      if (filters.selectedExperience && filters.selectedExperience.length > 0) {
+        params.experience = filters.selectedExperience.join(',');
+      }
+      
+      if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+        params.location = filters.selectedLocation.join(',');
+      }
+      
+      if (filters.selectedType && filters.selectedType.length > 0) {
+        params.type = filters.selectedType.join(',');
+      }
+      
+      if (filters.selectedSalary && filters.selectedSalary.length > 0) {
+        params.salary = filters.selectedSalary.join(',');
+      }
+
+      // Handle search query - ensure it's properly trimmed and not empty
+      const searchQuery = filters.searchQuery?.trim();
+      if (searchQuery && searchQuery.length > 0) {
+        params.search = searchQuery;
       }
 
       console.log('Loading jobs with params:', params); // Debug log
