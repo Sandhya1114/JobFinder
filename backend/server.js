@@ -14,7 +14,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 // ============ API ROUTES ============
 
-// Get all jobs with pagination and filters
+// UPDATED: Get all jobs with pagination and filters (FIXED COMPANY SEARCH)
 app.get('/api/jobs', async (req, res) => {
   try {
     const {
@@ -58,7 +58,6 @@ app.get('/api/jobs', async (req, res) => {
 
     if (experience) {
       const experiences = Array.isArray(experience) ? experience : experience.split(',');
-      // Use OR condition for multiple experience levels
       const experienceConditions = experiences.map(exp => `experience.ilike.%${exp}%`).join(',');
       query = query.or(experienceConditions);
     }
@@ -76,21 +75,57 @@ app.get('/api/jobs', async (req, res) => {
 
     if (salary) {
       const salaryRanges = Array.isArray(salary) ? salary : salary.split(',');
-      // Handle salary range filtering (assuming salary is stored as min-max or single values)
-      // This is a simplified implementation - adjust based on your salary data structure
       const salaryConditions = salaryRanges.map(range => {
         const [min, max] = range.split('-').map(Number);
-        return `salary_min.gte.${min},salary_max.lte.${max}`;
+        if (max) {
+          return `salary_min.gte.${min},salary_max.lte.${max}`;
+        } else {
+          return `salary_min.gte.${min}`;
+        }
       }).join(',');
       if (salaryConditions) {
         query = query.or(salaryConditions);
       }
     }
 
-    // Apply search
-    if (search) {
+    // ENHANCED SEARCH - Handle company name search
+    if (search && search.trim().length > 0) {
       const searchTerm = search.trim();
-      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%,companies.name.ilike.%${searchTerm}%,categories.name.ilike.%${searchTerm}%`);
+      console.log('Applying search term:', searchTerm);
+      
+      // First, find company IDs that match the search term
+      const { data: matchingCompanies } = await supabase
+        .from('companies')
+        .select('id')
+        .ilike('name', `%${searchTerm}%`);
+
+      // Find category IDs that match the search term
+      const { data: matchingCategories } = await supabase
+        .from('categories')
+        .select('id')
+        .ilike('name', `%${searchTerm}%`);
+
+      // Build search conditions
+      const searchConditions = [
+        `title.ilike.%${searchTerm}%`,
+        `description.ilike.%${searchTerm}%`,
+        `location.ilike.%${searchTerm}%`
+      ];
+
+      // Add company filter if matching companies found
+      if (matchingCompanies && matchingCompanies.length > 0) {
+        const companyIds = matchingCompanies.map(c => c.id);
+        searchConditions.push(`company_id.in.(${companyIds.join(',')})`);
+      }
+
+      // Add category filter if matching categories found
+      if (matchingCategories && matchingCategories.length > 0) {
+        const categoryIds = matchingCategories.map(c => c.id);
+        searchConditions.push(`category_id.in.(${categoryIds.join(',')})`);
+      }
+
+      // Apply search conditions
+      query = query.or(searchConditions.join(','));
     }
 
     // Apply sorting
@@ -100,15 +135,22 @@ app.get('/api/jobs', async (req, res) => {
     // Apply pagination
     query = query.range(offset, offset + limitNum - 1);
 
+    console.log('Executing query with search:', search);
+
     const { data: jobs, error, count } = await query;
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase query error:', error);
+      throw error;
+    }
 
     // Calculate pagination metadata
     const totalJobs = count || 0;
     const totalPages = Math.ceil(totalJobs / limitNum);
     const hasNextPage = pageNum < totalPages;
     const hasPreviousPage = pageNum > 1;
+
+    console.log(`Search results: ${totalJobs} jobs found for search term: "${search}"`);
 
     res.json({
       jobs: jobs || [],
@@ -207,23 +249,6 @@ app.get('/api/profile', async (req, res) => {
   }
 });
 
-// Get all users
-app.get('/api/users', async (req, res) => {
-  try {
-    const { data: users, error } = await supabase
-      .from('users')
-      .select('*')
-      .order('id');
-
-    if (error) throw error;
-
-    res.status(200).json({ users });
-  } catch (error) {
-    console.error('Error fetching users:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // Simple file upload (just return success message)
 app.post('/api/upload-resume', (req, res) => {
   res.json({ 
@@ -231,37 +256,6 @@ app.post('/api/upload-resume', (req, res) => {
     filePath: 'https://example.com/uploaded-resume.pdf' 
   });
 });
-// Create or update a user from dashboard
-app.post('/api/users', async (req, res) => {
-  try {
-    const { email, password_hash, role = 'job_seeker' } = req.body;
-
-    if (!email || !password_hash) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    // Insert or update user
-    const { data, error } = await supabase
-      .from('users')
-      .upsert([
-        {
-          email,
-          password_hash,
-          role,
-          created_at: new Date()
-        }
-      ])
-      .select(); // Return the inserted/updated user
-
-    if (error) throw error;
-
-    res.status(200).json({ message: 'User saved', user: data[0] });
-  } catch (error) {
-    console.error('Error saving user:', error.message);
-    res.status(500).json({ error: error.message });
-  }
-});
-
 
 // Stats
 app.get('/api/jobs/stats', async (req, res) => {
@@ -288,6 +282,178 @@ app.get('/api/jobs/stats', async (req, res) => {
   }
 });
 
+// ============ DEBUG ENDPOINTS ============
+
+// Test company search directly
+app.get('/api/debug/companies', async (req, res) => {
+  try {
+    const { search } = req.query;
+    
+    if (!search) {
+      return res.json({ message: 'Please provide a search parameter. Example: /api/debug/companies?search=Google' });
+    }
+
+    // Search companies
+    const { data: companies, error } = await supabase
+      .from('companies')
+      .select('*')
+      .ilike('name', `%${search}%`);
+
+    if (error) throw error;
+
+    res.json({
+      searchTerm: search,
+      matchingCompanies: companies,
+      count: companies?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test jobs by company name
+app.get('/api/debug/jobs-by-company', async (req, res) => {
+  try {
+    const { search } = req.query;
+    
+    if (!search) {
+      return res.json({ message: 'Please provide a search parameter. Example: /api/debug/jobs-by-company?search=Google' });
+    }
+
+    // First find matching companies
+    const { data: companies, error: companyError } = await supabase
+      .from('companies')
+      .select('id, name')
+      .ilike('name', `%${search}%`);
+
+    if (companyError) throw companyError;
+
+    if (!companies || companies.length === 0) {
+      return res.json({
+        searchTerm: search,
+        matchingCompanies: [],
+        jobs: [],
+        message: 'No companies found matching the search term'
+      });
+    }
+
+    // Then find jobs for these companies
+    const companyIds = companies.map(c => c.id);
+    const { data: jobs, error: jobsError } = await supabase
+      .from('jobs')
+      .select(`
+        *,
+        companies (id, name, logo),
+        categories (id, name, slug)
+      `)
+      .in('company_id', companyIds);
+
+    if (jobsError) throw jobsError;
+
+    res.json({
+      searchTerm: search,
+      matchingCompanies: companies,
+      jobs: jobs || [],
+      jobCount: jobs?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test the full search functionality
+app.get('/api/debug/full-search', async (req, res) => {
+  try {
+    const { search } = req.query;
+    
+    if (!search) {
+      return res.json({ 
+        message: 'Please provide a search parameter. Example: /api/debug/full-search?search=developer' 
+      });
+    }
+
+    const searchTerm = search.trim();
+
+    // Search in different areas
+    const [companiesResult, categoriesResult, jobsResult] = await Promise.all([
+      // Companies
+      supabase
+        .from('companies')
+        .select('id, name')
+        .ilike('name', `%${searchTerm}%`),
+      
+      // Categories  
+      supabase
+        .from('categories')
+        .select('id, name')
+        .ilike('name', `%${searchTerm}%`),
+      
+      // Jobs (title, description, location)
+      supabase
+        .from('jobs')
+        .select('id, title, description, location')
+        .or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,location.ilike.%${searchTerm}%`)
+    ]);
+
+    res.json({
+      searchTerm,
+      results: {
+        companies: {
+          data: companiesResult.data || [],
+          count: companiesResult.data?.length || 0,
+          error: companiesResult.error
+        },
+        categories: {
+          data: categoriesResult.data || [],
+          count: categoriesResult.data?.length || 0,
+          error: categoriesResult.error
+        },
+        jobs: {
+          data: jobsResult.data || [],
+          count: jobsResult.data?.length || 0,
+          error: jobsResult.error
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Test database structure
+app.get('/api/debug/structure', async (req, res) => {
+  try {
+    // Get sample data from each table to understand structure
+    const [jobsSample, companiesSample, categoriesSample] = await Promise.all([
+      supabase.from('jobs').select('*').limit(1),
+      supabase.from('companies').select('*').limit(1),
+      supabase.from('categories').select('*').limit(1)
+    ]);
+
+    res.json({
+      tables: {
+        jobs: {
+          sample: jobsSample.data?.[0] || null,
+          error: jobsSample.error,
+          columns: jobsSample.data?.[0] ? Object.keys(jobsSample.data[0]) : []
+        },
+        companies: {
+          sample: companiesSample.data?.[0] || null,
+          error: companiesSample.error,
+          columns: companiesSample.data?.[0] ? Object.keys(companiesSample.data[0]) : []
+        },
+        categories: {
+          sample: categoriesSample.data?.[0] || null,
+          error: categoriesSample.error,
+          columns: categoriesSample.data?.[0] ? Object.keys(categoriesSample.data[0]) : []
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running' });
@@ -297,4 +463,9 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📊 Debug endpoints available at:`);
+  console.log(`   - http://localhost:${PORT}/api/debug/companies?search=YourCompanyName`);
+  console.log(`   - http://localhost:${PORT}/api/debug/jobs-by-company?search=YourCompanyName`);
+  console.log(`   - http://localhost:${PORT}/api/debug/full-search?search=YourSearchTerm`);
+  console.log(`   - http://localhost:${PORT}/api/debug/structure`);
 });
