@@ -113,16 +113,85 @@ export const api = {
       throw error;
     }
   },
-
-  async uploadResume(formData) {
+  async applyToJob(jobId) {
     try {
-      const response = await fetch(`${API_BASE_URL}/upload-resume`, {
+      const response = await fetch(`${API_BASE_URL}/dashboard/apply/${jobId}`, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error applying to job:', error);
+      throw error;
+    }
+  },
+
+  async saveJob(jobId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/saved-jobs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jobId })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error saving job:', error);
+      throw error;
+    }
+  },
+
+  async removeSavedJob(jobId) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/saved-jobs/${jobId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error removing saved job:', error);
+      throw error;
+    }
+  },
+  async uploadResumeFile(filename, size) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/upload-resume`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filename, size })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
@@ -145,6 +214,58 @@ export const api = {
       return data;
     } catch (error) {
       console.error('Error fetching job stats:', error);
+      throw error;
+    }
+  },
+  async updateProfile(profileData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  },
+  async fetchMySavedJobs() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/my-saved-jobs`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching saved jobs:', error);
+      throw error;
+    }
+  },
+   async fetchMyApplications() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/my-applications`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching applications:', error);
       throw error;
     }
   }
