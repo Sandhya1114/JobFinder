@@ -1,6 +1,173 @@
+// import { configureStore, createSlice } from '@reduxjs/toolkit';
+
+// // Create a slice for jobs
+// const jobSlice = createSlice({
+//   name: 'jobs',
+//   initialState: {
+//     jobs: [],
+//     categories: [],
+//     companies: [],
+//     loading: false,
+//     error: null,
+//     pagination: {
+//       currentPage: 1,
+//       totalPages: 0,
+//       totalJobs: 0,
+//       jobsPerPage: 20,
+//       hasNextPage: false,
+//       hasPreviousPage: false,
+//       startIndex: 0,
+//       endIndex: 0
+//     },
+//     filters: {
+//       selectedCategory: [],
+//       selectedCompany: [],
+//       searchQuery: '',
+//       selectedExperience: [],
+//       selectedLocation: [],
+//       selectedType: [],
+//       selectedSalary: [],
+//     },
+//     sorting: {
+//       sortBy: 'created_at',
+//       sortOrder: 'desc'
+//     }
+//   },
+//   reducers: {
+//     setJobs(state, action) {
+//       state.jobs = action.payload;
+//       state.loading = false;
+//       state.error = null;
+//     },
+//     setJobsWithPagination(state, action) {
+//       const { jobs, pagination } = action.payload;
+//       state.jobs = jobs;
+//       state.pagination = {
+//         ...state.pagination,
+//         ...pagination
+//       };
+//       state.loading = false;
+//       state.error = null;
+//     },
+//     setCategories(state, action) {
+//       state.categories = action.payload;
+//     },
+//     setCompanies(state, action) {
+//       state.companies = action.payload;
+//     },
+//     setLoading(state, action) {
+//       state.loading = action.payload;
+//     },
+//     setError(state, action) {
+//       state.error = action.payload;
+//       state.loading = false;
+//     },
+//     setPagination(state, action) {
+//       state.pagination = {
+//         ...state.pagination,
+//         ...action.payload
+//       };
+//     },
+//     setCurrentPage(state, action) {
+//       state.pagination.currentPage = action.payload;
+//     },
+//     setJobsPerPage(state, action) {
+//       state.pagination.jobsPerPage = action.payload;
+//       state.pagination.currentPage = 1; // Reset to first page when changing page size
+//     },
+//     setSelectedCategory(state, action) {
+//       state.filters.selectedCategory = action.payload;
+//       state.pagination.currentPage = 1; // Reset to first page when filter changes
+//     },
+//     setSelectedCompany(state, action) {
+//       state.filters.selectedCompany = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSearchQuery(state, action) {
+//       state.filters.searchQuery = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSelectedExperience(state, action) {
+//       state.filters.selectedExperience = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSelectedLocation(state, action) {
+//       state.filters.selectedLocation = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSelectedType(state, action) {
+//       state.filters.selectedType = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSelectedSalary(state, action) {
+//       state.filters.selectedSalary = action.payload;
+//       state.pagination.currentPage = 1;
+//     },
+//     setSorting(state, action) {
+//       state.sorting = {
+//         ...state.sorting,
+//         ...action.payload
+//       };
+//       state.pagination.currentPage = 1;
+//     },
+//     clearFilters(state) {
+//       state.filters = {
+//         selectedCategory: [],
+//         selectedCompany: [],
+//         searchQuery: '',
+//         selectedExperience: [],
+//         selectedLocation: [],
+//         selectedType: [],
+//         selectedSalary: [],
+//       };
+//       state.pagination.currentPage = 1;
+//     },
+//   },
+// });
+
+// import savedJobsReducer from './savedJobsSlice';
+// import profileReducer from './profileSlice';
+
+// // Export actions for use in components
+// export const {
+//   setJobs,
+//   setJobsWithPagination,
+//   setCategories,
+//   setCompanies,
+//   setLoading,
+//   setError,
+//   setPagination,
+//   setCurrentPage,
+//   setJobsPerPage,
+//   setSelectedCategory,
+//   setSelectedCompany,
+//   setSearchQuery,
+//   setSelectedExperience,
+//   setSelectedLocation,
+//   setSelectedType,
+//   setSelectedSalary,
+//   setSorting,
+//   clearFilters,
+// } = jobSlice.actions;
+
+// // Configure the store
+// const store = configureStore({
+//   reducer: {
+//     jobs: jobSlice.reducer,
+//     profile: profileReducer,
+//     savedJobs: savedJobsReducer,
+//   },
+// });
+
+// export default store;
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 
-// Create a slice for jobs
+// Import existing reducers
+import savedJobsReducer from './savedJobsSlice';
+import profileReducer from './profileSlice';
+import dashboardReducer from './dashboardSlice'; // Add this import
+
+// Create a slice for jobs (existing code - keep as is)
 const jobSlice = createSlice({
   name: 'jobs',
   initialState: {
@@ -73,11 +240,11 @@ const jobSlice = createSlice({
     },
     setJobsPerPage(state, action) {
       state.pagination.jobsPerPage = action.payload;
-      state.pagination.currentPage = 1; // Reset to first page when changing page size
+      state.pagination.currentPage = 1;
     },
     setSelectedCategory(state, action) {
       state.filters.selectedCategory = action.payload;
-      state.pagination.currentPage = 1; // Reset to first page when filter changes
+      state.pagination.currentPage = 1;
     },
     setSelectedCompany(state, action) {
       state.filters.selectedCompany = action.payload;
@@ -125,9 +292,6 @@ const jobSlice = createSlice({
   },
 });
 
-import savedJobsReducer from './savedJobsSlice';
-import profileReducer from './profileSlice';
-
 // Export actions for use in components
 export const {
   setJobs,
@@ -150,12 +314,13 @@ export const {
   clearFilters,
 } = jobSlice.actions;
 
-// Configure the store
+// Configure the store - ADD dashboard reducer here
 const store = configureStore({
   reducer: {
     jobs: jobSlice.reducer,
     profile: profileReducer,
     savedJobs: savedJobsReducer,
+    dashboard: dashboardReducer, // Add this line
   },
 });
 
