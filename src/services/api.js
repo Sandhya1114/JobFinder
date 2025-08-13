@@ -1,5 +1,5 @@
-// Updated api.js with better error handling and logging
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL =  'http://localhost:5000/api';
+import { supabase } from '../supabaseClient'; 
 
 const buildQueryString = (params) => {
   const filteredParams = {};
@@ -24,70 +24,26 @@ const buildQueryString = (params) => {
   return queryString;
 };
 
-// Helper function for better error handling
-const handleApiResponse = async (response, context = '') => {
-  const contentType = response.headers.get('content-type');
-  
-  if (!response.ok) {
-    let errorMessage = `HTTP ${response.status}`;
-    let errorDetails = '';
-    
-    try {
-      if (contentType && contentType.includes('application/json')) {
-        const errorData = await response.json();
-        errorMessage = errorData.error || errorMessage;
-        errorDetails = errorData.details || '';
-      } else {
-        errorDetails = await response.text();
-      }
-    } catch (parseError) {
-      console.error('Error parsing error response:', parseError);
-    }
-    
-    const fullError = errorDetails ? `${errorMessage}: ${errorDetails}` : errorMessage;
-    console.error(`API Error (${context}):`, fullError);
-    throw new Error(fullError);
-  }
-
-  try {
-    if (contentType && contentType.includes('application/json')) {
-      return await response.json();
-    } else {
-      return await response.text();
-    }
-  } catch (parseError) {
-    console.error('Error parsing successful response:', parseError);
-    throw new Error('Invalid response format');
-  }
-};
-
 export const api = {
-  // Test database connection
-  async testConnection() {
-    try {
-      console.log('Testing database connection...');
-      const response = await fetch(`${API_BASE_URL}/dashboard/test`);
-      const data = await handleApiResponse(response, 'test connection');
-      console.log('Connection test result:', data);
-      return data;
-    } catch (error) {
-      console.error('Connection test failed:', error);
-      throw error;
-    }
-  },
-
   async fetchJobs(params = {}) {
     try {
       const queryString = buildQueryString(params);
       const url = `${API_BASE_URL}/jobs${queryString ? `?${queryString}` : ''}`;
       
-      console.log('Fetching jobs from URL:', url);
-      console.log('Request params:', params);
+      console.log('Fetching jobs from URL:', url); // Debug log
+      console.log('Request params:', params); // Debug log
 
       const response = await fetch(url);
-      const data = await handleApiResponse(response, 'fetch jobs');
       
-      console.log('Jobs API Response:', data);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data); // Debug log
+      
       return data;
     } catch (error) {
       console.error('Error fetching jobs:', error);
@@ -98,7 +54,13 @@ export const api = {
   async fetchJobById(id) {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/${id}`);
-      return await handleApiResponse(response, 'fetch job by ID');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching job by ID:', error);
       throw error;
@@ -108,7 +70,13 @@ export const api = {
   async fetchCategories() {
     try {
       const response = await fetch(`${API_BASE_URL}/categories`);
-      return await handleApiResponse(response, 'fetch categories');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching categories:', error);
       throw error;
@@ -118,19 +86,27 @@ export const api = {
   async fetchCompanies() {
     try {
       const response = await fetch(`${API_BASE_URL}/companies`);
-      return await handleApiResponse(response, 'fetch companies');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching companies:', error);
       throw error;
     }
   },
-
-  async fetchDashboardSummary() {
+ async fetchDashboardSummary() {
     try {
-      console.log('Fetching dashboard summary...');
       const response = await fetch(`${API_BASE_URL}/dashboard/summary`);
-      const data = await handleApiResponse(response, 'fetch dashboard summary');
-      console.log('Dashboard summary response:', data);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching dashboard summary:', error);
@@ -140,10 +116,13 @@ export const api = {
 
   async fetchProfile() {
     try {
-      console.log('Fetching profile...');
       const response = await fetch(`${API_BASE_URL}/profile`);
-      const data = await handleApiResponse(response, 'fetch profile');
-      console.log('Profile response:', data);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -153,27 +132,20 @@ export const api = {
 
   async updateProfile(profileData) {
     try {
-      console.log('Updating profile with data:', profileData);
-      
-      // Validate required fields
-      if (!profileData.name || !profileData.email) {
-        throw new Error('Name and email are required');
-      }
-
       const response = await fetch(`${API_BASE_URL}/dashboard/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name: profileData.name.trim(),
-          email: profileData.email.trim(),
-          skills: Array.isArray(profileData.skills) ? profileData.skills : []
-        })
+        body: JSON.stringify(profileData)
       });
       
-      const data = await handleApiResponse(response, 'update profile');
-      console.log('Profile update response:', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -181,57 +153,39 @@ export const api = {
     }
   },
 
-  async uploadResumeFile(file) {
-    try {
-      console.log('Uploading resume file:', file.name, file.size, file.type);
-      
-      // Validate file
-      if (!file) {
-        throw new Error('No file provided');
-      }
+async uploadResumeFile(file) {
+  try {
+    // ✅ Get the current session token from Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Not authenticated');
 
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ];
+    const formData = new FormData();
+    formData.append('resume', file);
 
-      if (!allowedTypes.includes(file.type)) {
-        throw new Error('Invalid file type. Please upload a PDF, DOC, or DOCX file.');
-      }
+    const response = await fetch(`${API_BASE_URL}/dashboard/upload-resume`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`, // send JWT to backend
+      },
+      body: formData // ✅ no Content-Type header, browser sets it
+    });
 
-      const maxSize = 10 * 1024 * 1024; // 10MB
-      if (file.size > maxSize) {
-        throw new Error('File size too large. Please upload a file smaller than 10MB.');
-      }
-
-      const formData = new FormData();
-      formData.append('resume', file);
-
-      console.log('Sending file upload request...');
-
-      const response = await fetch(`${API_BASE_URL}/dashboard/upload-resume`, {
-        method: 'POST',
-        body: formData // No Content-Type header, browser sets it
-      });
-
-      const data = await handleApiResponse(response, 'upload resume');
-      console.log('Resume upload response:', data);
-      return data;
-    } catch (error) {
-      console.error('Error uploading resume:', error);
-      throw error;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
     }
-  },
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error uploading resume:', error);
+    throw error;
+  }
+},
+
+
 
   async applyToJob(jobId) {
     try {
-      console.log('Applying to job:', jobId);
-      
-      if (!jobId) {
-        throw new Error('Job ID is required');
-      }
-
       const response = await fetch(`${API_BASE_URL}/dashboard/apply/${jobId}`, {
         method: 'POST',
         headers: {
@@ -239,8 +193,12 @@ export const api = {
         }
       });
       
-      const data = await handleApiResponse(response, 'apply to job');
-      console.log('Job application response:', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error applying to job:', error);
@@ -250,12 +208,6 @@ export const api = {
 
   async saveJob(jobId) {
     try {
-      console.log('Saving job:', jobId);
-      
-      if (!jobId) {
-        throw new Error('Job ID is required');
-      }
-
       const response = await fetch(`${API_BASE_URL}/dashboard/saved-jobs`, {
         method: 'POST',
         headers: {
@@ -264,8 +216,12 @@ export const api = {
         body: JSON.stringify({ jobId })
       });
       
-      const data = await handleApiResponse(response, 'save job');
-      console.log('Save job response:', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error saving job:', error);
@@ -275,12 +231,6 @@ export const api = {
 
   async removeSavedJob(jobId) {
     try {
-      console.log('Removing saved job:', jobId);
-      
-      if (!jobId) {
-        throw new Error('Job ID is required');
-      }
-
       const response = await fetch(`${API_BASE_URL}/dashboard/saved-jobs/${jobId}`, {
         method: 'DELETE',
         headers: {
@@ -288,8 +238,12 @@ export const api = {
         }
       });
       
-      const data = await handleApiResponse(response, 'remove saved job');
-      console.log('Remove saved job response:', data);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error removing saved job:', error);
@@ -299,10 +253,13 @@ export const api = {
 
   async fetchMySavedJobs() {
     try {
-      console.log('Fetching saved jobs...');
       const response = await fetch(`${API_BASE_URL}/dashboard/my-saved-jobs`);
-      const data = await handleApiResponse(response, 'fetch saved jobs');
-      console.log('Saved jobs response:', data);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching saved jobs:', error);
@@ -312,10 +269,13 @@ export const api = {
 
   async fetchMyApplications() {
     try {
-      console.log('Fetching applications...');
       const response = await fetch(`${API_BASE_URL}/dashboard/my-applications`);
-      const data = await handleApiResponse(response, 'fetch applications');
-      console.log('Applications response:', data);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return data;
     } catch (error) {
       console.error('Error fetching applications:', error);
@@ -327,7 +287,13 @@ export const api = {
   async getJobStats() {
     try {
       const response = await fetch(`${API_BASE_URL}/jobs/stats`);
-      return await handleApiResponse(response, 'fetch job stats');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
     } catch (error) {
       console.error('Error fetching job stats:', error);
       throw error;
