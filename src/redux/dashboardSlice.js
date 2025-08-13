@@ -97,15 +97,32 @@ export const removeSavedJobAsync = createAsyncThunk(
 
 export const uploadResumeAsync = createAsyncThunk(
   'dashboard/uploadResume',
-  async ({ filename, size }, { rejectWithValue }) => {
+  async (file, { rejectWithValue }) => {
     try {
-      const data = await api.uploadResumeFile(filename, size);
+      const formData = new FormData();
+      formData.append('resume', file);
+
+      const res = await fetch('/api/dashboard/upload-resume', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include', // send cookies/session
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        return rejectWithValue(data.error || `HTTP ${res.status}`);
+      }
+
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error?.message || 'Upload failed');
     }
   }
 );
+
+
+
 
 export const updateProfileAsync = createAsyncThunk(
   'dashboard/updateProfile',
@@ -212,6 +229,7 @@ const dashboardSlice = createSlice({
         state.recentJobs = data.recentJobs || [];
         state.categoryStats = data.categoryStats || [];
         state.userStats = data.userStats || state.userStats;
+        state.profile = data.profile || state.profile;
         state.status = 'succeeded';
         state.lastUpdated = new Date().toISOString();
       })
@@ -312,17 +330,4 @@ const dashboardSlice = createSlice({
 });
 
 export const { clearError, addRecentActivity } = dashboardSlice.actions;
-
-// Export async thunks for use in components
-export {
-  // fetchDashboardData,
-  // applyToJobAsync,
-  // saveJobAsync,
-  // removeSavedJobAsync,
-  // uploadResumeAsync,
-  // updateProfileAsync,
-  // fetchMySavedJobsAsync,
-  // fetchMyApplicationsAsync
-};
-
 export default dashboardSlice.reducer;

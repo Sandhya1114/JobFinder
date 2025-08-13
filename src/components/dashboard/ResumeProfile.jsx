@@ -275,35 +275,30 @@ const ResumeProfile = ({ profile, isUploading = false, isUpdating = false }) => 
     setUploadMessage("");
   };
 
-  const handleUploadResume = async () => {
-    if (!resumeFile) {
-      setUploadMessage("Please select a resume file first.");
-      return;
-    }
+const handleUploadResume = async () => {
+  if (!resumeFile) {
+    setUploadMessage("Please select a resume file first.");
+    return;
+  }
 
-    try {
-      const result = await dispatch(uploadResumeAsync({
-        filename: resumeFile.name,
-        size: resumeFile.size
-      })).unwrap();
+  try {
+    const result = await dispatch(uploadResumeAsync(resumeFile)).unwrap(); // ✅ pass the actual file
 
-      setUploadMessage("Resume uploaded successfully!");
-      setResumeFile(null);
-      
-      // Add to recent activity
-      dispatch(addRecentActivity({
-        action: 'Uploaded resume',
-        details: `Uploaded ${resumeFile.name}`
-      }));
+    setUploadMessage("Resume uploaded successfully!");
+    setResumeFile(null);
 
-      // Clear file input
-      const fileInput = document.querySelector('input[type="file"]');
-      if (fileInput) fileInput.value = '';
+    dispatch(addRecentActivity({
+      action: 'Uploaded resume',
+      details: `Uploaded ${resumeFile.name}`
+    }));
 
-    } catch (error) {
-      setUploadMessage(`Failed to upload resume: ${error}`);
-    }
-  };
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) fileInput.value = '';
+
+  } catch (error) {
+    setUploadMessage(`Failed to upload resume: ${error}`);
+  }
+};
 
   const handleAddSkill = () => {
     const trimmedSkill = newSkill.trim();
