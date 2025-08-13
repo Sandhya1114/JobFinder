@@ -1,13 +1,19 @@
-const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+// server.js
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import multer from 'multer';
+import { createClient } from '@supabase/supabase-js';
+import path from 'path';
+
+dotenv.config();
 
 const app = express();
 
-// Setup
+// ===== Middleware =====
 app.use(cors());
 app.use(express.json());
+const upload = multer({ storage: multer.memoryStorage() });
 
 // Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
@@ -420,431 +426,20 @@ app.get('/api/debug/full-search', async (req, res) => {
   }
 });
 // Add these routes to your existing Express server
-
-// ============ DASHBOARD API ROUTES ============
-
-// Dashboard overview stats
-app.get('/api/dashboard/stats', async (req, res) => {
-  try {
-    const [
-      jobsStats,
-      companiesStats,
-      categoriesStats,
-      recentJobsStats,
-      applicationStats
-    ] = await Promise.all([
-      // Total jobs count
-      supabase
-        .from('jobs')
-        .select('*', { count: 'exact', head: true }),
-      
-      // Total companies count
-      supabase
-        .from('companies')
-        .select('*', { count: 'exact', head: true }),
-      
-      // Total categories count
-      supabase
-        .from('categories')
-        .select('*', { count: 'exact', head: true }),
-      
-      // Jobs posted in last 7 days
-      supabase
-        .from('jobs')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
-      
-      // Applications count (if user is logged in)
-      supabase
-        .from('job_applications')
-        .select('*', { count: 'exact', head: true })
-    ]);
-
-    res.json({
-      overview: {
-        totalJobs: jobsStats.count || 0,
-        totalCompanies: companiesStats.count || 0,
-        totalCategories: categoriesStats.count || 0,
-        recentJobs: recentJobsStats.count || 0,
-        totalApplications: applicationStats.count || 0
-      }
-    });
-  } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Recent jobs for dashboard
-app.get('/api/dashboard/recent-jobs', async (req, res) => {
-  try {
-    const { limit = 5 } = req.query;
-
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select(`
-        id,
-        title,
-        location,
-        type,
-        created_at,
-        salary_min,
-        salary_max,
-        companies (id, name, logo),
-        categories (id, name)
-      `)
-      .order('created_at', { ascending: false })
-      .limit(parseInt(limit));
-
-    if (error) throw error;
-
-    res.json({
-      recentJobs: jobs || [],
-      total: jobs?.length || 0
-    });
-  } catch (error) {
-    console.error('Error fetching recent jobs:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Jobs by category for charts
-app.get('/api/dashboard/jobs-by-category', async (req, res) => {
-  try {
-    const { data: jobsByCategory, error } = await supabase
-      .from('jobs')
-      .select(`
-        category_id,
-        categories (id, name)
-      `);
-
-    if (error) throw error;
-
-    // Group jobs by category
-    const categoryStats = {};
-    jobsByCategory?.forEach(job => {
-      const categoryName = job.categories?.name || 'Unknown';
-      categoryStats[categoryName] = (categoryStats[categoryName] || 0) + 1;
-    });
-
-    // Convert to array format for charts
-    const chartData = Object.entries(categoryStats).map(([name, count]) => ({
-      category: name,
-      jobs: count
-    }));
-
-    res.json({
-      categoryStats: chartData,
-      total: jobsByCategory?.length || 0
-    });
-  } catch (error) {
-    console.error('Error fetching jobs by category:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Jobs by location for maps/charts
-app.get('/api/dashboard/jobs-by-location', async (req, res) => {
-  try {
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select('location');
-
-    if (error) throw error;
-
-    // Group jobs by location
-    const locationStats = {};
-    jobs?.forEach(job => {
-      const location = job.location || 'Remote';
-      locationStats[location] = (locationStats[location] || 0) + 1;
-    });
-
-    // Convert to array and sort by count
-    const chartData = Object.entries(locationStats)
-      .map(([location, count]) => ({
-        location,
-        jobs: count
-      }))
-      .sort((a, b) => b.jobs - a.jobs)
-      .slice(0, 10); // Top 10 locations
-
-    res.json({
-      locationStats: chartData,
-      total: jobs?.length || 0
-    });
-  } catch (error) {
-    console.error('Error fetching jobs by location:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Jobs by type (Full-time, Part-time, etc.)
-app.get('/api/dashboard/jobs-by-type', async (req, res) => {
-  try {
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select('type');
-
-    if (error) throw error;
-
-    // Group jobs by type
-    const typeStats = {};
-    jobs?.forEach(job => {
-      const type = job.type || 'Unknown';
-      typeStats[type] = (typeStats[type] || 0) + 1;
-    });
-
-    // Convert to array format
-    const chartData = Object.entries(typeStats).map(([type, count]) => ({
-      type,
-      jobs: count
-    }));
-
-    res.json({
-      typeStats: chartData,
-      total: jobs?.length || 0
-    });
-  } catch (error) {
-    console.error('Error fetching jobs by type:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Top companies by job count
-app.get('/api/dashboard/top-companies', async (req, res) => {
-  try {
-    const { limit = 10 } = req.query;
-
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select(`
-        company_id,
-        companies (id, name, logo)
-      `);
-
-    if (error) throw error;
-
-    // Group jobs by company
-    const companyStats = {};
-    jobs?.forEach(job => {
-      const company = job.companies;
-      if (company) {
-        const key = company.id;
-        if (!companyStats[key]) {
-          companyStats[key] = {
-            id: company.id,
-            name: company.name,
-            logo: company.logo,
-            jobCount: 0
-          };
-        }
-        companyStats[key].jobCount++;
-      }
-    });
-
-    // Convert to array and sort by job count
-    const topCompanies = Object.values(companyStats)
-      .sort((a, b) => b.jobCount - a.jobCount)
-      .slice(0, parseInt(limit));
-
-    res.json({
-      topCompanies,
-      total: Object.keys(companyStats).length
-    });
-  } catch (error) {
-    console.error('Error fetching top companies:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Salary statistics
-app.get('/api/dashboard/salary-stats', async (req, res) => {
-  try {
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select('salary_min, salary_max, type')
-      .not('salary_min', 'is', null)
-      .not('salary_max', 'is', null);
-
-    if (error) throw error;
-
-    if (!jobs || jobs.length === 0) {
-      return res.json({
-        salaryStats: {
-          averageMin: 0,
-          averageMax: 0,
-          medianMin: 0,
-          medianMax: 0,
-          totalJobsWithSalary: 0
-        },
-        salaryRanges: []
-      });
-    }
-
-    // Calculate averages
-    const totalMin = jobs.reduce((sum, job) => sum + (job.salary_min || 0), 0);
-    const totalMax = jobs.reduce((sum, job) => sum + (job.salary_max || 0), 0);
-    const averageMin = totalMin / jobs.length;
-    const averageMax = totalMax / jobs.length;
-
-    // Calculate salary ranges
-    const ranges = {
-      '0-50k': 0,
-      '50k-100k': 0,
-      '100k-150k': 0,
-      '150k-200k': 0,
-      '200k+': 0
-    };
-
-    jobs.forEach(job => {
-      const avgSalary = (job.salary_min + job.salary_max) / 2;
-      if (avgSalary < 50000) ranges['0-50k']++;
-      else if (avgSalary < 100000) ranges['50k-100k']++;
-      else if (avgSalary < 150000) ranges['100k-150k']++;
-      else if (avgSalary < 200000) ranges['150k-200k']++;
-      else ranges['200k+']++;
-    });
-
-    const salaryRanges = Object.entries(ranges).map(([range, count]) => ({
-      range,
-      jobs: count
-    }));
-
-    res.json({
-      salaryStats: {
-        averageMin: Math.round(averageMin),
-        averageMax: Math.round(averageMax),
-        totalJobsWithSalary: jobs.length
-      },
-      salaryRanges
-    });
-  } catch (error) {
-    console.error('Error fetching salary stats:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// User dashboard data (for authenticated users)
-app.get('/api/dashboard/user-stats', async (req, res) => {
-  try {
-    // For now, return mock data since we don't have authentication
-    // In a real app, you'd get the user_id from the authenticated session
-    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001'; // Use the sample user ID from your schema
-
-    const [
-      savedJobsStats,
-      applicationsStats,
-      recentActivities,
-      unreadMessages
-    ] = await Promise.all([
-      // Saved jobs count
-      supabase
-        .from('saved_jobs')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', mockUserId),
-      
-      // Applications count
-      supabase
-        .from('job_applications')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', mockUserId),
-      
-      // Recent activities
-      supabase
-        .from('user_activities')
-        .select('*')
-        .eq('user_id', mockUserId)
-        .order('created_at', { ascending: false })
-        .limit(5),
-      
-      // Unread messages
-      supabase
-        .from('user_messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', mockUserId)
-        .eq('is_read', false)
-    ]);
-
-    res.json({
-      userStats: {
-        savedJobs: savedJobsStats.count || 0,
-        applications: applicationsStats.count || 0,
-        unreadMessages: unreadMessages.count || 0
-      },
-      recentActivities: recentActivities.data || []
-    });
-  } catch (error) {
-    console.error('Error fetching user stats:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Weekly job posting trends
-app.get('/api/dashboard/job-trends', async (req, res) => {
-  try {
-    const { days = 7 } = req.query;
-    const daysBack = parseInt(days);
-    
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - daysBack);
-
-    const { data: jobs, error } = await supabase
-      .from('jobs')
-      .select('created_at')
-      .gte('created_at', startDate.toISOString())
-      .order('created_at', { ascending: true });
-
-    if (error) throw error;
-
-    // Group jobs by date
-    const trends = {};
-    for (let i = 0; i < daysBack; i++) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      trends[dateStr] = 0;
-    }
-
-    jobs?.forEach(job => {
-      const dateStr = job.created_at.split('T')[0];
-      if (trends.hasOwnProperty(dateStr)) {
-        trends[dateStr]++;
-      }
-    });
-
-    // Convert to array format
-    const trendData = Object.entries(trends)
-      .map(([date, count]) => ({
-        date,
-        jobs: count
-      }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    res.json({
-      jobTrends: trendData,
-      totalDays: daysBack,
-      totalJobs: jobs?.length || 0
-    });
-  } catch (error) {
-    console.error('Error fetching job trends:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Dashboard summary - combines multiple metrics
-// Replace the existing /api/dashboard/summary route in your server.js with this optimized version:
-
-// Dashboard summary - combines multiple metrics (OPTIMIZED)
 app.get('/api/dashboard/summary', async (req, res) => {
   try {
+    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
+    
     const [
       jobsStats,
       companiesStats,
       categoriesStats,
       recentJobsStats,
       applicationStats,
+      savedJobsStats,
       recentJobs,
-      categoryJobs
+      categoryJobs,
+      profileData
     ] = await Promise.all([
       // Total jobs count
       supabase
@@ -870,7 +465,14 @@ app.get('/api/dashboard/summary', async (req, res) => {
       // Applications count
       supabase
         .from('job_applications')
-        .select('*', { count: 'exact', head: true }),
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', mockUserId),
+
+      // Saved jobs count
+      supabase
+        .from('saved_jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', mockUserId),
 
       // Recent jobs
       supabase
@@ -895,7 +497,14 @@ app.get('/api/dashboard/summary', async (req, res) => {
         .select(`
           category_id,
           categories (id, name)
-        `)
+        `),
+
+      // User profile
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', mockUserId)
+        .single()
     ]);
 
     // Process category stats
@@ -921,9 +530,15 @@ app.get('/api/dashboard/summary', async (req, res) => {
       recentJobs: recentJobs.data || [],
       categoryStats: chartData,
       userStats: {
-        savedJobs: 0, // Will be handled by frontend localStorage
+        savedJobs: savedJobsStats.count || 0,
         applications: applicationStats.count || 0,
-        unreadMessages: 0
+        unreadMessages: 0 // TODO: Implement messages if needed
+      },
+      profile: profileData.data || {
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        resume: '',
+        skills: []
       },
       timestamp: new Date().toISOString()
     });
@@ -932,14 +547,140 @@ app.get('/api/dashboard/summary', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-// ============ DASHBOARD POST/DELETE ROUTES ============
-// Add these routes to your server.js file after the existing dashboard GET routes
+
+// Get user profile
+app.get('/api/profile', async (req, res) => {
+  try {
+    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
+    
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', mockUserId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    res.json({
+      name: profile?.name || 'John Doe',
+      email: profile?.email || 'john.doe@example.com',
+      resume: profile?.resume_url || '',
+      skills: profile?.skills || ['React', 'JavaScript', 'Node.js']
+    });
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user profile
+app.put('/api/dashboard/profile', async (req, res) => {
+  try {
+    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
+    const { name, email, skills } = req.body;
+
+    const updateData = {
+      user_id: mockUserId,
+      updated_at: new Date().toISOString()
+    };
+
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+    if (skills) updateData.skills = skills;
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .upsert([updateData])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Log activity
+    await supabase
+      .from('user_activities')
+      .insert([
+        {
+          user_id: mockUserId,
+          action: 'updated_profile',
+          details: 'Profile information updated',
+          created_at: new Date().toISOString()
+        }
+      ]);
+
+    res.json({
+      message: 'Profile updated successfully',
+      profile
+    });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Upload resume
+// Upload Resume
+app.post('/api/dashboard/upload-resume', upload.single('resume'), async (req, res) => {
+  try {
+    // ✅ Get user from Supabase auth token
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    if (userError || !user) {
+      return res.status(401).json({ error: 'Invalid user token' });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const fileExt = path.extname(req.file.originalname);
+    const fileName = `${user.id}-${Date.now()}${fileExt}`;
+
+    // ✅ Upload to Supabase Storage
+    const { error: uploadError } = await supabase
+      .storage
+      .from('resumes')
+      .upload(fileName, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: true
+      });
+
+    if (uploadError) throw uploadError;
+
+    // ✅ Get public URL
+    const { data: publicData } = supabase
+      .storage
+      .from('resumes')
+      .getPublicUrl(fileName);
+
+    // ✅ Update profiles table
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update({ resume_url: publicData.publicUrl })
+      .eq('id', user.id); // or whatever your PK is
+
+    if (updateError) throw updateError;
+
+    res.json({
+      message: 'Resume uploaded successfully',
+      fileUrl: publicData.publicUrl
+    });
+
+  } catch (err) {
+    console.error('Upload error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // Apply to a job
 app.post('/api/dashboard/apply/:jobId', async (req, res) => {
   try {
     const jobId = req.params.jobId;
-    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001'; // Use your sample user ID
+    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
     
     // Check if job exists
     const { data: job, error: jobError } = await supabase
@@ -1052,6 +793,18 @@ app.post('/api/dashboard/saved-jobs', async (req, res) => {
 
     if (error) throw error;
 
+    // Log activity
+    await supabase
+      .from('user_activities')
+      .insert([
+        {
+          user_id: mockUserId,
+          action: 'saved_job',
+          details: `Saved ${job.title} at ${job.companies?.name}`,
+          created_at: new Date().toISOString()
+        }
+      ]);
+
     res.json({
       message: 'Job saved successfully',
       savedJob,
@@ -1086,97 +839,24 @@ app.delete('/api/dashboard/saved-jobs/:jobId', async (req, res) => {
       throw error;
     }
 
-    res.json({
-      message: 'Job removed from saved list successfully',
-      removedJob: data
-    });
-  } catch (error) {
-    console.error('Error removing saved job:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Upload resume (enhanced version)
-app.post('/api/dashboard/upload-resume', async (req, res) => {
-  try {
-    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
-    const { filename, size } = req.body;
-
-    if (!filename) {
-      return res.status(400).json({ error: 'Filename is required' });
-    }
-
-    // Mock file upload - in real app you'd handle actual file upload
-    const mockResumeUrl = `https://example.com/resumes/${mockUserId}/${filename}`;
-
-    // Update user profile with resume URL
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .upsert([
-        {
-          user_id: mockUserId,
-          resume_url: mockResumeUrl,
-          updated_at: new Date().toISOString()
-        }
-      ])
-      .select()
-      .single();
-
-    if (error) throw error;
-
     // Log activity
     await supabase
       .from('user_activities')
       .insert([
         {
           user_id: mockUserId,
-          action: 'uploaded_resume',
-          details: `Uploaded resume: ${filename}`,
+          action: 'removed_saved_job',
+          details: 'Removed job from saved list',
           created_at: new Date().toISOString()
         }
       ]);
 
     res.json({
-      message: 'Resume uploaded successfully',
-      filePath: mockResumeUrl,
-      filename,
-      size: size || 0
+      message: 'Job removed from saved list successfully',
+      removedJob: data
     });
   } catch (error) {
-    console.error('Error uploading resume:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
-
-// Update user profile
-app.put('/api/dashboard/profile', async (req, res) => {
-  try {
-    const mockUserId = '279a101a-69da-4c04-a414-992b339dd001';
-    const { name, email, skills } = req.body;
-
-    const updateData = {
-      user_id: mockUserId,
-      updated_at: new Date().toISOString()
-    };
-
-    if (name) updateData.name = name;
-    if (email) updateData.email = email;
-    if (skills) updateData.skills = skills;
-
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .upsert([updateData])
-      .select()
-      .single();
-
-    if (error) throw error;
-
-    res.json({
-      message: 'Profile updated successfully',
-      profile
-    });
-  } catch (error) {
-    console.error('Error updating profile:', error);
+    console.error('Error removing saved job:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -1252,7 +932,6 @@ app.get('/api/dashboard/my-applications', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 // Test database structure
 app.get('/api/debug/structure', async (req, res) => {
   try {

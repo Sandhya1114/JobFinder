@@ -136,38 +136,44 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
 
+  const dashboard = useSelector((state) => state.dashboard);
+  const profile = useSelector((state) => state.profile);
+
   const {
-    overview,
-    recentJobs,
-    categoryStats,
-    userStats,
-    mySavedJobs,
-    myApplications,
+    overview = {},
+    recentJobs = [],
+    categoryStats = [],
+    userStats = {},
+    mySavedJobs = [],
+    myApplications = [],
     status,
     error,
-    actionLoading
-  } = useSelector((state) => state.dashboard);
-
-  const profile = useSelector((state) => state.profile);
+    actionLoading = {}
+  } = dashboard;
 
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
+        console.log('Loading dashboard data...');
+        
         // Clear any existing errors
         dispatch(clearError());
         
         // Load all dashboard data
-        await Promise.all([
-          dispatch(fetchDashboardData()),
-          dispatch(fetchProfile()),
-          dispatch(fetchMySavedJobsAsync()),
-          dispatch(fetchMyApplicationsAsync())
-        ]);
+        const promises = [
+          dispatch(fetchDashboardData()).unwrap(),
+          dispatch(fetchProfile()).unwrap(),
+          dispatch(fetchMySavedJobsAsync()).unwrap(),
+          dispatch(fetchMyApplicationsAsync()).unwrap()
+        ];
+
+        await Promise.allSettled(promises);
+        console.log('Dashboard data loaded successfully');
       } catch (err) {
         console.error('Error loading dashboard:', err);
       } finally {
-        // Simulate loading animation
-        setTimeout(() => setIsLoading(false), 800);
+        // Add a slight delay for better UX
+        setTimeout(() => setIsLoading(false), 1000);
       }
     };
 
@@ -188,29 +194,24 @@ const Dashboard = () => {
     );
   }
 
-  // Show error state
-  if (error) {
+  // Show error state with retry option
+  if (status === 'failed' && error) {
     return (
       <div className="dashboard-container">
         <div className="dashboard-header">
           <h1 className="dashboard-title">Dashboard</h1>
-          <div className="dashboard-subtitle" style={{ color: '#ff6b6b' }}>
-            Error: {error}
+          <div className="error-state">
+            <div className="error-message">
+              <h3>⚠️ Something went wrong</h3>
+              <p>Error: {error}</p>
+              <button 
+                onClick={() => window.location.reload()} 
+                className="retry-button"
+              >
+                🔄 Retry
+              </button>
+            </div>
           </div>
-          <button 
-            onClick={() => window.location.reload()} 
-            style={{ 
-              marginTop: '20px', 
-              padding: '10px 20px', 
-              backgroundColor: '#667eea', 
-              color: 'white', 
-              border: 'none', 
-              borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-          >
-            Retry
-          </button>
         </div>
       </div>
     );
@@ -222,6 +223,14 @@ const Dashboard = () => {
         <h1 className="dashboard-title">Dashboard</h1>
         <div className="dashboard-subtitle">Manage your job search journey</div>
       </div>
+      
+      {/* Show non-critical errors as notifications */}
+      {error && status !== 'failed' && (
+        <div className="error-notification">
+          <span>⚠️ {error}</span>
+          <button onClick={() => dispatch(clearError())} className="dismiss-error">×</button>
+        </div>
+      )}
       
       <div className="dashboard-content">
         <WelcomeSection 

@@ -1,4 +1,5 @@
 const API_BASE_URL =  'http://localhost:5000/api';
+import { supabase } from '../supabaseClient'; 
 
 const buildQueryString = (params) => {
   const filteredParams = {};
@@ -97,6 +98,21 @@ export const api = {
       throw error;
     }
   },
+ async fetchDashboardSummary() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/summary`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching dashboard summary:', error);
+      throw error;
+    }
+  },
 
   async fetchProfile() {
     try {
@@ -113,6 +129,61 @@ export const api = {
       throw error;
     }
   },
+
+  async updateProfile(profileData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/dashboard/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  },
+
+async uploadResumeFile(file) {
+  try {
+    // ✅ Get the current session token from Supabase
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error('Not authenticated');
+
+    const formData = new FormData();
+    formData.append('resume', file);
+
+    const response = await fetch(`${API_BASE_URL}/dashboard/upload-resume`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${session.access_token}`, // send JWT to backend
+      },
+      body: formData // ✅ no Content-Type header, browser sets it
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error uploading resume:', error);
+    throw error;
+  }
+},
+
+
+
   async applyToJob(jobId) {
     try {
       const response = await fetch(`${API_BASE_URL}/dashboard/apply/${jobId}`, {
@@ -179,66 +250,7 @@ export const api = {
       throw error;
     }
   },
-  async uploadResumeFile(filename, size) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/upload-resume`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filename, size })
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
 
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error uploading resume:', error);
-      throw error;
-    }
-  },
-
-  async getJobStats() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/jobs/stats`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching job stats:', error);
-      throw error;
-    }
-  },
-  async updateProfile(profileData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/profile`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      throw error;
-    }
-  },
   async fetchMySavedJobs() {
     try {
       const response = await fetch(`${API_BASE_URL}/dashboard/my-saved-jobs`);
@@ -254,7 +266,8 @@ export const api = {
       throw error;
     }
   },
-   async fetchMyApplications() {
+
+  async fetchMyApplications() {
     try {
       const response = await fetch(`${API_BASE_URL}/dashboard/my-applications`);
       
@@ -266,6 +279,23 @@ export const api = {
       return data;
     } catch (error) {
       console.error('Error fetching applications:', error);
+      throw error;
+    }
+  },
+
+  // ========== STATS APIs ==========
+  async getJobStats() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/jobs/stats`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching job stats:', error);
       throw error;
     }
   }
