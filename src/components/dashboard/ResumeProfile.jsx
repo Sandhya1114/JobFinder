@@ -247,7 +247,8 @@
 
 // export default ResumeProfile;
 // components/ResumeProfile.jsx
-import React, { useState } from "react";
+// components/ResumeProfile.jsx - Fixed version
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   uploadResumeAsync, 
@@ -262,12 +263,23 @@ const ResumeProfile = ({ profile, isUploading = false, isUpdating = false }) => 
 
   const [resumeFile, setResumeFile] = useState(null);
   const [uploadMessage, setUploadMessage] = useState("");
-  const [skills, setSkills] = useState(profile.skills || []);
+  const [skills, setSkills] = useState([]);
   const [newSkill, setNewSkill] = useState("");
   const [profileData, setProfileData] = useState({
-    name: profile.name || '',
-    email: profile.email || ''
+    name: '',
+    email: ''
   });
+
+  // Update local state when profile prop changes
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        name: profile.name || '',
+        email: profile.email || ''
+      });
+      setSkills(profile.skills || []);
+    }
+  }, [profile]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -275,68 +287,91 @@ const ResumeProfile = ({ profile, isUploading = false, isUpdating = false }) => 
     setUploadMessage("");
   };
 
-const handleUploadResume = async () => {
-  if (!resumeFile) {
-    setUploadMessage("Please select a resume file first.");
-    return;
-  }
-
-  try {
-    const result = await dispatch(uploadResumeAsync(resumeFile)).unwrap(); // ✅ pass the actual file
-
-    setUploadMessage("Resume uploaded successfully!");
-    setResumeFile(null);
-
-    dispatch(addRecentActivity({
-      action: 'Uploaded resume',
-      details: `Uploaded ${resumeFile.name}`
-    }));
-
-    const fileInput = document.querySelector('input[type="file"]');
-    if (fileInput) fileInput.value = '';
-
-  } catch (error) {
-    setUploadMessage(`Failed to upload resume: ${error}`);
-  }
-};
-
-  const handleAddSkill = () => {
-    const trimmedSkill = newSkill.trim();
-    if (trimmedSkill !== "" && !skills.includes(trimmedSkill)) {
-      const updatedSkills = [...skills, trimmedSkill];
-      setSkills(updatedSkills);
-      setNewSkill("");
-      
-      // Update profile with new skills
-      handleUpdateProfile({ skills: updatedSkills });
+  const handleUploadResume = async () => {
+    if (!resumeFile) {
+      setUploadMessage("Please select a resume file first.");
+      return;
     }
-  };
 
-  const handleRemoveSkill = (skillToRemove) => {
-    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
-    setSkills(updatedSkills);
-    
-    // Update profile with remaining skills
-    handleUpdateProfile({ skills: updatedSkills });
-  };
-
-  const handleUpdateProfile = async (updates = {}) => {
     try {
-      const updateData = {
-        ...profileData,
-        skills,
-        ...updates
-      };
+      setUploadMessage("Uploading...");
+      const result = await dispatch(uploadResumeAsync(resumeFile)).unwrap();
 
-      await dispatch(updateProfileAsync(updateData)).unwrap();
-      
+      setUploadMessage("Resume uploaded successfully!");
+      setResumeFile(null);
+
+      // Clear file input
+      const fileInput = document.querySelector('input[type="file"]');
+      if (fileInput) fileInput.value = '';
+
+      // Add activity log
       dispatch(addRecentActivity({
-        action: 'Updated profile',
-        details: 'Profile information updated'
+        action: 'Uploaded resume',
+        details: `Uploaded ${resumeFile.name}`
       }));
 
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      console.error('Upload error:', error);
+      setUploadMessage(`Failed to upload: ${error}`);
+    }
+  };
+
+  const handleAddSkill = async () => {
+    const trimmedSkill = newSkill.trim();
+    if (trimmedSkill === "") {
+      return;
+    }
+    
+    if (skills.includes(trimmedSkill)) {
+      setNewSkill("");
+      return;
+    }
+
+    const updatedSkills = [...skills, trimmedSkill];
+    
+    // Update local state immediately for better UX
+    setSkills(updatedSkills);
+    setNewSkill("");
+    
+    // Update backend
+    try {
+      await dispatch(updateProfileAsync({ 
+        ...profileData, 
+        skills: updatedSkills 
+      })).unwrap();
+      
+      dispatch(addRecentActivity({
+        action: 'Added skill',
+        details: `Added skill: ${trimmedSkill}`
+      }));
+    } catch (error) {
+      // Revert local state if backend fails
+      setSkills(skills);
+      console.error('Failed to add skill:', error);
+    }
+  };
+
+  const handleRemoveSkill = async (skillToRemove) => {
+    const updatedSkills = skills.filter((skill) => skill !== skillToRemove);
+    
+    // Update local state immediately
+    setSkills(updatedSkills);
+    
+    // Update backend
+    try {
+      await dispatch(updateProfileAsync({ 
+        ...profileData, 
+        skills: updatedSkills 
+      })).unwrap();
+      
+      dispatch(addRecentActivity({
+        action: 'Removed skill',
+        details: `Removed skill: ${skillToRemove}`
+      }));
+    } catch (error) {
+      // Revert local state if backend fails
+      setSkills([...skills]);
+      console.error('Failed to remove skill:', error);
     }
   };
 
@@ -347,9 +382,22 @@ const handleUploadResume = async () => {
     }));
   };
 
-  const handleProfileSubmit = (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    handleUpdateProfile();
+    
+    try {
+      await dispatch(updateProfileAsync({ 
+        ...profileData, 
+        skills 
+      })).unwrap();
+      
+      dispatch(addRecentActivity({
+        action: 'Updated profile',
+        details: 'Profile information updated'
+      }));
+    } catch (error) {
+      console.error('Failed to update profile:', error);
+    }
   };
 
   return (
@@ -388,6 +436,7 @@ const handleUploadResume = async () => {
               onChange={(e) => handleProfileInputChange('name', e.target.value)}
               placeholder="Enter your full name"
               className="profile-input"
+              disabled={isUpdating}
             />
           </div>
           
@@ -400,6 +449,7 @@ const handleUploadResume = async () => {
               onChange={(e) => handleProfileInputChange('email', e.target.value)}
               placeholder="Enter your email"
               className="profile-input"
+              disabled={isUpdating}
             />
           </div>
           
@@ -461,7 +511,7 @@ const handleUploadResume = async () => {
             </button>
           </div>
           {uploadMessage && (
-            <div className={`upload-message ${uploadMessage.includes('success') ? 'success' : 'error'}`}>
+            <div className={`upload-message ${uploadMessage.includes('success') || uploadMessage.includes('successfully') ? 'success' : uploadMessage.includes('Uploading') ? 'info' : 'error'}`}>
               {uploadMessage}
             </div>
           )}
@@ -482,7 +532,12 @@ const handleUploadResume = async () => {
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
             className="skill-input"
-            onKeyPress={(e) => e.key === 'Enter' && handleAddSkill()}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddSkill();
+              }
+            }}
             disabled={isUpdating}
           />
           <button 
@@ -501,23 +556,29 @@ const handleUploadResume = async () => {
           </button>
         </div>
 
-        <ul className="skills-list">
-          {skills.map((skill, index) => (
-            <li key={index} className="skill-item">
-              <span>{skill}</span>
-              <button
-                onClick={() => handleRemoveSkill(skill)}
-                className="remove-skill-btn"
-                title={`Remove ${skill}`}
-                disabled={isUpdating}
-              >
-                <svg className="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </li>
-          ))}
-        </ul>
+        {skills.length > 0 ? (
+          <ul className="skills-list">
+            {skills.map((skill, index) => (
+              <li key={index} className="skill-item">
+                <span>{skill}</span>
+                <button
+                  onClick={() => handleRemoveSkill(skill)}
+                  className="remove-skill-btn"
+                  title={`Remove ${skill}`}
+                  disabled={isUpdating}
+                >
+                  <svg className="delete-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="empty-skills">
+            <p>No skills added yet. Add your first skill above!</p>
+          </div>
+        )}
       </div>
     </div>
   );

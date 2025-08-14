@@ -1,24 +1,23 @@
-/* ResumeProfile.css - Enhanced with form styling and loading states */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
+/* ResumeProfile.css */
 .resume-profile {
   background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
   padding: 30px;
-  border-radius: 16px;
   margin-bottom: 30px;
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  font-family: 'Inter', sans-serif;
+  animation: slideInUp 0.6s ease-out;
 }
 
 .resume-profile h3 {
-  color: white;
-  font-size: 1.8rem;
-  margin-bottom: 25px;
-  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 12px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
 }
 
 .section-icon {
@@ -28,18 +27,16 @@
 /* Profile Section */
 .profile-section {
   margin-bottom: 30px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .profile-title {
-  color: white;
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #e0e7ff;
+  margin-bottom: 20px;
 }
 
 .profile-form {
@@ -54,51 +51,58 @@
 }
 
 .form-group label {
-  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
+  color: #ffffff;
   font-size: 0.95rem;
 }
 
 .profile-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
   padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .profile-input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .profile-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.profile-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .update-profile-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
   padding: 12px 24px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: fit-content;
+  align-self: start;
 }
 
 .update-profile-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
 }
 
 .update-profile-btn:disabled {
@@ -110,43 +114,41 @@
 /* Resume Section */
 .resume-section {
   margin-bottom: 30px;
-  padding-bottom: 25px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .resume-title {
-  color: white;
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #e0e7ff;
+  margin-bottom: 20px;
 }
 
 .resume-link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #a5b4fc;
+  padding: 12px 20px;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 12px;
+  color: #10b981;
   text-decoration: none;
-  padding: 12px 16px;
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  margin-bottom: 20px;
   font-weight: 500;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
 }
 
 .resume-link:hover {
-  background: rgba(102, 126, 234, 0.2);
-  transform: translateY(-1px);
+  background: rgba(34, 197, 94, 0.3);
+  transform: translateY(-2px);
 }
 
 .resume-link-icon {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .file-upload-section {
@@ -157,25 +159,20 @@
 
 .file-input-wrapper {
   display: flex;
-  gap: 12px;
+  gap: 15px;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .file-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.9);
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
   flex: 1;
   min-width: 200px;
-}
-
-.file-input:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .file-input:disabled {
@@ -184,14 +181,14 @@
 }
 
 .upload-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
+  border-radius: 12px;
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -199,8 +196,9 @@
 }
 
 .upload-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
 }
 
 .upload-btn:disabled {
@@ -209,79 +207,66 @@
   transform: none;
 }
 
-.upload-message {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.upload-message.success {
-  background: rgba(34, 197, 94, 0.1);
-  color: #86efac;
-  border: 1px solid rgba(34, 197, 94, 0.2);
-}
-
-.upload-message.error {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
 /* Skills Section */
 .skills-section {
-  margin-bottom: 20px;
+  /* No additional margin needed */
 }
 
 .skills-title {
-  color: white;
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #e0e7ff;
+  margin-bottom: 20px;
 }
 
 .skill-input-wrapper {
   display: flex;
-  gap: 12px;
+  gap: 15px;
   margin-bottom: 20px;
+  align-items: center;
   flex-wrap: wrap;
 }
 
 .skill-input {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
   flex: 1;
-  min-width: 250px;
+  min-width: 200px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .skill-input:focus {
   outline: none;
-  background: rgba(255, 255, 255, 0.12);
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .skill-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.skill-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .add-skill-btn {
-  background: rgba(34, 197, 94, 0.2);
-  color: #86efac;
-  border: 1px solid rgba(34, 197, 94, 0.3);
   padding: 12px 20px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -289,8 +274,9 @@
 }
 
 .add-skill-btn:hover:not(:disabled) {
-  background: rgba(34, 197, 94, 0.3);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
 }
 
 .add-skill-btn:disabled {
@@ -300,127 +286,157 @@
 }
 
 .skills-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   list-style: none;
   padding: 0;
-  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .skill-item {
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  color: #a5b4fc;
-  padding: 8px 12px;
-  border-radius: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
+  padding: 8px 16px;
+  background: rgba(124, 58, 237, 0.2);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: 25px;
+  color: #e0e7ff;
   font-weight: 500;
-  transition: all 0.2s ease;
-  animation: slideIn 0.3s ease;
-}
-
-.skill-item:hover {
-  background: rgba(102, 126, 234, 0.2);
+  animation: fadeIn 0.3s ease;
 }
 
 .remove-skill-btn {
   background: none;
   border: none;
-  color: rgba(239, 68, 68, 0.8);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  padding: 0;
+  padding: 2px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .remove-skill-btn:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fca5a5;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
 
 .remove-skill-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .delete-icon {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 
+.empty-skills {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
+
+/* Upload Messages */
+.upload-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+}
+
+.upload-message.success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.upload-message.error {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.upload-message.info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+}
+
+/* Error Message */
+.error-message {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Loading Spinners */
 .spinner-small {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
+  border-top: 2px solid #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
-.error-message {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  font-size: 0.9rem;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .resume-profile {
-    padding: 20px;
-  }
-  
-  .resume-profile h3 {
-    font-size: 1.5rem;
-  }
-  
-  .file-input-wrapper {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .file-input {
-    min-width: auto;
-  }
-  
-  .skill-input-wrapper {
-    flex-direction: column;
-  }
-  
-  .skill-input {
-    min-width: auto;
-  }
-  
-  .profile-form {
-    gap: 15px;
-  }
-}
-
-@keyframes slideIn {
+/* Animations */
+@keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .resume-profile {
+    padding: 20px;
+  }
+
+  .file-input-wrapper,
+  .skill-input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .file-input,
+  .skill-input {
+    min-width: 100%;
+  }
+
+  .upload-btn,
+  .add-skill-btn,
+  .update-profile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .skills-list {
+    justify-content: center;
+  }
+
+  .resume-profile h3 {
+    font-size: 1.5rem;
+  }
 }
