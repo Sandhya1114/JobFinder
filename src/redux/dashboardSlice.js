@@ -121,9 +121,6 @@ export const uploadResumeAsync = createAsyncThunk(
   }
 );
 
-
-
-
 export const updateProfileAsync = createAsyncThunk(
   'dashboard/updateProfile',
   async (profileData, { rejectWithValue }) => {

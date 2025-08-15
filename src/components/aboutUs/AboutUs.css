@@ -108,7 +108,7 @@
 }
 
 .glass-hero-content {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(66, 64, 64, 0.1);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   padding: 50px;
