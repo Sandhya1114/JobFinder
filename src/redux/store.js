@@ -125,13 +125,13 @@ const jobSlice = createSlice({
   },
 });
 
-import dashboardReducer from './slices/dashboardSlice';
-import profileReducer from './slices/profileSlice';
-import savedJobsReducer from './slices/savedJobsSlice';
-import educationReducer from './slices/educationSlice';
-import skillsReducer from './slices/skillsSlice';
-import workExperienceReducer from './slices/workExperienceSlice';
-import resumesReducer from './slices/resumesSlice';
+import dashboardReducer from './dashboardSlice';
+import profileReducer from './profileSlice';
+import savedJobsReducer from './savedJobsSlice';
+import educationReducer from './educationSlice';
+import skillsReducer from './skillsSlice';
+import workExperienceReducer from './workExperienceSlice';
+import resumesReducer from './resumesSlice';
 
 // Export actions for use in components
 export const {
@@ -167,6 +167,13 @@ const store = configureStore({
     workExperience: workExperienceReducer,
     resumes: resumesReducer,
   },
+ middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+      },
+    }),
+  devTools: process.env.NODE_ENV !== 'production',
 });
 
 export default store;
