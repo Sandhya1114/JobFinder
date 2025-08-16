@@ -125,8 +125,13 @@ const jobSlice = createSlice({
   },
 });
 
-import savedJobsReducer from './savedJobsSlice';
-import profileReducer from './profileSlice';
+import dashboardReducer from './slices/dashboardSlice';
+import profileReducer from './slices/profileSlice';
+import savedJobsReducer from './slices/savedJobsSlice';
+import educationReducer from './slices/educationSlice';
+import skillsReducer from './slices/skillsSlice';
+import workExperienceReducer from './slices/workExperienceSlice';
+import resumesReducer from './slices/resumesSlice';
 
 // Export actions for use in components
 export const {
@@ -156,6 +161,11 @@ const store = configureStore({
     jobs: jobSlice.reducer,
     profile: profileReducer,
     savedJobs: savedJobsReducer,
+    dashboard: dashboardReducer,
+    education: educationReducer,
+    skills: skillsReducer,
+    workExperience: workExperienceReducer,
+    resumes: resumesReducer,
   },
 });
 
