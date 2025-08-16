@@ -1,148 +1,79 @@
+/* .delete {
+    font-size: 20px;
+} */
+
 /* ResumeProfile.css */
 .resume-profile {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
   backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 30px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  animation: slideInUp 0.6s ease-out;
+  border-radius: 24px;
+  padding: 40px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+  animation: slideInLeft 0.8s ease-out 0.8s both;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.resume-profile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+  pointer-events: none;
 }
 
 .resume-profile h3 {
-  display: flex;
-  align-items: center;
-  gap: 12px;
   font-size: 1.8rem;
   font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 25px;
-  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+  color: white;
+  margin: 0 0 30px 0;
+  text-align: center;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .section-icon {
   font-size: 1.5rem;
 }
 
-/* Profile Section */
-.profile-section {
-  margin-bottom: 30px;
-}
-
-.profile-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: #e0e7ff;
-  margin-bottom: 20px;
-}
-
-.profile-form {
-  display: grid;
-  gap: 20px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.form-group label {
-  font-weight: 500;
-  color: #ffffff;
-  font-size: 0.95rem;
-}
-
-.profile-input {
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  color: #ffffff;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.profile-input:focus {
-  outline: none;
-  border-color: #7c3aed;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.profile-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.profile-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.update-profile-btn {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  align-self: start;
-}
-
-.update-profile-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #6d28d9 0%, #9333ea 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
-}
-
-.update-profile-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Resume Section */
 .resume-section {
-  margin-bottom: 30px;
-}
-
-.resume-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: #e0e7ff;
-  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .resume-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background: rgba(34, 197, 94, 0.2);
-  border: 1px solid rgba(34, 197, 94, 0.4);
-  border-radius: 12px;
-  color: #10b981;
+  gap: 12px;
+  color: #60a5fa;
   text-decoration: none;
   font-weight: 500;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: rgba(96, 165, 250, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.2);
   transition: all 0.3s ease;
-  margin-bottom: 20px;
 }
 
 .resume-link:hover {
-  background: rgba(34, 197, 94, 0.3);
+  background: rgba(96, 165, 250, 0.2);
+  border-color: rgba(96, 165, 250, 0.4);
   transform: translateY(-2px);
 }
 
@@ -154,12 +85,12 @@
 .file-upload-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .file-input-wrapper {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
 }
@@ -167,66 +98,89 @@
 .file-input {
   flex: 1;
   min-width: 200px;
-  padding: 10px;
+  padding: 12px 16px;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: 12px;
-  color: #ffffff;
-  cursor: pointer;
+  color: white;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
 }
 
-.file-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.file-input:focus {
+  outline: none;
+  border-color: rgba(96, 165, 250, 0.6);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .upload-btn {
   padding: 12px 24px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: violet;
+  color: white;
   border: none;
   border-radius: 12px;
-  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.upload-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+.upload-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
-.upload-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+.upload-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
 }
 
-/* Skills Section */
+.upload-btn:hover::before {
+  left: 100%;
+}
+
+.upload-message {
+  color: #131013;
+  font-weight: 500;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  animation: slideIn 0.3s ease;
+}
+
 .skills-section {
-  /* No additional margin needed */
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
 }
 
 .skills-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 20px 0;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.3rem;
-  font-weight: 500;
-  color: #e0e7ff;
-  margin-bottom: 20px;
+  gap: 8px;
 }
 
 .skill-input-wrapper {
   display: flex;
-  gap: 15px;
+  gap: 12px;
   margin-bottom: 20px;
-  align-items: center;
   flex-wrap: wrap;
 }
 
@@ -235,75 +189,70 @@
   min-width: 200px;
   padding: 12px 16px;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  color: #ffffff;
-  font-size: 1rem;
+  color: white;
+  font-size: 0.9rem;
   transition: all 0.3s ease;
 }
 
 .skill-input:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: rgba(209, 72, 247, 0.6);
   background: rgba(255, 255, 255, 0.15);
 }
 
 .skill-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.skill-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .add-skill-btn {
   padding: 12px 20px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background-color: rgb(176, 134, 215);
+  /* background: linear-gradient(135deg, #10b981 0%, #059669 100%); */
+  color: white;
   border: none;
   border-radius: 12px;
-  color: white;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
 }
 
-.add-skill-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+.add-skill-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-}
-
-.add-skill-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+  /* box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%); */
 }
 
 .skills-list {
-  list-style: none;
-  padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .skill-item {
   display: flex;
   align-items: center;
   gap: 8px;
+  background: linear-gradient(135deg, rgba(202, 28, 255, 0.916) 0%, rgb(214, 163, 236) 100%);
+  color: white;
   padding: 8px 16px;
-  background: rgba(124, 58, 237, 0.2);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  border-radius: 25px;
-  color: #e0e7ff;
+  border-radius: 20px;
+  border: 1px solid rgb(255, 255, 255);
+  font-size: 0.9rem;
   font-weight: 500;
-  animation: fadeIn 0.3s ease;
+  animation: skillFadeIn 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.skill-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
 }
 
 .remove-skill-btn {
@@ -313,80 +262,41 @@
   cursor: pointer;
   padding: 2px;
   border-radius: 50%;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  width: 18px;
+  height: 18px;
 }
 
-.remove-skill-btn:hover:not(:disabled) {
+.remove-skill-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
   color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
-.remove-skill-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  transform: scale(1.1);
 }
 
 .delete-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.empty-skills {
-  text-align: center;
-  padding: 20px;
-  color: rgba(255, 255, 255, 0.6);
-  font-style: italic;
-}
-
-/* Upload Messages */
-.upload-message {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-weight: 500;
-  animation: fadeIn 0.3s ease;
-}
-
-.upload-message.success {
-  background: rgba(34, 197, 94, 0.2);
-  color: #10b981;
-  border: 1px solid rgba(34, 197, 94, 0.4);
-}
-
-.upload-message.error {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-}
-
-.upload-message.info {
-  background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.4);
-}
-
-/* Error Message */
-.error-message {
-  animation: fadeIn 0.3s ease;
-}
-
-/* Loading Spinners */
-.spinner-small {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid #ffffff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+  width: 12px;
+  height: 12px;
 }
 
 /* Animations */
-@keyframes slideInUp {
+@keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -394,49 +304,56 @@
   }
 }
 
-@keyframes fadeIn {
+@keyframes skillFadeIn {
   from {
     opacity: 0;
+    transform: scale(0.8);
   }
   to {
     opacity: 1;
+    transform: scale(1);
   }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .resume-profile {
-    padding: 20px;
+    padding: 30px 20px;
   }
-
-  .file-input-wrapper,
+  
+  .file-input-wrapper {
+    flex-direction: column;
+  }
+  
+  .file-input {
+    min-width: auto;
+  }
+  
   .skill-input-wrapper {
     flex-direction: column;
-    align-items: stretch;
   }
-
-  .file-input,
+  
   .skill-input {
-    min-width: 100%;
+    min-width: auto;
   }
-
-  .upload-btn,
-  .add-skill-btn,
-  .update-profile-btn {
-    width: 100%;
-    justify-content: center;
-  }
-
+  
   .skills-list {
-    justify-content: center;
+    gap: 8px;
   }
+}
 
+@media (max-width: 480px) {
+  .resume-profile {
+    padding: 24px 16px;
+  }
+  
   .resume-profile h3 {
     font-size: 1.5rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .resume-section, .skills-section {
+    padding: 20px;
   }
 }
