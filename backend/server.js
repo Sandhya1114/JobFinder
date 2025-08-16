@@ -1,11 +1,22 @@
-const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+// const express = require('express');
+// const cors = require('cors');
+// const { createClient } = require('@supabase/supabase-js');
+// require('dotenv').config();
+
+// const app = express();
+
+// // Setup
+// app.use(cors());
+// app.use(express.json());
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
+dotenv.config();
 
 const app = express();
 
-// Setup
+// ===== Middleware =====
 app.use(cors());
 app.use(express.json());
 
@@ -227,61 +238,632 @@ app.get('/api/companies', async (req, res) => {
   }
 });
 
-// Get profile
-app.get('/api/profile', async (req, res) => {
+// Add these routes to your existing Express.js backend
+
+// ============ DASHBOARD API ROUTES ============
+
+// Middleware to get user from auth header (you'll need to implement this)
+const authenticateUser = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+    
+    // Verify token with Supabase
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+    if (error || !user) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+    
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ error: 'Authentication failed' });
+  }
+};
+
+// ============ PROFILE ROUTES ============
+
+// Get user profile (Updated to work with your existing endpoint)
+app.get('/api/profile', authenticateUser, async (req, res) => {
   try {
     const { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
-      .limit(1)
+      .eq('id', req.user.id)
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error;
+
+    // Return format compatible with your existing endpoint
+    res.json({
+      name: profile?.name || 'New User',
+      email: profile?.email || req.user.email,
+      about: profile?.about || '',
+      phone: profile?.phone || '',
+      location: profile?.location || '',
+      resume: profile?.resume_url || '',
+      skills: profile?.skills || []
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update user profile
+app.put('/api/profile', authenticateUser, async (req, res) => {
+  try {
+    const { name, about, phone, location, resume_url, skills } = req.body;
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        name,
+        about,
+        phone,
+        location,
+        resume_url,
+        skills
+      })
+      .eq('id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Profile updated successfully',
+      profile: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ EDUCATION ROUTES ============
+
+// Get user's education
+app.get('/api/education', authenticateUser, async (req, res) => {
+  try {
+    const { data: education, error } = await supabase
+      .from('education')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .order('start_date', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({
+      education: education || [],
+      total: education?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add education
+app.post('/api/education', authenticateUser, async (req, res) => {
+  try {
+    const educationData = {
+      ...req.body,
+      user_id: req.user.id
+    };
+
+    const { data, error } = await supabase
+      .from('education')
+      .insert(educationData)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Education added successfully',
+      education: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update education
+app.put('/api/education/:id', authenticateUser, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('education')
+      .update(req.body)
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Education updated successfully',
+      education: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete education
+app.delete('/api/education/:id', authenticateUser, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('education')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Education deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ SAVED JOBS ROUTES ============
+
+// Get user's saved jobs with job details
+app.get('/api/saved-jobs', authenticateUser, async (req, res) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    let query = supabase
+      .from('saved_jobs')
+      .select(`
+        *,
+        jobs (
+          *,
+          companies (id, name, logo),
+          categories (id, name, slug)
+        )
+      `, { count: 'exact' })
+      .eq('user_id', req.user.id);
+
+    if (status) {
+      query = query.eq('application_status', status);
+    }
+
+    query = query
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limitNum - 1);
+
+    const { data: savedJobs, error, count } = await query;
+
+    if (error) throw error;
+
+    // Calculate pagination
+    const totalJobs = count || 0;
+    const totalPages = Math.ceil(totalJobs / limitNum);
+
+    res.json({
+      savedJobs: savedJobs || [],
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalJobs,
+        jobsPerPage: limitNum
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Save a job
+app.post('/api/saved-jobs', authenticateUser, async (req, res) => {
+  try {
+    const { job_id, notes, priority } = req.body;
+
+    // Check if job exists
+    const { data: jobExists } = await supabase
+      .from('jobs')
+      .select('id')
+      .eq('id', job_id)
+      .single();
+
+    if (!jobExists) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    const { data, error } = await supabase
+      .from('saved_jobs')
+      .insert({
+        user_id: req.user.id,
+        job_id,
+        notes,
+        priority: priority || 0
+      })
+      .select(`
+        *,
+        jobs (
+          *,
+          companies (id, name, logo),
+          categories (id, name, slug)
+        )
+      `)
+      .single();
+
+    if (error) {
+      if (error.code === '23505') { // Unique constraint violation
+        return res.status(409).json({ error: 'Job already saved' });
+      }
+      throw error;
+    }
+
+    res.json({
+      message: 'Job saved successfully',
+      savedJob: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update saved job status
+app.put('/api/saved-jobs/:id', authenticateUser, async (req, res) => {
+  try {
+    const { application_status, notes, priority, application_date, reminder_date } = req.body;
+
+    const { data, error } = await supabase
+      .from('saved_jobs')
+      .update({
+        application_status,
+        notes,
+        priority,
+        application_date,
+        reminder_date
+      })
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Saved job updated successfully',
+      savedJob: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Remove saved job
+app.delete('/api/saved-jobs/:id', authenticateUser, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('saved_jobs')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Job removed from saved list' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Check if job is saved
+app.get('/api/jobs/:id/saved', authenticateUser, async (req, res) => {
+  try {
+    const { data: savedJob, error } = await supabase
+      .from('saved_jobs')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .eq('job_id', req.params.id)
       .single();
 
     if (error && error.code !== 'PGRST116') throw error;
 
     res.json({
-      name: profile?.name || 'Abhishek Deshwal',
-      email: profile?.email || 'abhishek@example.com',
-      resume: profile?.resume_url || 'https://example.com/resume.pdf',
-      skills: profile?.skills || ['React', 'JavaScript', 'Redux', 'HTML', 'CSS']
+      isSaved: !!savedJob,
+      savedJob: savedJob || null
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Simple file upload (just return success message)
-app.post('/api/upload-resume', (req, res) => {
-  res.json({ 
-    message: 'Upload successful', 
-    filePath: 'https://example.com/uploaded-resume.pdf' 
-  });
-});
+// ============ SKILLS ROUTES ============
 
-// Stats
-app.get('/api/jobs/stats', async (req, res) => {
+// Get user's skills
+app.get('/api/skills', authenticateUser, async (req, res) => {
   try {
-    const { count: totalJobs } = await supabase
-      .from('jobs')
-      .select('*', { count: 'exact', head: true });
+    const { category } = req.query;
 
-    const { count: totalCompanies } = await supabase
-      .from('companies')
-      .select('*', { count: 'exact', head: true });
+    let query = supabase
+      .from('skills')
+      .select('*')
+      .eq('user_id', req.user.id);
 
-    const { count: totalCategories } = await supabase
-      .from('categories')
-      .select('*', { count: 'exact', head: true });
+    if (category) {
+      query = query.eq('category', category);
+    }
+
+    query = query.order('skill_name');
+
+    const { data: skills, error } = await query;
+
+    if (error) throw error;
 
     res.json({
-      totalJobs: totalJobs || 0,
-      totalCompanies: totalCompanies || 0,
-      totalCategories: totalCategories || 0
+      skills: skills || [],
+      total: skills?.length || 0
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
+// Add skill
+app.post('/api/skills', authenticateUser, async (req, res) => {
+  try {
+    const skillData = {
+      ...req.body,
+      user_id: req.user.id
+    };
+
+    const { data, error } = await supabase
+      .from('skills')
+      .insert(skillData)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Skill added successfully',
+      skill: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update skill
+app.put('/api/skills/:id', authenticateUser, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('skills')
+      .update(req.body)
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Skill updated successfully',
+      skill: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete skill
+app.delete('/api/skills/:id', authenticateUser, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('skills')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Skill deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ RESUMES ROUTES ============
+
+// Get user's resumes
+app.get('/api/resumes', authenticateUser, async (req, res) => {
+  try {
+    const { data: resumes, error } = await supabase
+      .from('resumes')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({
+      resumes: resumes || [],
+      total: resumes?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add resume
+app.post('/api/resumes', authenticateUser, async (req, res) => {
+  try {
+    const resumeData = {
+      ...req.body,
+      user_id: req.user.id
+    };
+
+    const { data, error } = await supabase
+      .from('resumes')
+      .insert(resumeData)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Resume added successfully',
+      resume: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete resume
+app.delete('/api/resumes/:id', authenticateUser, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('resumes')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Resume deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ DASHBOARD STATS ============
+
+// Get user dashboard stats
+app.get('/api/dashboard/stats', authenticateUser, async (req, res) => {
+  try {
+    const [savedJobsResult, appliedJobsResult, skillsResult, educationResult] = await Promise.all([
+      // Total saved jobs
+      supabase
+        .from('saved_jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', req.user.id),
+      
+      // Applied jobs
+      supabase
+        .from('saved_jobs')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', req.user.id)
+        .eq('application_status', 'applied'),
+      
+      // Skills count
+      supabase
+        .from('skills')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', req.user.id),
+      
+      // Education count
+      supabase
+        .from('education')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', req.user.id)
+    ]);
+
+    res.json({
+      savedJobs: savedJobsResult.count || 0,
+      appliedJobs: appliedJobsResult.count || 0,
+      totalSkills: skillsResult.count || 0,
+      totalEducation: educationResult.count || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ WORK EXPERIENCE ROUTES ============
+
+// Get user's work experience
+app.get('/api/work-experience', authenticateUser, async (req, res) => {
+  try {
+    const { data: experience, error } = await supabase
+      .from('work_experience')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .order('start_date', { ascending: false });
+
+    if (error) throw error;
+
+    res.json({
+      experience: experience || [],
+      total: experience?.length || 0
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add work experience
+app.post('/api/work-experience', authenticateUser, async (req, res) => {
+  try {
+    const experienceData = {
+      ...req.body,
+      user_id: req.user.id
+    };
+
+    const { data, error } = await supabase
+      .from('work_experience')
+      .insert(experienceData)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Work experience added successfully',
+      experience: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update work experience
+app.put('/api/work-experience/:id', authenticateUser, async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('work_experience')
+      .update(req.body)
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    res.json({
+      message: 'Work experience updated successfully',
+      experience: data
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete work experience
+app.delete('/api/work-experience/:id', authenticateUser, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('work_experience')
+      .delete()
+      .eq('id', req.params.id)
+      .eq('user_id', req.user.id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Work experience deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 // ============ DEBUG ENDPOINTS ============
 
 // Test company search directly
