@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../api';
+import { api } from '../services/api';
 
 // Async thunks for skills operations
 export const fetchSkills = createAsyncThunk(

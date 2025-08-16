@@ -36,7 +36,7 @@
 // export const { saveJob, unsaveJob, clearSavedJobs } = savedJobsSlice.actions;
 // export default savedJobsSlice.reducer;
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../api';
+import { api } from '../services/api';
 
 // Async thunks for saved jobs operations
 export const fetchSavedJobs = createAsyncThunk(

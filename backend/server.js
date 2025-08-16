@@ -243,27 +243,80 @@ app.get('/api/companies', async (req, res) => {
 // ============ DASHBOARD API ROUTES ============
 
 // Middleware to get user from auth header (you'll need to implement this)
+// Updated authentication middleware in server.js
 const authenticateUser = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ error: 'No token provided' });
     }
     
+    const token = authHeader.replace('Bearer ', '');
+    
     // Verify token with Supabase
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) {
+    
+    if (error) {
+      console.error('Supabase auth error:', error);
       return res.status(401).json({ error: 'Invalid token' });
+    }
+    
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
     }
     
     req.user = user;
     next();
   } catch (error) {
+    console.error('Authentication middleware error:', error);
     res.status(401).json({ error: 'Authentication failed' });
   }
 };
-
 // ============ PROFILE ROUTES ============
+// Helper function to ensure profile exists
+const ensureProfileExists = async (userId, userEmail = null) => {
+  try {
+    // Check if profile exists
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (profileError && profileError.code === 'PGRST116') {
+      // Profile doesn't exist, create it
+      console.log('Profile not found, creating for user:', userId);
+      
+      const { data: newProfile, error: createError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          name: 'New User',
+          email: userEmail,
+          about: '',
+          skills: []
+        })
+        .select()
+        .single();
+
+      if (createError) {
+        console.error('Error creating profile:', createError);
+        throw new Error('Failed to create user profile');
+      }
+
+      console.log('Profile created successfully:', newProfile.id);
+      return newProfile;
+    } else if (profileError) {
+      throw profileError;
+    }
+
+    return profile;
+  } catch (error) {
+    console.error('Error in ensureProfileExists:', error);
+    throw error;
+  }
+};
 
 // Get user profile (Updated to work with your existing endpoint)
 app.get('/api/profile', authenticateUser, async (req, res) => {

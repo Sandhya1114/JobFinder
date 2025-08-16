@@ -48,7 +48,7 @@
 // export const { markMessageRead, applyToJob } = dashboardSlice.actions;
 // export default dashboardSlice.reducer;
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../api';
+import { api } from '../services/api';
 
 // Async thunks for dashboard stats
 export const fetchDashboardStats = createAsyncThunk(
