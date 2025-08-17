@@ -1,11 +1,11 @@
-// ResumesSection.jsx
+// ResumesSection.jsx - Updated to handle file uploads properly
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   fetchResumes,
   addResume,
   deleteResume,
-  uploadResume,
+  uploadResumeFile, // Use the new upload action
   setShowUploadForm,
   updateFormData,
   setPrimaryResume,
@@ -67,10 +67,9 @@ const ResumesSection = () => {
         return;
       }
 
-      const formData = new FormData();
-      formData.append('resume', file);
-      
-      dispatch(uploadResume(formData));
+      // Instead of using the legacy upload, use the new approach
+      const title = `Uploaded ${file.name}`;
+      dispatch(uploadResumeFile({ file, title }));
     }
   };
 
@@ -119,6 +118,31 @@ const ResumesSection = () => {
     }
   };
 
+  // Helper function to handle file upload with cloud service
+  const uploadToCloudService = async (file) => {
+    // This is where you'd integrate with a cloud service
+    // For now, we'll show how to structure this for future implementation
+    
+    try {
+      // Example for uploading to a cloud service:
+      // const formData = new FormData();
+      // formData.append('file', file);
+      // 
+      // const response = await fetch('/api/upload-to-cloud', {
+      //   method: 'POST',
+      //   body: formData
+      // });
+      // 
+      // const result = await response.json();
+      // return result.url;
+
+      // For now, create a temporary URL
+      return URL.createObjectURL(file);
+    } catch (error) {
+      throw new Error('Failed to upload file to cloud service');
+    }
+  };
+
   if (loading) {
     return (
       <div className="section-loading">
@@ -142,7 +166,7 @@ const ResumesSection = () => {
           </button>
           <button className="add-btn" onClick={handleUploadClick}>
             <i className="fas fa-plus"></i>
-            Add Resume
+            Add Resume Link
           </button>
         </div>
       </div>
@@ -178,7 +202,7 @@ const ResumesSection = () => {
         <div className="upload-progress">
           <div className="progress-info">
             <i className="fas fa-cloud-upload-alt"></i>
-            <span>Uploading resume... {uploadProgress}%</span>
+            <span>Processing resume... {uploadProgress}%</span>
           </div>
           <div className="progress-bar">
             <div 

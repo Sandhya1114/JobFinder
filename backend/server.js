@@ -275,59 +275,50 @@ const authenticateUser = async (req, res, next) => {
 };
 // ============ PROFILE ROUTES ============
 // Helper function to ensure profile exists
-const ensureProfileExists = async (userId, userEmail = null) => {
-  try {
-    // Check if profile exists
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', userId)
-      .single();
 
-    if (profileError && profileError.code === 'PGRST116') {
-      // Profile doesn't exist, create it
-      console.log('Profile not found, creating for user:', userId);
-      
-      const { data: newProfile, error: createError } = await supabase
-        .from('profiles')
-        .insert({
-          id: userId,
-          name: 'New User',
-          email: userEmail,
-          about: '',
-          skills: []
-        })
-        .select()
-        .single();
-
-      if (createError) {
-        console.error('Error creating profile:', createError);
-        throw new Error('Failed to create user profile');
-      }
-
-      console.log('Profile created successfully:', newProfile.id);
-      return newProfile;
-    } else if (profileError) {
-      throw profileError;
-    }
-
-    return profile;
-  } catch (error) {
-    console.error('Error in ensureProfileExists:', error);
-    throw error;
-  }
-};
-
-// Get user profile (Updated to work with your existing endpoint)
+// Get user profile (Fixed to handle missing profiles)
 app.get('/api/profile', authenticateUser, async (req, res) => {
   try {
-    const { data: profile, error } = await supabase
+    // First, try to get existing profile
+    let { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', req.user.id)
-      .single();
+      .maybeSingle(); // Use maybeSingle() instead of single()
 
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error) {
+      console.error('Error fetching profile:', error);
+      throw error;
+    }
+
+    // If no profile exists, create one
+    if (!profile) {
+      console.log('No profile found, creating new profile for user:', req.user.id);
+      
+      const newProfileData = {
+        id: req.user.id,
+        name: req.user.user_metadata?.full_name || 'New User',
+        email: req.user.email,
+        about: '',
+        phone: '',
+        location: '',
+        resume_url: '',
+        skills: []
+      };
+
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert(newProfileData)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error('Error creating profile:', insertError);
+        throw insertError;
+      }
+
+      profile = newProfile;
+    }
 
     // Return format compatible with your existing endpoint
     res.json({
@@ -340,36 +331,62 @@ app.get('/api/profile', authenticateUser, async (req, res) => {
       skills: profile?.skills || []
     });
   } catch (error) {
+    console.error('Profile endpoint error:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// Update user profile
+// Update user profile (Fixed to handle upsert)
 app.put('/api/profile', authenticateUser, async (req, res) => {
   try {
-    const { name, about, phone, location, resume_url, skills } = req.body;
+    const { name, about, phone, location, resume, skills } = req.body;
 
+    // Prepare update data
+    const updateData = {
+      name,
+      about,
+      phone,
+      location,
+      resume_url: resume, // Map resume to resume_url
+      skills: Array.isArray(skills) ? skills : []
+    };
+
+    // Use upsert to handle both insert and update
     const { data, error } = await supabase
       .from('profiles')
-      .update({
-        name,
-        about,
-        phone,
-        location,
-        resume_url,
-        skills
-      })
-      .eq('id', req.user.id)
+      .upsert(
+        {
+          id: req.user.id,
+          email: req.user.email, // Include email for new records
+          ...updateData
+        },
+        { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        }
+      )
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
 
     res.json({
       message: 'Profile updated successfully',
-      profile: data
+      profile: {
+        name: data.name,
+        email: data.email,
+        about: data.about,
+        phone: data.phone,
+        location: data.location,
+        resume: data.resume_url,
+        skills: data.skills
+      }
     });
   } catch (error) {
+    console.error('Profile update error:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -790,7 +807,25 @@ app.delete('/api/resumes/:id', authenticateUser, async (req, res) => {
 });
 
 // ============ DASHBOARD STATS ============
-
+const sanitizeDateFields = (data) => {
+  const sanitized = { ...data };
+  
+  // List of date fields that might be empty strings
+  const dateFields = ['start_date', 'end_date', 'application_date', 'reminder_date'];
+  
+  dateFields.forEach(field => {
+    if (sanitized[field] === '' || sanitized[field] === undefined) {
+      sanitized[field] = null;
+    }
+  });
+  
+  // Special handling for is_current flag
+  if (sanitized.is_current === true) {
+    sanitized.end_date = null;
+  }
+  
+  return sanitized;
+};
 // Get user dashboard stats
 app.get('/api/dashboard/stats', authenticateUser, async (req, res) => {
   try {

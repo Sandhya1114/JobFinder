@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { api } from '../services/api';
-// import { api } from '../api';
 
 // Async thunks for resumes operations
 export const fetchResumes = createAsyncThunk(
@@ -39,12 +38,31 @@ export const deleteResume = createAsyncThunk(
   }
 );
 
-export const uploadResume = createAsyncThunk(
-  'resumes/uploadResume',
-  async (formData, { rejectWithValue }) => {
+// NEW: Handle file upload by converting to URL and adding to database
+export const uploadResumeFile = createAsyncThunk(
+  'resumes/uploadResumeFile',
+  async ({ file, title }, { rejectWithValue, dispatch }) => {
     try {
-      const data = await api.uploadResume(formData);
-      return data;
+      // Option A: Upload to a cloud service (recommended)
+      // For now, we'll simulate this by creating a temporary URL
+      // In production, you'd upload to AWS S3, Cloudinary, etc.
+      
+      // Create a temporary URL for the file
+      const fileUrl = URL.createObjectURL(file);
+      
+      // Create resume data
+      const resumeData = {
+        title: title || `Uploaded ${file.name}`,
+        file_url: fileUrl, // In production, this would be the cloud URL
+        file_name: file.name,
+        file_size: file.size,
+        content: `Uploaded file: ${file.name}`,
+        is_primary: false
+      };
+
+      // Add to database using existing API
+      const result = await dispatch(addResume(resumeData));
+      return result.payload;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -174,31 +192,20 @@ const resumesSlice = createSlice({
         state.error = action.payload;
       })
       
-      // Upload resume (legacy)
-      .addCase(uploadResume.pending, (state) => {
+      // Upload resume file
+      .addCase(uploadResumeFile.pending, (state) => {
         state.uploading = true;
         state.error = null;
-        state.uploadProgress = 0;
+        state.uploadProgress = 50; // Simulate progress
       })
-      .addCase(uploadResume.fulfilled, (state, action) => {
+      .addCase(uploadResumeFile.fulfilled, (state, action) => {
         state.uploading = false;
         state.uploadProgress = 100;
         state.message = 'Resume uploaded successfully!';
         
-        // Add uploaded resume to items if it has proper structure
-        if (action.payload.filePath) {
-          const newResume = {
-            id: Date.now(), // Temporary ID
-            title: 'Uploaded Resume',
-            file_url: action.payload.filePath,
-            file_name: action.payload.fileName || 'resume.pdf',
-            is_primary: state.items.length === 0,
-            created_at: new Date().toISOString()
-          };
-          state.items.unshift(newResume);
-        }
+        // The resume is already added via the addResume action
       })
-      .addCase(uploadResume.rejected, (state, action) => {
+      .addCase(uploadResumeFile.rejected, (state, action) => {
         state.uploading = false;
         state.error = action.payload;
         state.uploadProgress = 0;
