@@ -1,4 +1,4 @@
-// EducationSection.jsx
+// EducationSection.jsx - Enhanced version with better form validation
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -55,12 +55,68 @@ const EducationSection = () => {
     }
   };
 
+  const validateForm = () => {
+    const errors = [];
+    
+    if (!formData.institution.trim()) {
+      errors.push('Institution name is required');
+    }
+    
+    if (!formData.degree.trim()) {
+      errors.push('Degree is required');
+    }
+    
+    if (!formData.field_of_study.trim()) {
+      errors.push('Field of study is required');
+    }
+    
+    if (!formData.start_date) {
+      errors.push('Start date is required');
+    }
+    
+    // Validate date logic
+    if (formData.start_date && formData.end_date && !formData.is_current) {
+      const startDate = new Date(formData.start_date);
+      const endDate = new Date(formData.end_date);
+      
+      if (startDate >= endDate) {
+        errors.push('End date must be after start date');
+      }
+    }
+    
+    return errors;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validate form
+    const errors = validateForm();
+    if (errors.length > 0) {
+      dispatch(clearError());
+      // You might want to show these errors in a more user-friendly way
+      alert('Please fix the following errors:\n• ' + errors.join('\n• '));
+      return;
+    }
+
+    // Prepare submission data
+    const submissionData = {
+      institution: formData.institution.trim(),
+      degree: formData.degree.trim(),
+      field_of_study: formData.field_of_study.trim(),
+      start_date: formData.start_date || null,
+      end_date: formData.is_current ? null : (formData.end_date || null),
+      grade: formData.grade.trim(),
+      description: formData.description.trim(),
+      is_current: formData.is_current
+    };
+
+    console.log('Submitting form data:', submissionData);
+
     if (editingItem) {
-      dispatch(updateEducation({ id: editingItem.id, educationData: formData }));
+      dispatch(updateEducation({ id: editingItem.id, educationData: submissionData }));
     } else {
-      dispatch(addEducation(formData));
+      dispatch(addEducation(submissionData));
     }
   };
 
@@ -212,6 +268,7 @@ const EducationSection = () => {
                   value={formData.end_date}
                   onChange={(e) => handleFieldChange('end_date', e.target.value)}
                   disabled={formData.is_current}
+                  min={formData.start_date} // Prevent selecting end date before start date
                 />
                 <div className="checkbox-group">
                   <input
@@ -315,15 +372,15 @@ const EducationSection = () => {
                 <div className="item-meta">
                   <span>
                     <i className="fas fa-calendar"></i>
-                    {new Date(item.start_date).toLocaleDateString('en-US', {
+                    {item.start_date ? new Date(item.start_date).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'short'
-                    })} - {
+                    }) : 'N/A'} - {
                       item.is_current ? 'Present' : 
-                      new Date(item.end_date).toLocaleDateString('en-US', {
+                      (item.end_date ? new Date(item.end_date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short'
-                      })
+                      }) : 'N/A')
                     }
                   </span>
                   {item.grade && (
