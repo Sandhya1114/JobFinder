@@ -1,4 +1,4 @@
-// SavedJobsSection.jsx
+// Enhanced SavedJobsSection.jsx - With complete job details modal and apply functionality
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
@@ -9,9 +9,11 @@ import {
   clearMessage,
   clearError
 } from '../../redux/savedJobsSlice';
+import './SavedJobs.css';
 
 const SavedJobsSection = () => {
   const dispatch = useDispatch();
+  
   const { 
     jobs, 
     pagination, 
@@ -24,16 +26,26 @@ const SavedJobsSection = () => {
 
   const [selectedJob, setSelectedJob] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showJobDetailsModal, setShowJobDetailsModal] = useState(false);
   const [updateData, setUpdateData] = useState({
     application_status: 'saved',
     notes: '',
     priority: 0
   });
 
+  // Fetch saved jobs on component mount and when filters change
   useEffect(() => {
     dispatch(fetchSavedJobs(filters));
   }, [dispatch, filters]);
 
+  // Auto-refresh saved jobs when a new job is saved
+  useEffect(() => {
+    if (message && message.includes('saved successfully')) {
+      dispatch(fetchSavedJobs(filters));
+    }
+  }, [message, dispatch, filters]);
+
+  // Clear success/error messages after 5 seconds
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -42,6 +54,15 @@ const SavedJobsSection = () => {
       return () => clearTimeout(timer);
     }
   }, [message, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        dispatch(clearError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, dispatch]);
 
   const statusOptions = [
     { value: '', label: 'All Statuses' },
@@ -57,6 +78,18 @@ const SavedJobsSection = () => {
     { value: 1, label: 'High', color: '#d69e2e' },
     { value: 2, label: 'Urgent', color: '#e53e3e' }
   ];
+
+  // Utility function to format salary
+  const formatSalary = (salary) => {
+    if (!salary?.min || !salary?.max) return 'Salary not specified';
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: salary.currency || 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
+    return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
+  };
 
   const handleStatusFilter = (status) => {
     dispatch(setFilters({ ...filters, status, page: 1 }));
@@ -76,22 +109,71 @@ const SavedJobsSection = () => {
     setShowUpdateModal(true);
   };
 
-  const handleSaveUpdate = () => {
+  const handleViewJobDetails = (job) => {
+    setSelectedJob(job);
+    setShowJobDetailsModal(true);
+  };
+
+  const handleSaveUpdate = async () => {
     if (selectedJob) {
-      dispatch(updateSavedJob({ 
-        id: selectedJob.id, 
-        updateData 
-      })).then(() => {
+      try {
+        await dispatch(updateSavedJob({ 
+          id: selectedJob.id, 
+          updateData 
+        }));
         setShowUpdateModal(false);
         setSelectedJob(null);
-      });
+        dispatch(fetchSavedJobs(filters));
+      } catch (error) {
+        console.error('Error updating job:', error);
+      }
     }
   };
 
-  const handleRemoveJob = (id) => {
+  const handleRemoveJob = async (id) => {
     if (confirm('Are you sure you want to remove this job from your saved list?')) {
-      dispatch(removeSavedJob(id));
+      try {
+        await dispatch(removeSavedJob(id));
+        dispatch(fetchSavedJobs(filters));
+      } catch (error) {
+        console.error('Error removing job:', error);
+      }
     }
+  };
+
+  const handleApplyNow = async (savedJob) => {
+    const job = savedJob.jobs;
+    const applyUrl = job?.applyUrl || job?.apply_url || job?.applicationUrl || 
+                    job?.application_url || job?.url || job?.link;
+    
+    if (!applyUrl) {
+      alert('Application link is not available for this job');
+      return;
+    }
+
+    // Auto-update status to "applied" when user clicks apply
+    if (savedJob.application_status === 'saved') {
+      try {
+        await dispatch(updateSavedJob({
+          id: savedJob.id,
+          updateData: {
+            application_status: 'applied',
+            application_date: new Date().toISOString().split('T')[0],
+            notes: savedJob.notes ? 
+              `${savedJob.notes}\n\nApplied on: ${new Date().toLocaleDateString()}` : 
+              `Applied on: ${new Date().toLocaleDateString()}`
+          }
+        }));
+        
+        dispatch(clearMessage());
+        dispatch(fetchSavedJobs(filters));
+      } catch (error) {
+        console.error('Error updating job status:', error);
+      }
+    }
+
+    // Open application link
+    window.open(applyUrl, '_blank', 'noopener,noreferrer');
   };
 
   const getStatusBadge = (status) => {
@@ -146,14 +228,26 @@ const SavedJobsSection = () => {
       <div className="section-header">
         <h2>
           <i className="fas fa-bookmark"></i>
-          Saved Jobs ({pagination.totalJobs})
+          Saved Jobs ({pagination.totalJobs || 0})
         </h2>
+        <button 
+          className="refresh-btn"
+          onClick={() => dispatch(fetchSavedJobs(filters))}
+          disabled={loading}
+          title="Refresh saved jobs"
+        >
+          <i className="fas fa-sync-alt"></i>
+          Refresh
+        </button>
       </div>
 
       {message && (
         <div className="message success">
           <i className="fas fa-check-circle"></i>
           {message}
+          <button onClick={() => dispatch(clearMessage())}>
+            <i className="fas fa-times"></i>
+          </button>
         </div>
       )}
 
@@ -172,7 +266,7 @@ const SavedJobsSection = () => {
         <div className="filter-group">
           <label>Filter by Status:</label>
           <select 
-            value={filters.status} 
+            value={filters.status || ''} 
             onChange={(e) => handleStatusFilter(e.target.value)}
           >
             {statusOptions.map(option => (
@@ -185,13 +279,13 @@ const SavedJobsSection = () => {
         
         <div className="filter-stats">
           <span>
-            Showing {pagination.startIndex}-{pagination.endIndex} of {pagination.totalJobs} jobs
+            Showing {pagination.startIndex || 0}-{pagination.endIndex || 0} of {pagination.totalJobs || 0} jobs
           </span>
         </div>
       </div>
 
       {/* Jobs List */}
-      {jobs.length === 0 ? (
+      {!jobs || jobs.length === 0 ? (
         <div className="empty-state">
           <i className="fas fa-bookmark"></i>
           <h3>No Saved Jobs</h3>
@@ -200,74 +294,123 @@ const SavedJobsSection = () => {
       ) : (
         <>
           <div className="items-grid">
-            {jobs.map(savedJob => (
-              <div key={savedJob.id} className="item-card job-card">
-                <div className="item-header">
-                  <div className="job-info">
-                    <h3 className="item-title">{savedJob.jobs?.title}</h3>
-                    <p className="item-subtitle">
-                      <i className="fas fa-building"></i>
-                      {savedJob.jobs?.companies?.name}
-                    </p>
-                  </div>
-                  <div className="item-actions">
-                    <button
-                      onClick={() => handleUpdateJob(savedJob)}
-                      title="Update Status"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button
-                      onClick={() => handleRemoveJob(savedJob.id)}
-                      className="delete"
-                      title="Remove Job"
-                    >
-                      <i className="fas fa-trash"></i>
-                    </button>
-                  </div>
-                </div>
-
-                <div className="job-details">
-                  <div className="job-badges">
-                    {getStatusBadge(savedJob.application_status)}
-                    {getPriorityBadge(savedJob.priority)}
-                  </div>
-
-                  <div className="item-meta">
-                    <span>
-                      <i className="fas fa-map-marker-alt"></i>
-                      {savedJob.jobs?.location}
-                    </span>
-                    <span>
-                      <i className="fas fa-clock"></i>
-                      Saved {new Date(savedJob.created_at).toLocaleDateString()}
-                    </span>
-                    <span>
-                      <i className="fas fa-tag"></i>
-                      {savedJob.jobs?.categories?.name}
-                    </span>
-                  </div>
-
-                  {savedJob.notes && (
-                    <div className="job-notes">
-                      <strong>Notes:</strong> {savedJob.notes}
+            {jobs.map(savedJob => {
+              const job = savedJob.jobs;
+              const applyUrl = job?.applyUrl || job?.apply_url || job?.applicationUrl || 
+                              job?.application_url || job?.url || job?.link;
+              
+              return (
+                <div key={savedJob.id} className="item-card job-card">
+                  <div className="item-header">
+                    <div className="job-info">
+                      <h3 className="item-title">{job?.title || 'Job Title Not Available'}</h3>
+                      <p className="item-subtitle">
+                        <i className="fas fa-building"></i>
+                        {job?.companies?.name || job?.company?.name || 'Company Not Available'}
+                      </p>
                     </div>
-                  )}
+                    <div className="item-actions">
+                      <button
+                        onClick={() => handleViewJobDetails(savedJob)}
+                        title="View Details"
+                        className="details-btn"
+                      >
+                        <i className="fas fa-info-circle"></i>
+                      </button>
+                      <button
+                        onClick={() => handleUpdateJob(savedJob)}
+                        title="Update Status"
+                        disabled={saving}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                      <button
+                        onClick={() => handleRemoveJob(savedJob.id)}
+                        className="delete"
+                        title="Remove Job"
+                        disabled={saving}
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </div>
 
-                  <div className="job-actions">
-                    <a 
-                      href={`/jobs/${savedJob.jobs?.id}`}
-                      className="view-job-btn"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <i className="fas fa-external-link-alt"></i>
-                      View Job
-                    </a>
+                  <div className="job-details">
+                    <div className="job-badges">
+                      {getStatusBadge(savedJob.application_status)}
+                      {getPriorityBadge(savedJob.priority)}
+                    </div>
+
+                    <div className="item-meta">
+                      <span>
+                        <i className="fas fa-map-marker-alt"></i>
+                        {job?.location || 'Location not specified'}
+                      </span>
+                      <span>
+                        <i className="fas fa-clock"></i>
+                        Saved {new Date(savedJob.created_at).toLocaleDateString()}
+                      </span>
+                      <span>
+                        <i className="fas fa-tag"></i>
+                        {job?.categories?.name || job?.category?.name || 'Category not specified'}
+                      </span>
+                    </div>
+
+                    {/* Job Description Preview */}
+                    {job?.description && (
+                      <div className="job-description-preview">
+                        <p>{job.description.length > 150 ? `${job.description.substring(0, 150)}...` : job.description}</p>
+                      </div>
+                    )}
+
+                    {savedJob.notes && (
+                      <div className="job-notes">
+                        <strong>Notes:</strong> {savedJob.notes}
+                      </div>
+                    )}
+
+                    {/* Enhanced Job Actions */}
+                    <div className="job-actions">
+                      {applyUrl ? (
+                        <button
+                          className={`apply-now-btn ${savedJob.application_status === 'applied' ? 'applied' : ''}`}
+                          onClick={() => handleApplyNow(savedJob)}
+                        >
+                          <i className={savedJob.application_status === 'applied' ? 'fas fa-check-circle' : 'fas fa-external-link-alt'}></i>
+                          {savedJob.application_status === 'applied' ? 'Apply Again' : 'Apply Now'}
+                        </button>
+                      ) : (
+                        <button 
+                          className="apply-now-btn disabled"
+                          disabled
+                          title="Application link not available for this job"
+                        >
+                          <i className="fas fa-ban"></i>
+                          No Apply Link
+                        </button>
+                      )}
+
+                      <button
+                        className="view-details-btn"
+                        onClick={() => handleViewJobDetails(savedJob)}
+                        title="View full job details"
+                      >
+                        <i className="fas fa-info-circle"></i>
+                        View Details
+                      </button>
+
+                      {/* Application Date Display */}
+                      {savedJob.application_date && (
+                        <span className="application-date">
+                          <i className="fas fa-calendar-check"></i>
+                          Applied: {new Date(savedJob.application_date).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Pagination */}
@@ -295,6 +438,107 @@ const SavedJobsSection = () => {
             </div>
           )}
         </>
+      )}
+
+      {/* Job Details Modal */}
+      {showJobDetailsModal && selectedJob && (
+        <div className="modal-overlay">
+          <div className="modal-content job-details-modal">
+            <div className="modal-header">
+              <h3>
+                <i className="fas fa-briefcase"></i>
+                {selectedJob.jobs?.title}
+              </h3>
+              <button 
+                className="modal-close" 
+                onClick={() => {
+                  setShowJobDetailsModal(false);
+                  setSelectedJob(null);
+                }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            
+            <div className="modal-body">
+              <div className="job-detail-section">
+                <h4><i className="fas fa-building"></i> Company Information</h4>
+                <div className="detail-grid">
+                  <p><strong>Company:</strong> {selectedJob.jobs?.companies?.name || selectedJob.jobs?.company?.name}</p>
+                  <p><strong>Location:</strong> {selectedJob.jobs?.location}</p>
+                  <p><strong>Type:</strong> {selectedJob.jobs?.type}</p>
+                  <p><strong>Experience:</strong> {selectedJob.jobs?.experience}</p>
+                  <p><strong>Salary:</strong> {formatSalary(selectedJob.jobs?.salary)}</p>
+                </div>
+              </div>
+
+              <div className="job-detail-section">
+                <h4><i className="fas fa-file-alt"></i> Job Description</h4>
+                <div className="job-description-full">
+                  {selectedJob.jobs?.description || 'No description available'}
+                </div>
+              </div>
+
+              {selectedJob.jobs?.requirements && selectedJob.jobs.requirements.length > 0 && (
+                <div className="job-detail-section">
+                  <h4><i className="fas fa-list-check"></i> Requirements</h4>
+                  <ul className="requirements-list">
+                    {selectedJob.jobs.requirements.map((req, index) => (
+                      <li key={index}>{req}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <div className="job-detail-section">
+                <h4><i className="fas fa-bookmark"></i> Your Application Status</h4>
+                <div className="current-status">
+                  {getStatusBadge(selectedJob.application_status)}
+                  {getPriorityBadge(selectedJob.priority)}
+                </div>
+                {selectedJob.notes && (
+                  <div className="notes-section">
+                    <strong>Your Notes:</strong>
+                    <p>{selectedJob.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              {selectedJob.jobs?.applyUrl || selectedJob.jobs?.apply_url || 
+               selectedJob.jobs?.applicationUrl || selectedJob.jobs?.application_url || 
+               selectedJob.jobs?.url || selectedJob.jobs?.link ? (
+                <button 
+                  className="apply-now-btn large primary"
+                  onClick={() => {
+                    setShowJobDetailsModal(false);
+                    handleApplyNow(selectedJob);
+                  }}
+                >
+                  <i className="fas fa-external-link-alt"></i>
+                  Apply on Company Website
+                </button>
+              ) : (
+                <button className="apply-now-btn disabled large">
+                  <i className="fas fa-ban"></i>
+                  No Application Link Available
+                </button>
+              )}
+              
+              <button
+                className="edit-status-btn secondary"
+                onClick={() => {
+                  setShowJobDetailsModal(false);
+                  handleUpdateJob(selectedJob);
+                }}
+              >
+                <i className="fas fa-edit"></i>
+                Update Status
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Update Job Modal */}

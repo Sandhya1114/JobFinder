@@ -496,31 +496,52 @@ const JobList = () => {
                         Posted: {job.postedDate || job.created_at ? new Date(job.postedDate || job.created_at).toLocaleDateString() : 'Date not available'}
                       </span>
                       <div className="job-actions">
-                        {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
-                          <a href={job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link} target="_blank" rel="noopener noreferrer">
-                            <button className="apply-btn">Apply Now</button>
-                          </a>
-                        ) : (
-                          <button 
-                            className="apply-btn disabled"
-                            onClick={() => showToast("Application link not available for this job")}
-                            title="Application link not available"
-                          >
-                            Apply
-                          </button>
-                        )}
-                        <button
-                          onClick={() => {
-                            dispatch(saveJob(job));
-                            showToast("Job saved successfully!");
-                            if (window.innerWidth <= 768) {
-                              setIsSidebarOpen(false);
-                            }
-                          }}
-                          className="save-btn"
-                        >
-                          Save Job
-                        </button>
+                      {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
+                      <a href={job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link} target="_blank" rel="noopener noreferrer">
+                      <button className="apply-btn">Apply Now</button>
+                      </a>
+                      ) : (
+                      <button 
+                      className="apply-btn disabled"
+                      onClick={() => showToast("Application link not available for this job")}
+                      title="Application link not available"
+                      >
+                      Apply
+                      </button>
+                      )}
+                      <button
+                      onClick={async () => {
+                      try {
+                      // ✅ Correct way to call the saveJob thunk
+                      const result = await dispatch(saveJob({ 
+                      jobId: job.id,
+                      notes: '',
+                      priority: 0
+                      }));
+
+                      if (result.meta.requestStatus === 'fulfilled') {
+                      showToast("Job saved successfully!");
+                      } else if (result.meta.requestStatus === 'rejected') {
+                      const errorMessage = result.payload || "Failed to save job";
+                      if (errorMessage.includes('already saved')) {
+                      showToast("Job is already saved");
+                      } else {
+                      showToast(errorMessage);
+                      }
+                      }
+
+                      if (window.innerWidth <= 768) {
+                      setIsSidebarOpen(false);
+                      }
+                      } catch (error) {
+                      console.error('Error saving job:', error);
+                      showToast("Failed to save job");
+                      }
+                      }}
+                      className="save-btn"
+                      >
+                      Save Job
+                      </button>
                       </div>
                     </div>
                   </div>

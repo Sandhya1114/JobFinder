@@ -48,7 +48,7 @@
 
 // export default SavedJobs;
 // components/SavedJobs.jsx
-import React from 'react';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { applyToJob } from '../../redux/dashboardSlice.js';
 import { unsaveJob } from '../../redux/savedJobsSlice.js';
