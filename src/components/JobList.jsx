@@ -243,7 +243,7 @@ const JobList = () => {
       <div className="job-list-layout">
         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
           <div className="filters-section">
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Category</h4>
               {categories.map((category) => (
                 <label key={category.id} className="filter-checkbox">
@@ -263,7 +263,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Company</h4>
               {companies.map((company) => (
                 <label key={company.id} className="filter-checkbox">
@@ -283,7 +283,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Experience</h4>
               {experienceOptions.map((level) => (
                 <label key={level} className="filter-checkbox">
@@ -303,7 +303,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Location</h4>
               {locationOptions.map((location) => (
                 <label key={location} className="filter-checkbox">
@@ -323,7 +323,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Type</h4>
               {typeOptions.map((type) => (
                 <label key={type} className="filter-checkbox">
@@ -343,7 +343,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="filter-group">
+            <div className="FilterGroup">
               <h4>Salary Range</h4>
               {salaryRangeOptions.map((range) => (
                 <label key={range} className="filter-checkbox">

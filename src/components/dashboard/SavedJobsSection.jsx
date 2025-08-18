@@ -1,5 +1,5 @@
 // Enhanced SavedJobsSection.jsx - With complete job details modal and apply functionality
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
   fetchSavedJobs,

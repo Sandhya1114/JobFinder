@@ -24,7 +24,7 @@ body {
 
 
 
-  background: #f8fafc;
+  background: #f8fafca8;
   color: #9684C0;
 }
 
@@ -32,9 +32,9 @@ body {
   background: white;
   border-bottom: 1px solid #e2e8f0;
   padding: 1rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  /* position: sticky;
+  top: 0; */
+  /* z-index: 100; */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -1484,7 +1484,7 @@ a:focus-visible {
   line-height: 1.5;
 }
 
-.current-badge {
+.item-meta .current-badge {
   background: #38a169;
   color: white;
   padding: 0.25rem 0.5rem;
@@ -1902,6 +1902,7 @@ a:focus-visible {
 }
 
 .quick-actions {
+  display: block;
   background: white;
   padding: 1.5rem;
   border-radius: 0.75rem;
@@ -1961,9 +1962,10 @@ a:focus-visible {
 
 /* ============ RECENT ACTIVITY ============ */
 .recent-activity {
-  background: white;
+  background: rgb(255, 255, 255);
   padding: 1.5rem;
   border-radius: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #000;
+  /* border: 1px solid #000; */
+  margin-bottom: 10px;
 }
