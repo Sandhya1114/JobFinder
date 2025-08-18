@@ -109,6 +109,7 @@ function App() {
           <Route path="/auth" element={<AuthForm onAuthSuccess={() => setUser (true)} />} />
           <Route path="/about" element={<><AboutUs/><Footer /></>}/>
           <Route path="/contact" element={<><ContactUs/><Footer /></>}/>
+          
           <Route path="/dashboard" element={<Dashboard user={user} onSignOut={handleSignOut} />} />
           <Route path="/footer" element={<><Footer /></>} />
         </Routes>
