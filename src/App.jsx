@@ -58,6 +58,68 @@
 // }
 
 // export default App;
+// import React, { useEffect, useState } from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import Header from "./components/Header";
+// import Hero from "./components/Hero";
+// import Main from "./components/Main";
+// import Footer from "./components/Footer";
+// import JobList from "./components/JobList";
+// import Dashboard from "./components/dashboard/Dashboard";
+// import AboutUs from "./components/aboutUs/AboutUs";
+// import ContactUs from "./components/contactUs/ContactUs";
+// import AuthForm from "./components/AuthForm";
+// import { supabase } from "./supabaseClient";
+// import { useDataLoader } from "./hooks/useDataLoader";
+
+// function App() {
+//   const [user, setUser ] = useState(null);
+//   const { loadAllData } = useDataLoader();
+
+//   useEffect(() => {
+//     loadAllData();
+
+//     supabase.auth.getSession().then(({ data: { session } }) => {
+//       setUser (session?.user || null);
+//     });
+
+//     const {
+//       data: { subscription },
+//     } = supabase.auth.onAuthStateChange((_event, session) => {
+//       setUser (session?.user || null);
+//     });
+
+//     return () => {
+//       subscription.unsubscribe();
+//     };
+//   }, []);
+
+//   const handleSignOut = async () => {
+//     await supabase.auth.signOut();
+//     setUser (null);
+//   };
+
+//   return (
+//     <Router>
+//       <div className="root">
+//         <Header user={user} />
+//         <Routes>
+//           <Route path="/" element={<><Hero /><Main /><Footer /></>} />
+//           <Route path="/jobs" element={<><JobList /></>} />
+//           <Route path="/auth" element={<AuthForm onAuthSuccess={() => setUser (true)} />} />
+//           <Route path="/about" element={<><AboutUs/><Footer /></>}/>
+//           <Route path="/contact" element={<><ContactUs/><Footer /></>}/>
+          
+//           <Route path="/dashboard" element={<Dashboard user={user} onSignOut={handleSignOut} />} />
+//           <Route path="/footer" element={<><Footer /></>} />
+//         </Routes>
+//       </div>
+//     </Router>
+//   );
+// }
+
+// export default App;
+// src/App.jsx
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/Header";
@@ -73,22 +135,28 @@ import { supabase } from "./supabaseClient";
 import { useDataLoader } from "./hooks/useDataLoader";
 
 function App() {
-  const [user, setUser ] = useState(null);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const { loadAllData } = useDataLoader();
 
   useEffect(() => {
+    // Load any backend data you need
     loadAllData();
 
+    // Restore Supabase session on app start
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser (session?.user || null);
+      setUser(session?.user || null);
+      setAuthLoading(false);
     });
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser (session?.user || null);
-    });
+    // Listen for login/logout changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user || null);
+      }
+    );
 
+    // Cleanup listener on unmount
     return () => {
       subscription.unsubscribe();
     };
@@ -96,8 +164,13 @@ function App() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setUser (null);
+    setUser(null);
   };
+
+  // Prevent flicker/redirect while Supabase restores session
+  if (authLoading) {
+    return <div>Loading session...</div>;
+  }
 
   return (
     <Router>
@@ -105,13 +178,25 @@ function App() {
         <Header user={user} />
         <Routes>
           <Route path="/" element={<><Hero /><Main /><Footer /></>} />
-          <Route path="/jobs" element={<><JobList /></>} />
-          <Route path="/auth" element={<AuthForm onAuthSuccess={() => setUser (true)} />} />
-          <Route path="/about" element={<><AboutUs/><Footer /></>}/>
-          <Route path="/contact" element={<><ContactUs/><Footer /></>}/>
-          
-          <Route path="/dashboard" element={<Dashboard user={user} onSignOut={handleSignOut} />} />
-          <Route path="/footer" element={<><Footer /></>} />
+          <Route path="/jobs" element={<JobList />} />
+          <Route
+            path="/auth"
+            element={
+              <AuthForm
+                onAuthSuccess={async () => {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  setUser(session?.user || null);
+                }}
+              />
+            }
+          />
+          <Route path="/about" element={<><AboutUs /><Footer /></>} />
+          <Route path="/contact" element={<><ContactUs /><Footer /></>} />
+          <Route
+            path="/dashboard"
+            element={<Dashboard user={user} onSignOut={handleSignOut} />}
+          />
+          <Route path="/footer" element={<Footer />} />
         </Routes>
       </div>
     </Router>
@@ -119,3 +204,4 @@ function App() {
 }
 
 export default App;
+

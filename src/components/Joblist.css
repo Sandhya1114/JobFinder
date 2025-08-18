@@ -223,10 +223,10 @@ h1 {
   background: #9684C0;
   color: white;
   border: none;
-  padding: 25px 20px;
+  padding: 0.75rem 1.5rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  /* font-size: 14px; */
   font-weight: 500;
   transition: background 0.2s;
 }
@@ -282,11 +282,11 @@ h1 {
   flex-direction: column;
 }
 
-.filter-group {
+.FilterGroup {
   margin-bottom: 24px;
 }
 
-.filter-group h4 {
+.FilterGroup h4 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 10px;
@@ -397,11 +397,11 @@ h1 {
   color: #856404;
   text-align: center;
 }
-.filter-group {
+.FilterGroup {
   margin-bottom: 20px;
 }
 
-.filter-group h4 {
+.FilterGroup h4 {
   margin-bottom: 10px;
   font-size: 16px;
   color: #222;
@@ -422,9 +422,12 @@ h1 {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-  height: auto;
+  position: sticky;
+  top: 20px; /* Distance from top when stuck */
+  height: calc(100vh - 40px); /* Full height minus top offset */
+ 
   overflow-y: auto;
-  max-height: 100vh;
+
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
 }
