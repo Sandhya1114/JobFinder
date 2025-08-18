@@ -1157,6 +1157,8 @@ body {
     flex-direction: column;
     align-items: flex-start;
   }
+  .items-grid {
+    width: 92%;}
 }
 
 /* ============ UTILITY CLASSES ============ */
@@ -1392,9 +1394,13 @@ a:focus-visible {
   display: grid;
   gap: 1rem;
   margin-top: 1rem;
+  
+   
 }
 
-.item-card {
+
+.item-card { 
+  width: 95%;
   background: white;
   padding: 1.5rem;
   border-radius: 0.5rem;
