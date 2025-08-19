@@ -750,7 +750,7 @@ import {
   resetInfiniteScroll,
   setInfiniteScrollLoading
 } from '../redux/store';
-import './JobList.css';
+import './Joblist.css';
 import { saveJob } from '../redux/savedJobsSlice';
 import { useLocation } from 'react-router-dom';
 
