@@ -1395,6 +1395,7 @@ h1 {
   .job-actions {
     flex-direction: row;
     gap: 10px;
+    justify-content: space-around;
   }
 /*   
   .apply-btn, .save-btn {
