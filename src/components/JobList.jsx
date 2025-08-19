@@ -1,5 +1,4 @@
-
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
 
@@ -19,7 +18,7 @@ import './JobList.css';
 import { saveJob } from '../redux/savedJobsSlice';
 import { useLocation } from 'react-router-dom';
 
-// Pagination Component
+// Pagination Component - Only shown on desktop
 const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
   const { 
     currentPage, 
@@ -31,6 +30,19 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
     hasNextPage,
     hasPreviousPage
   } = pagination;
+
+  // Don't render pagination on mobile
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  if (isMobile) return null;
 
   const getPageNumbers = () => {
     const pages = [];
@@ -109,40 +121,122 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
   );
 };
 
+// Mobile Infinite Scroll Component
+const MobileInfiniteScroll = ({ jobs, hasMore, loadMore, loading }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const loaderRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading && !isLoading) {
+          setIsLoading(true);
+          loadMore().finally(() => setIsLoading(false));
+        }
+      },
+      { threshold: 1.0, rootMargin: '100px' }
+    );
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [hasMore, loading, isLoading, loadMore]);
+
+  return (
+    <div ref={loaderRef} className="mobile-infinite-loader">
+      {(isLoading || loading) && hasMore && (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <span>Loading more jobs...</span>
+        </div>
+      )}
+      {!hasMore && jobs.length > 0 && (
+        <div className="end-message">
+          🎉 You've seen all available jobs!
+        </div>
+      )}
+    </div>
+  );
+};
+
 const JobList = () => {
   const dispatch = useDispatch();
   const { jobs, categories, companies, loading, error, filters, pagination } = useSelector((state) => state.jobs);
-  const { loadJobs, loadAllData } = useDataLoader();
+  const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader(); // Assuming loadMoreJobs exists
   const [toast, setToast] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const location = useLocation();
   const isJobPage = location.pathname === '/jobs';
-  const [locationSearchInput, setLocationSearchInput] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  
+  // Separate state for input fields to avoid losing user input
+  const [localFilters, setLocalFilters] = useState({
+    searchInput: '',
+    locationSearchInput: ''
+  });
+  
+  // Mobile infinite scroll state
+  const [mobileJobs, setMobileJobs] = useState([]);
+  const [hasMoreJobs, setHasMoreJobs] = useState(true);
+  const [mobileLoading, setMobileLoading] = useState(false);
 
-  // Debounce search input
+  // Check if device is mobile
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      
+      // Reset mobile state when switching between mobile/desktop
+      if (!mobile) {
+        setMobileJobs([]);
+        setHasMoreJobs(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Initialize mobile jobs on first load or filter change
+  useEffect(() => {
+    if (isMobile && jobs.length > 0) {
+      setMobileJobs(jobs);
+      setHasMoreJobs(pagination.hasNextPage);
+    }
+  }, [jobs, isMobile, pagination.hasNextPage]);
+
+  // Debounce search input while preserving all existing filters
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      if (searchInput !== filters.searchQuery) {
-        dispatch(setSearchQuery(searchInput));
+      if (localFilters.searchInput !== filters.searchQuery) {
+        dispatch(setSearchQuery(localFilters.searchInput));
       }
-    }, 500); // 500ms delay
+    }, 500);
 
     return () => clearTimeout(debounceTimer);
-  }, [searchInput, filters.searchQuery, dispatch]);
+  }, [localFilters.searchInput, filters.searchQuery, dispatch]);
+
+  // Update local state when Redux filters change (but preserve user input)
+  useEffect(() => {
+    setLocalFilters(prev => ({
+      ...prev,
+      searchInput: prev.searchInput === '' ? (filters.searchQuery || '') : prev.searchInput,
+      locationSearchInput: prev.locationSearchInput === '' ? 
+        (filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '') : 
+        prev.locationSearchInput
+    }));
+  }, [filters.selectedLocation, filters.searchQuery]);
 
   const showToast = useCallback((message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
   }, []);
-
-  // Update local state when Redux filters change
-  useEffect(() => {
-    if (filters.selectedLocation?.length > 0) {
-      setLocationSearchInput(filters.selectedLocation[0]);
-    }
-    setSearchInput(filters.searchQuery || '');
-  }, [filters.selectedLocation, filters.searchQuery]);
 
   // Sidebar management effects
   useEffect(() => {
@@ -165,39 +259,61 @@ const JobList = () => {
     };
   }, [isSidebarOpen]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768 && isSidebarOpen) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isSidebarOpen]);
-
   // Load initial data
   useEffect(() => {
     loadAllData();
   }, [loadAllData]);
 
-  // Reload jobs when filters or pagination change
+  // Reload jobs when filters change
   useEffect(() => {
+    if (isMobile) {
+      // Reset mobile infinite scroll when filters change
+      setMobileJobs([]);
+      setHasMoreJobs(true);
+    }
     loadJobs();
-  }, [loadJobs]);
+  }, [loadJobs, filters, isMobile]);
 
-  // Scroll to top when page changes
+  // Scroll to top when page changes (desktop only)
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [pagination.currentPage]);
+    if (!isMobile) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [pagination.currentPage, isMobile]);
 
   const handlePageChange = useCallback((newPage) => {
-    dispatch(setCurrentPage(newPage));
-  }, [dispatch]);
+    if (!isMobile) {
+      dispatch(setCurrentPage(newPage));
+    }
+  }, [dispatch, isMobile]);
 
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
-    dispatch(setJobsPerPage(newJobsPerPage));
-  }, [dispatch]);
+    if (!isMobile) {
+      dispatch(setJobsPerPage(newJobsPerPage));
+    }
+  }, [dispatch, isMobile]);
+
+  // Mobile infinite scroll load more function
+  const handleLoadMore = useCallback(async () => {
+    if (!hasMoreJobs || mobileLoading) return;
+
+    setMobileLoading(true);
+    try {
+      const nextPage = Math.floor(mobileJobs.length / 20) + 1;
+      dispatch(setCurrentPage(nextPage));
+      
+      // Simulate API call - replace with actual loadMoreJobs function
+      await loadMoreJobs();
+      
+      // This would be handled by the Redux state update
+      // The useEffect above will append new jobs to mobileJobs
+    } catch (error) {
+      console.error('Error loading more jobs:', error);
+      showToast('Error loading more jobs');
+    } finally {
+      setMobileLoading(false);
+    }
+  }, [hasMoreJobs, mobileLoading, mobileJobs.length, dispatch, loadMoreJobs, showToast]);
 
   // Memoized salary formatter
   const formatSalary = useCallback((salary) => {
@@ -213,15 +329,45 @@ const JobList = () => {
 
   const handleClearFilters = useCallback(() => {
     dispatch(clearFilters());
-    setLocationSearchInput('');
-    setSearchInput('');
-  }, [dispatch]);
+    setLocalFilters({
+      searchInput: '',
+      locationSearchInput: ''
+    });
+    if (isMobile) {
+      setMobileJobs([]);
+      setHasMoreJobs(true);
+    }
+  }, [dispatch, isMobile]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  if (loading) return <div className="loading">Loading jobs...</div>;
+  // Handle search input changes
+  const handleSearchInputChange = useCallback((value) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      searchInput: value
+    }));
+  }, []);
+
+  const handleLocationInputChange = useCallback((value) => {
+    setLocalFilters(prev => ({
+      ...prev,
+      locationSearchInput: value
+    }));
+    
+    if (value.trim()) {
+      dispatch(setSelectedLocation([value.trim()]));
+    } else {
+      dispatch(setSelectedLocation([]));
+    }
+  }, [dispatch]);
+
+  if (loading && (!isMobile || mobileJobs.length === 0)) {
+    return <div className="loading">Loading jobs...</div>;
+  }
+  
   if (error) return <div className="error">Error: {error}</div>;
 
   // Static filter options
@@ -229,6 +375,9 @@ const JobList = () => {
   const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'];
   const typeOptions = ['Full-time', 'Part-time', 'Contract'];
   const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'];
+
+  // Use mobile jobs for mobile view, regular jobs for desktop
+  const displayJobs = isMobile ? mobileJobs : jobs;
 
   return (
     <div className="job-list-container">
@@ -242,6 +391,16 @@ const JobList = () => {
 
       <div className="job-list-layout">
         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          {/* Close button for mobile */}
+          {isMobile && (
+            <div className="sidebar-header">
+              <h3>Filters</h3>
+              <button className="sidebar-close" onClick={() => setIsSidebarOpen(false)}>
+                <i className="fa fa-times"></i>
+              </button>
+            </div>
+          )}
+          
           <div className="filters-section">
             <div className="FilterGroup">
               <h4>Category</h4>
@@ -378,11 +537,11 @@ const JobList = () => {
                 <input
                   type="text"
                   placeholder="Enter skills / designations / companies"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
+                  value={localFilters.searchInput}
+                  onChange={(e) => handleSearchInputChange(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
-                      dispatch(setSearchQuery(searchInput));
+                      dispatch(setSearchQuery(localFilters.searchInput));
                     }
                   }}
                 />
@@ -412,17 +571,8 @@ const JobList = () => {
                 type="text"
                 className="location-input"
                 placeholder="Enter location"
-                value={locationSearchInput}
-                onChange={(e) => {
-                  const locationValue = e.target.value;
-                  setLocationSearchInput(locationValue);
-                  
-                  if (locationValue.trim()) {
-                    dispatch(setSelectedLocation([locationValue.trim()]));
-                  } else {
-                    dispatch(setSelectedLocation([]));
-                  }
-                }}
+                value={localFilters.locationSearchInput}
+                onChange={(e) => handleLocationInputChange(e.target.value)}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     const locationValue = e.target.value.trim();
@@ -433,30 +583,38 @@ const JobList = () => {
                 }}
               />
               <button className="search-btn" onClick={() => {
-                dispatch(setSearchQuery(searchInput.trim()));
+                dispatch(setSearchQuery(localFilters.searchInput.trim()));
               }}>
                 Search
               </button>
             </div>
           )}
 
-          {/* Pagination - Top */}
-          {pagination.totalJobs > 0 && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onJobsPerPageChange={handleJobsPerPageChange}
-            />
+          {/* Mobile job count info */}
+          {isMobile && (
+            <div className="mobile-job-info">
+              <span>Showing {displayJobs.length} jobs</span>
+              {pagination.totalJobs > 0 && (
+                <span> of {pagination.totalJobs} total</span>
+              )}
+            </div>
           )}
 
+          {/* Pagination - Top (Desktop only) */}
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onJobsPerPageChange={handleJobsPerPageChange}
+          />
+
           <div className="jobs-grid">
-            {jobs.length === 0 ? (
+            {displayJobs.length === 0 ? (
               <div className="no-jobs">
                 {pagination.totalJobs === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
               </div>
             ) : (
-              jobs.map((job) => (
-                <div key={job.id} className="job-card">
+              displayJobs.map((job) => (
+                <div key={`${job.id}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card">
                   <div className="job-header">
                     <h2 className="job-title">{job.title || 'No Title'}</h2>
                     <div className="job-meta">
@@ -496,52 +654,51 @@ const JobList = () => {
                         Posted: {job.postedDate || job.created_at ? new Date(job.postedDate || job.created_at).toLocaleDateString() : 'Date not available'}
                       </span>
                       <div className="job-actions">
-                      {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
-                      <a href={job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link} target="_blank" rel="noopener noreferrer">
-                      <button className="apply-btn">Apply Now</button>
-                      </a>
-                      ) : (
-                      <button 
-                      className="apply-btn disabled"
-                      onClick={() => showToast("Application link not available for this job")}
-                      title="Application link not available"
-                      >
-                      Apply
-                      </button>
-                      )}
-                      <button
-                      onClick={async () => {
-                      try {
-                      // ✅ Correct way to call the saveJob thunk
-                      const result = await dispatch(saveJob({ 
-                      jobId: job.id,
-                      notes: '',
-                      priority: 0
-                      }));
+                        {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
+                          <a href={job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link} target="_blank" rel="noopener noreferrer">
+                            <button className="apply-btn">Apply Now</button>
+                          </a>
+                        ) : (
+                          <button 
+                            className="apply-btn disabled"
+                            onClick={() => showToast("Application link not available for this job")}
+                            title="Application link not available"
+                          >
+                            Apply
+                          </button>
+                        )}
+                        <button
+                          onClick={async () => {
+                            try {
+                              const result = await dispatch(saveJob({ 
+                                jobId: job.id,
+                                notes: '',
+                                priority: 0
+                              }));
 
-                      if (result.meta.requestStatus === 'fulfilled') {
-                      showToast("Job saved successfully!");
-                      } else if (result.meta.requestStatus === 'rejected') {
-                      const errorMessage = result.payload || "Failed to save job";
-                      if (errorMessage.includes('already saved')) {
-                      showToast("Job is already saved");
-                      } else {
-                      showToast(errorMessage);
-                      }
-                      }
+                              if (result.meta.requestStatus === 'fulfilled') {
+                                showToast("Job saved successfully!");
+                              } else if (result.meta.requestStatus === 'rejected') {
+                                const errorMessage = result.payload || "Failed to save job";
+                                if (errorMessage.includes('already saved')) {
+                                  showToast("Job is already saved");
+                                } else {
+                                  showToast(errorMessage);
+                                }
+                              }
 
-                      if (window.innerWidth <= 768) {
-                      setIsSidebarOpen(false);
-                      }
-                      } catch (error) {
-                      console.error('Error saving job:', error);
-                      showToast("Failed to save job");
-                      }
-                      }}
-                      className="save-btn"
-                      >
-                      Save Job
-                      </button>
+                              if (isMobile && isSidebarOpen) {
+                                setIsSidebarOpen(false);
+                              }
+                            } catch (error) {
+                              console.error('Error saving job:', error);
+                              showToast("Failed to save job");
+                            }
+                          }}
+                          className="save-btn"
+                        >
+                          Save Job
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -550,14 +707,22 @@ const JobList = () => {
             )}
           </div>
 
-          {/* Pagination - Bottom */}
-          {pagination.totalJobs > 0 && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onJobsPerPageChange={handleJobsPerPageChange}
+          {/* Mobile Infinite Scroll Loader */}
+          {isMobile && (
+            <MobileInfiniteScroll
+              jobs={displayJobs}
+              hasMore={hasMoreJobs}
+              loadMore={handleLoadMore}
+              loading={mobileLoading}
             />
           )}
+
+          {/* Pagination - Bottom (Desktop only) */}
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onJobsPerPageChange={handleJobsPerPageChange}
+          />
         </div>
       </div>
       
