@@ -1131,11 +1131,21 @@ app.get('/api/health', (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
+const baseUrl = process.env.PUBLIC_URL || `http://localhost:${PORT}`;
+// app.listen(PORT, () => {
+
+//   console.log(`🚀 Server running on http://localhost:${PORT}`);
+//   console.log(`📊 Debug endpoints available at:`);
+//   console.log(`   - http://localhost:${PORT}/api/debug/companies?search=YourCompanyName`);
+//   console.log(`   - http://localhost:${PORT}/api/debug/jobs-by-company?search=YourCompanyName`);
+//   console.log(`   - http://localhost:${PORT}/api/debug/full-search?search=YourSearchTerm`);
+//   console.log(`   - http://localhost:${PORT}/api/debug/structure`);
+// });
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on ${baseUrl}`);
   console.log(`📊 Debug endpoints available at:`);
-  console.log(`   - http://localhost:${PORT}/api/debug/companies?search=YourCompanyName`);
-  console.log(`   - http://localhost:${PORT}/api/debug/jobs-by-company?search=YourCompanyName`);
-  console.log(`   - http://localhost:${PORT}/api/debug/full-search?search=YourSearchTerm`);
-  console.log(`   - http://localhost:${PORT}/api/debug/structure`);
+  console.log(`   - ${baseUrl}/api/debug/companies?search=YourCompanyName`);
+  console.log(`   - ${baseUrl}/api/debug/jobs-by-company?search=YourCompanyName`);
+  console.log(`   - ${baseUrl}/api/debug/full-search?search=YourSearchTerm`);
+  console.log(`   - ${baseUrl}/api/debug/structure`);
 });
