@@ -190,7 +190,7 @@ const ProfileSection = () => {
             </small>
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="skills">
               <i className="fas fa-tools"></i>
               Skills (comma-separated)
@@ -205,7 +205,7 @@ const ProfileSection = () => {
             <small className="form-hint">
               List your technical and professional skills separated by commas
             </small>
-          </div>
+          </div> */}
 
           <div className="form-group">
             <label htmlFor="resume">
