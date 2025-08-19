@@ -1338,7 +1338,7 @@ const JobList = () => {
               ))}
             </div>
 
-            <div className="FilterGroup">
+            {/* <div className="FilterGroup">
               <h4>Salary Range</h4>
               {salaryRangeOptions.map((range) => (
                 <label key={range} className="filter-checkbox">
@@ -1356,7 +1356,7 @@ const JobList = () => {
                   {range}
                 </label>
               ))}
-            </div>
+            </div> */}
 
             <button onClick={handleClearFilters} className="clear-filters-btn">
               Clear Filters
@@ -1467,7 +1467,7 @@ const JobList = () => {
                     <div className="job-info">
                       <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
                       <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-                      <p><strong>Salary:</strong> {formatSalary(job.salary)}</p>
+                      {/* <p><strong>Salary:</strong> {formatSalary(job.salary)}</p> */}
                     </div>
 
                     <div className="job-description">
