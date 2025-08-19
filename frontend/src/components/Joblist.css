@@ -1396,33 +1396,16 @@ h1 {
     flex-direction: column;
     gap: 10px;
   }
-  
+/*   
   .apply-btn, .save-btn {
     width: 100%;
     padding: 12px;
     font-weight: 600;
     border-radius: 8px;
   }
+   */
   
-  .apply-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-  }
   
-  .save-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-  }
-  
-  .apply-btn:hover {
-    background: #0056b3;
-  }
-  
-  .save-btn:hover {
-    background: #1e7e34;
-  }
 }
 
 /* Pagination hidden on mobile */
