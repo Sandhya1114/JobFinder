@@ -1277,3 +1277,154 @@ h1 {
     color: #e2e8f0;
   }
 }
+/* Mobile Infinite Scroll Styles */
+.mobile-infinite-loader {
+  padding: 20px;
+  text-align: center;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  color: #666;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.end-message {
+  padding: 30px 20px;
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: 500;
+  border-top: 2px solid #e9ecef;
+  margin-top: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px;
+}
+
+.mobile-job-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+@media (min-width: 769px) {
+  .mobile-infinite-loader,
+  .mobile-job-info {
+    display: none;
+  }
+}
+
+/* Toast notification styles */
+.toast-popup {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+  max-width: 90%;
+  text-align: center;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Enhanced job card styles for mobile */
+@media (max-width: 768px) {
+  .job-card {
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  }
+  
+  .job-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .apply-btn, .save-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+  
+  .apply-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+  }
+  
+  .save-btn {
+    background: #28a745;
+    color: white;
+    border: none;
+  }
+  
+  .apply-btn:hover {
+    background: #0056b3;
+  }
+  
+  .save-btn:hover {
+    background: #1e7e34;
+  }
+}
+
+/* Pagination hidden on mobile */
+@media (max-width: 768px) {
+  .pagination-container {
+    display: none;
+  }
+}
