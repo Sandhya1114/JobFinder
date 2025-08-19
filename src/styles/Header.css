@@ -15,7 +15,7 @@ header.sticky {
 
 /* Sticky disabled */
 header.non-sticky {
-  position: static;
+  position: relative;
 }
 
 /* Shrinking on scroll */
@@ -193,7 +193,7 @@ header.shrink .header-options a {
   top: 0 ;
   left: 0 ;
   
-  width: 98vw;
+  width: 100vw;
   height: 100vh ;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(10px);
@@ -513,6 +513,7 @@ header.shrink .header-options a {
 @media screen and (max-width: 768px) {
   header {
     height: 10vh;
+    z-index: 10001;
   }
   
   header.shrink {

@@ -1070,24 +1070,38 @@ const JobList = () => {
     }
   }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
 
-  // Scroll to top when page changes (desktop only)
+  // FIXED: Scroll to top when page changes (desktop only)
   useEffect(() => {
     if (!isMobile && pagination.currentPage > 1) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pagination.currentPage, isMobile]);
 
+  // FIXED: Handle page change - ensure it triggers data reload
   const handlePageChange = useCallback((newPage) => {
-    if (!isMobile) {
+    if (!isMobile && newPage !== pagination.currentPage) {
+      console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
       dispatch(setCurrentPage(newPage));
+      
+      // Force reload jobs for the new page
+      loadJobs({ page: newPage }).catch(error => {
+        console.error('Failed to load jobs for page:', newPage, error);
+      });
     }
-  }, [dispatch, isMobile]);
+  }, [dispatch, isMobile, pagination.currentPage, loadJobs]);
 
+  // FIXED: Handle jobs per page change - ensure it reloads data
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
-    if (!isMobile) {
+    if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
+      console.log('Jobs per page change requested:', newJobsPerPage);
       dispatch(setJobsPerPage(newJobsPerPage));
+      
+      // Force reload jobs with new page size
+      loadJobs({ limit: newJobsPerPage, page: 1 }).catch(error => {
+        console.error('Failed to load jobs with new page size:', newJobsPerPage, error);
+      });
     }
-  }, [dispatch, isMobile]);
+  }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
 
   // FIXED: Mobile infinite scroll load more function with proper error handling
   const handleLoadMore = useCallback(async () => {

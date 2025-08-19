@@ -1082,7 +1082,7 @@ h1 {
   }
   
   .jobs-content {
-    width: 100%;
+    width: 96%;
     padding: 10px;
   }
   
@@ -1095,6 +1095,8 @@ h1 {
   
   .jobs-grid {
     justify-content: center;
+    width: 93vw;
+    
   }
   
   .job-card {
@@ -1188,6 +1190,7 @@ h1 {
   }
   
   .divider {
+    color: black;
     height: 20px;
     width: 0.5px;
   }
