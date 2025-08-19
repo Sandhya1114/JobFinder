@@ -74,7 +74,8 @@
 import { useState, useEffect } from "react";
 import "../styles/Header.css";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { supabase } from "../SupabaseClient";
+import { supabase } from "../supabaseClient";
+
 
 export default function Header({ user }) {
   const [showMenu, setShowMenu] = useState(false);
