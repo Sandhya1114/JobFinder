@@ -1142,7 +1142,9 @@ h1 {
     display: flex;
     gap: 10px;
   }
-  
+  .apply-btn{
+  width: 82vw;
+   margin-left: 6px;}
   /* .apply-btn,
   .save-btn {
     flex: 1;
