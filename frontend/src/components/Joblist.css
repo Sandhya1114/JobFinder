@@ -1639,6 +1639,7 @@ h1 {
 }
 
 .sidebar-close i {
+  display: flex;
   font-size: 18px;
   line-height: 1;
 }
@@ -1650,6 +1651,7 @@ h1 {
     display: flex;
     justify-content: flex-start; /* Only show title, close button is floating */
     align-items: center;
+    margin-top: 15vh;
   }
   
   /* Show floating close button when sidebar is open */
@@ -1694,5 +1696,6 @@ h1 {
     font-size: 22px;
     top: 15px;
     right: 15px;
+    margin-top: 14vh;
   }
 }
