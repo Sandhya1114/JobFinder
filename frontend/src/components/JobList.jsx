@@ -1467,6 +1467,23 @@ const JobList = () => {
           )}
           
           <div className="filters-section">
+            {/* Filter Action Buttons */}
+            <div className="filter-actions">
+              <button 
+                onClick={handleApplyFilters} 
+                className={`apply-filters-btn ${hasUnappliedFilters ? 'highlighted' : ''}`}
+                disabled={!hasUnappliedFilters}
+              >
+                <i className="fa fa-check"></i>
+                Apply Filters
+                {hasUnappliedFilters && <span className="pulse-dot"></span>}
+              </button>
+              
+              <button onClick={handleClearFilters} className="clear-filters-btn">
+                <i className="fa fa-refresh"></i>
+                Clear All
+              </button>
+            </div>
             <div className="FilterGroup">
               <h4>Category</h4>
               {categories.map((category) => (
@@ -1543,7 +1560,7 @@ const JobList = () => {
             </div>
 
             {/* Filter Action Buttons */}
-            <div className="filter-actions">
+            {/* <div className="filter-actions">
               <button 
                 onClick={handleApplyFilters} 
                 className={`apply-filters-btn ${hasUnappliedFilters ? 'highlighted' : ''}`}
@@ -1558,7 +1575,7 @@ const JobList = () => {
                 <i className="fa fa-refresh"></i>
                 Clear All
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 
