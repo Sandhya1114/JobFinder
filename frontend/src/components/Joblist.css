@@ -39,7 +39,7 @@ h1 {
 /* Filters Section */
 .filters-section {
   background: #f8f9fa47;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 8px;
   margin-bottom: 20px;
 }
@@ -375,10 +375,13 @@ h1 {
 
 /* Filter Action Buttons */
 .filter-actions {
-  margin-top: 30px;
+  /* margin-top: 30px; */
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
 }
 
 .apply-filters-btn {
