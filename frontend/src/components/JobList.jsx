@@ -1141,25 +1141,44 @@ const JobList = () => {
   }, []);
 
   // Sidebar management effects
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
-        setIsSidebarOpen(false);
-      }
-    };
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
+  //       setIsSidebarOpen(false);
+  //     }
+  //   };
 
-    if (isSidebarOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+  //   if (isSidebarOpen) {
+  //     document.addEventListener('mousedown', handleClickOutside);
+  //     document.body.style.overflow = 'hidden';
+  //   } else {
+  //     document.body.style.overflow = 'unset';
+  //   }
+
+  //   return () => {
+  //     document.removeEventListener('mousedown', handleClickOutside);
+  //     document.body.style.overflow = 'unset';
+  //   };
+  // }, [isSidebarOpen]);
+   useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
+      setIsSidebarOpen(false);
     }
+  };
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isSidebarOpen]);
+  if (isSidebarOpen) {
+    document.addEventListener('mousedown', handleClickOutside);
+    document.body.classList.add('body-no-scroll'); // Add class to hide overflow
+  } else {
+    document.body.classList.remove('body-no-scroll'); // Remove class to allow scrolling
+  }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+    document.body.classList.remove('body-no-scroll'); // Ensure class is removed on cleanup
+  };
+}, [isSidebarOpen]);
 
   // FIXED: Load initial data only once with proper initialization
   useEffect(() => {

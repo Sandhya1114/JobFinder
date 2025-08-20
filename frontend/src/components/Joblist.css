@@ -1281,7 +1281,7 @@ h1 {
 /* Very small screens */
 @media (max-width: 480px) {
   .filters-sidebar {
-    width: 100%;
+    width: 90%;
   }
   
   .job-card {
