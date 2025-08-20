@@ -1,7 +1,7 @@
-// import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+
+// import { useEffect, useState, useCallback, useRef } from 'react';
 // import { useSelector, useDispatch } from 'react-redux';
 // import { useDataLoader } from '../hooks/useDataLoader';
-
 // import {
 //   setSelectedCategory,
 //   setSelectedCompany,
@@ -13,8 +13,11 @@
 //   setCurrentPage,
 //   setJobsPerPage,
 //   clearFilters,
+//   appendJobs,
+//   resetInfiniteScroll,
+//   setInfiniteScrollLoading
 // } from '../redux/store';
-// import './JobList.css';
+// import './Joblist.css';
 // import { saveJob } from '../redux/savedJobsSlice';
 // import { useLocation } from 'react-router-dom';
 
@@ -123,34 +126,38 @@
 
 // // Mobile Infinite Scroll Component
 // const MobileInfiniteScroll = ({ jobs, hasMore, loadMore, loading }) => {
-//   const [isLoading, setIsLoading] = useState(false);
 //   const loaderRef = useRef(null);
 
 //   useEffect(() => {
 //     const observer = new IntersectionObserver(
 //       (entries) => {
-//         if (entries[0].isIntersecting && hasMore && !loading && !isLoading) {
-//           setIsLoading(true);
-//           loadMore().finally(() => setIsLoading(false));
+//         const target = entries[0];
+//         if (target.isIntersecting && hasMore && !loading) {
+//           console.log('Intersection observer triggered - loading more jobs');
+//           loadMore();
 //         }
 //       },
-//       { threshold: 1.0, rootMargin: '100px' }
+//       { 
+//         threshold: 0.1, 
+//         rootMargin: '100px' 
+//       }
 //     );
 
-//     if (loaderRef.current) {
-//       observer.observe(loaderRef.current);
+//     const currentRef = loaderRef.current;
+//     if (currentRef) {
+//       observer.observe(currentRef);
 //     }
 
 //     return () => {
-//       if (loaderRef.current) {
-//         observer.unobserve(loaderRef.current);
+//       if (currentRef) {
+//         observer.unobserve(currentRef);
 //       }
 //     };
-//   }, [hasMore, loading, isLoading, loadMore]);
+//   }, [hasMore, loading, loadMore]);
 
 //   return (
 //     <div ref={loaderRef} className="mobile-infinite-loader">
-//       {(isLoading || loading) && hasMore && (
+//       {loading && hasMore && (
 //         <div className="loading-spinner">
 //           <div className="spinner"></div>
 //           <span>Loading more jobs...</span>
@@ -161,14 +168,29 @@
 //           🎉 You've seen all available jobs!
 //         </div>
 //       )}
+//       {!hasMore && jobs.length === 0 && (
+//         <div className="end-message">
+//           No jobs found matching your criteria.
+//         </div>
+//       )}
 //     </div>
 //   );
 // };
 
 // const JobList = () => {
 //   const dispatch = useDispatch();
-//   const { jobs, categories, companies, loading, error, filters, pagination } = useSelector((state) => state.jobs);
-//   const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader(); // Assuming loadMoreJobs exists
+//   const { 
+//     jobs, 
+//     categories, 
+//     companies, 
+//     loading, 
+//     error, 
+//     filters, 
+//     pagination, 
+//     infiniteScroll 
+//   } = useSelector((state) => state.jobs);
+  
+//   const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader();
 //   const [toast, setToast] = useState(null);
 //   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 //   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -180,36 +202,33 @@
 //     searchInput: '',
 //     locationSearchInput: ''
 //   });
+
+//   // Track initial load and prevent infinite loops
+//   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+//   const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
   
-//   // Mobile infinite scroll state
-//   const [mobileJobs, setMobileJobs] = useState([]);
-//   const [hasMoreJobs, setHasMoreJobs] = useState(true);
-//   const [mobileLoading, setMobileLoading] = useState(false);
+//   // Refs to prevent infinite loops and race conditions
+//   const lastFiltersRef = useRef(null);
+//   const isLoadingMoreRef = useRef(false);
+//   const initializationRef = useRef(false);
 
 //   // Check if device is mobile
 //   useEffect(() => {
 //     const handleResize = () => {
 //       const mobile = window.innerWidth <= 768;
+//       const wasMobile = isMobile;
 //       setIsMobile(mobile);
       
-//       // Reset mobile state when switching between mobile/desktop
-//       if (!mobile) {
-//         setMobileJobs([]);
-//         setHasMoreJobs(true);
+//       // Reset infinite scroll when switching between mobile/desktop
+//       if (wasMobile !== mobile) {
+//         dispatch(resetInfiniteScroll());
+//         setInfiniteScrollInitialized(false);
 //       }
 //     };
 
 //     window.addEventListener('resize', handleResize);
 //     return () => window.removeEventListener('resize', handleResize);
-//   }, []);
-
-//   // Initialize mobile jobs on first load or filter change
-//   useEffect(() => {
-//     if (isMobile && jobs.length > 0) {
-//       setMobileJobs(jobs);
-//       setHasMoreJobs(pagination.hasNextPage);
-//     }
-//   }, [jobs, isMobile, pagination.hasNextPage]);
+//   }, [dispatch, isMobile]);
 
 //   // Debounce search input while preserving all existing filters
 //   useEffect(() => {
@@ -259,61 +278,143 @@
 //     };
 //   }, [isSidebarOpen]);
 
-//   // Load initial data
+//   // FIXED: Load initial data only once with proper initialization
 //   useEffect(() => {
-//     loadAllData();
-//   }, [loadAllData]);
-
-//   // Reload jobs when filters change
-//   useEffect(() => {
-//     if (isMobile) {
-//       // Reset mobile infinite scroll when filters change
-//       setMobileJobs([]);
-//       setHasMoreJobs(true);
+//     if (!initialLoadComplete && !initializationRef.current) {
+//       initializationRef.current = true;
+//       console.log('Loading initial data...');
+      
+//       loadAllData().then(() => {
+//         console.log('Initial data loaded');
+//         setInitialLoadComplete(true);
+//       }).catch(error => {
+//         console.error('Failed to load initial data:', error);
+//         initializationRef.current = false;
+//       });
 //     }
-//     loadJobs();
-//   }, [loadJobs, filters, isMobile]);
+//   }, [loadAllData, initialLoadComplete]);
 
-//   // Scroll to top when page changes (desktop only)
+//   // FIXED: Reload jobs when filters change (but only after initial load and avoid duplicates)
 //   useEffect(() => {
-//     if (!isMobile) {
+//     if (!initialLoadComplete || !initializationRef.current) return;
+
+//     const currentFilters = JSON.stringify(filters);
+//     const lastFilters = lastFiltersRef.current;
+
+//     // Only reload if filters actually changed
+//     if (currentFilters !== lastFilters) {
+//       console.log('Filters changed, reloading jobs');
+//       lastFiltersRef.current = currentFilters;
+      
+//       // Reset infinite scroll state when filters change
+//       setInfiniteScrollInitialized(false);
+//       isLoadingMoreRef.current = false;
+//       dispatch(resetInfiniteScroll());
+      
+//       loadJobs().catch(error => {
+//         console.error('Failed to reload jobs:', error);
+//       });
+//     }
+//   }, [filters, loadJobs, initialLoadComplete, dispatch]);
+
+//   // FIXED: Initialize mobile infinite scroll data when jobs are loaded
+//   useEffect(() => {
+//     if (
+//       isMobile && 
+//       jobs.length > 0 && 
+//       initialLoadComplete && 
+//       !infiniteScrollInitialized &&
+//       infiniteScroll.allJobs.length === 0 // Only initialize if no jobs in infinite scroll
+//     ) {
+//       console.log('Initializing infinite scroll with jobs:', jobs.length);
+//       dispatch(appendJobs({ 
+//         jobs: jobs, 
+//         pagination: pagination, 
+//         resetList: true 
+//       }));
+//       setInfiniteScrollInitialized(true);
+//       isLoadingMoreRef.current = false; // Reset loading ref
+//     }
+//   }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
+
+//   // FIXED: Scroll to top when page changes (desktop only)
+//   useEffect(() => {
+//     if (!isMobile && pagination.currentPage > 1) {
 //       window.scrollTo({ top: 0, behavior: 'smooth' });
 //     }
 //   }, [pagination.currentPage, isMobile]);
 
+//   // FIXED: Handle page change - ensure it triggers data reload
 //   const handlePageChange = useCallback((newPage) => {
-//     if (!isMobile) {
+//     if (!isMobile && newPage !== pagination.currentPage) {
+//       console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
 //       dispatch(setCurrentPage(newPage));
+      
+//       // Force reload jobs for the new page
+//       loadJobs({ page: newPage }).catch(error => {
+//         console.error('Failed to load jobs for page:', newPage, error);
+//       });
 //     }
-//   }, [dispatch, isMobile]);
+//   }, [dispatch, isMobile, pagination.currentPage, loadJobs]);
 
+//   // FIXED: Handle jobs per page change - ensure it reloads data
 //   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
-//     if (!isMobile) {
+//     if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
+//       console.log('Jobs per page change requested:', newJobsPerPage);
 //       dispatch(setJobsPerPage(newJobsPerPage));
+      
+//       // Force reload jobs with new page size
+//       loadJobs({ limit: newJobsPerPage, page: 1 }).catch(error => {
+//         console.error('Failed to load jobs with new page size:', newJobsPerPage, error);
+//       });
 //     }
-//   }, [dispatch, isMobile]);
+//   }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
 
-//   // Mobile infinite scroll load more function
+//   // FIXED: Mobile infinite scroll load more function with proper error handling
 //   const handleLoadMore = useCallback(async () => {
-//     if (!hasMoreJobs || mobileLoading) return;
+//     // Prevent multiple simultaneous calls
+//     if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current) {
+//       console.log('Cannot load more:', { 
+//         hasMore: infiniteScroll.hasMore, 
+//         isLoading: infiniteScroll.isLoading,
+//         isLoadingMoreRef: isLoadingMoreRef.current
+//       });
+//       return;
+//     }
 
-//     setMobileLoading(true);
 //     try {
-//       const nextPage = Math.floor(mobileJobs.length / 20) + 1;
-//       dispatch(setCurrentPage(nextPage));
+//       isLoadingMoreRef.current = true;
+//       dispatch(setInfiniteScrollLoading(true));
+//       console.log('Loading more jobs... Current page:', pagination.currentPage);
       
-//       // Simulate API call - replace with actual loadMoreJobs function
-//       await loadMoreJobs();
+//       const result = await loadMoreJobs();
       
-//       // This would be handled by the Redux state update
-//       // The useEffect above will append new jobs to mobileJobs
+//       if (result && result.newJobs && result.newJobs.length > 0) {
+//         console.log('Successfully loaded page:', result.pagination?.currentPage || 'unknown');
+//         console.log('New jobs count:', result.newJobs.length);
+//         console.log('Has more pages:', result.hasMore);
+        
+//         dispatch(appendJobs({ 
+//           jobs: result.newJobs, 
+//           pagination: result.pagination || {
+//             ...pagination, 
+//             hasNextPage: result.hasMore,
+//             totalJobs: result.totalJobs,
+//             currentPage: result.pagination?.currentPage || pagination.currentPage + 1
+//           }
+//         }));
+//       } else {
+//         console.log('No more jobs to load or empty result');
+//       }
 //     } catch (error) {
 //       console.error('Error loading more jobs:', error);
 //       showToast('Error loading more jobs');
 //     } finally {
-//       setMobileLoading(false);
+//       // Always reset loading state
+//       dispatch(setInfiniteScrollLoading(false));
+//       isLoadingMoreRef.current = false;
 //     }
-//   }, [hasMoreJobs, mobileLoading, mobileJobs.length, dispatch, loadMoreJobs, showToast]);
+//   }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
 
 //   // Memoized salary formatter
 //   const formatSalary = useCallback((salary) => {
@@ -333,11 +434,9 @@
 //       searchInput: '',
 //       locationSearchInput: ''
 //     });
-//     if (isMobile) {
-//       setMobileJobs([]);
-//       setHasMoreJobs(true);
-//     }
-//   }, [dispatch, isMobile]);
+//     setInfiniteScrollInitialized(false);
+//     isLoadingMoreRef.current = false;
+//   }, [dispatch]);
 
 //   const toggleSidebar = useCallback(() => {
 //     setIsSidebarOpen(prev => !prev);
@@ -364,7 +463,11 @@
 //     }
 //   }, [dispatch]);
 
-//   if (loading && (!isMobile || mobileJobs.length === 0)) {
+//   if (!initialLoadComplete) {
+//     return <div className="loading">Loading jobs...</div>;
+//   }
+
+//   if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
 //     return <div className="loading">Loading jobs...</div>;
 //   }
   
@@ -376,8 +479,8 @@
 //   const typeOptions = ['Full-time', 'Part-time', 'Contract'];
 //   const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'];
 
-//   // Use mobile jobs for mobile view, regular jobs for desktop
-//   const displayJobs = isMobile ? mobileJobs : jobs;
+//   // Use infinite scroll jobs for mobile view, regular jobs for desktop
+//   const displayJobs = isMobile ? infiniteScroll.allJobs : jobs;
 
 //   return (
 //     <div className="job-list-container">
@@ -385,21 +488,25 @@
 //       <button className="filter-toggle" onClick={toggleSidebar}>
 //         <i className="fa fa-filter"></i> Filters
 //       </button>
+// {/* Sidebar overlay for mobile */}
+// <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
 
-//       {/* Sidebar overlay for mobile */}
-//       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+// {/* Floating close button - shown when sidebar is open on mobile */}
+// {isMobile && isSidebarOpen && (
+//   <button className="sidebar-close" onClick={() => setIsSidebarOpen(false)}>
+//     <i className="fa fa-times"></i>
+//   </button>
+// )}
 
-//       <div className="job-list-layout">
-//         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-//           {/* Close button for mobile */}
-//           {isMobile && (
-//             <div className="sidebar-header">
-//               <h3>Filters</h3>
-//               <button className="sidebar-close" onClick={() => setIsSidebarOpen(false)}>
-//                 <i className="fa fa-times"></i>
-//               </button>
-//             </div>
-//           )}
+// <div className="job-list-layout">
+//   <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+//     {/* Header for mobile - without close button since it's floating */}
+//     {isMobile && (
+//       <div className="sidebar-header">
+//         <h3><i className="fa fa-filter"></i> Filters</h3>
+//       </div>
+//     )}
+    
           
 //           <div className="filters-section">
 //             <div className="FilterGroup">
@@ -502,7 +609,7 @@
 //               ))}
 //             </div>
 
-//             <div className="FilterGroup">
+//             {/* <div className="FilterGroup">
 //               <h4>Salary Range</h4>
 //               {salaryRangeOptions.map((range) => (
 //                 <label key={range} className="filter-checkbox">
@@ -520,7 +627,7 @@
 //                   {range}
 //                 </label>
 //               ))}
-//             </div>
+//             </div> */}
 
 //             <button onClick={handleClearFilters} className="clear-filters-btn">
 //               Clear Filters
@@ -613,8 +720,8 @@
 //                 {pagination.totalJobs === 0 ? 'No jobs available' : 'No jobs found matching your criteria'}
 //               </div>
 //             ) : (
-//               displayJobs.map((job) => (
-//                 <div key={`${job.id}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card">
+//               displayJobs.map((job, index) => (
+//                 <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card">
 //                   <div className="job-header">
 //                     <h2 className="job-title">{job.title || 'No Title'}</h2>
 //                     <div className="job-meta">
@@ -631,7 +738,7 @@
 //                     <div className="job-info">
 //                       <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
 //                       <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-//                       <p><strong>Salary:</strong> {formatSalary(job.salary)}</p>
+//                       {/* <p><strong>Salary:</strong> {formatSalary(job.salary)}</p> */}
 //                     </div>
 
 //                     <div className="job-description">
@@ -711,9 +818,9 @@
 //           {isMobile && (
 //             <MobileInfiniteScroll
 //               jobs={displayJobs}
-//               hasMore={hasMoreJobs}
+//               hasMore={infiniteScroll.hasMore}
 //               loadMore={handleLoadMore}
-//               loading={mobileLoading}
+//               loading={infiniteScroll.isLoading}
 //             />
 //           )}
 
@@ -732,6 +839,8 @@
 // };
 
 // export default JobList;
+
+
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
@@ -936,6 +1045,19 @@ const JobList = () => {
     locationSearchInput: ''
   });
 
+  // NEW: State for pending filters (not applied yet)
+  const [pendingFilters, setPendingFilters] = useState({
+    selectedCategory: [],
+    selectedCompany: [],
+    selectedExperience: [],
+    selectedLocation: [],
+    selectedType: [],
+    selectedSalary: []
+  });
+
+  // NEW: Track if filters have changed but not applied
+  const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
+
   // Track initial load and prevent infinite loops
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
@@ -962,6 +1084,34 @@ const JobList = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, isMobile]);
+
+  // NEW: Initialize pending filters from current filters
+  useEffect(() => {
+    setPendingFilters({
+      selectedCategory: filters.selectedCategory || [],
+      selectedCompany: filters.selectedCompany || [],
+      selectedExperience: filters.selectedExperience || [],
+      selectedLocation: filters.selectedLocation || [],
+      selectedType: filters.selectedType || [],
+      selectedSalary: filters.selectedSalary || []
+    });
+  }, [filters]);
+
+  // NEW: Check if pending filters differ from applied filters
+  useEffect(() => {
+    const currentFiltersStr = JSON.stringify({
+      selectedCategory: filters.selectedCategory || [],
+      selectedCompany: filters.selectedCompany || [],
+      selectedExperience: filters.selectedExperience || [],
+      selectedLocation: filters.selectedLocation || [],
+      selectedType: filters.selectedType || [],
+      selectedSalary: filters.selectedSalary || []
+    });
+    
+    const pendingFiltersStr = JSON.stringify(pendingFilters);
+    
+    setHasUnappliedFilters(currentFiltersStr !== pendingFiltersStr);
+  }, [filters, pendingFilters]);
 
   // Debounce search input while preserving all existing filters
   useEffect(() => {
@@ -1161,7 +1311,37 @@ const JobList = () => {
     return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
   }, []);
 
+  // NEW: Apply filters function
+  const handleApplyFilters = useCallback(() => {
+    dispatch(setSelectedCategory(pendingFilters.selectedCategory));
+    dispatch(setSelectedCompany(pendingFilters.selectedCompany));
+    dispatch(setSelectedExperience(pendingFilters.selectedExperience));
+    dispatch(setSelectedLocation(pendingFilters.selectedLocation));
+    dispatch(setSelectedType(pendingFilters.selectedType));
+    dispatch(setSelectedSalary(pendingFilters.selectedSalary));
+    
+    setInfiniteScrollInitialized(false);
+    isLoadingMoreRef.current = false;
+    
+    showToast('Filters applied successfully!');
+    
+    // Close sidebar on mobile after applying
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [dispatch, pendingFilters, isMobile, showToast]);
+
+  // NEW: Clear all filters function
   const handleClearFilters = useCallback(() => {
+    setPendingFilters({
+      selectedCategory: [],
+      selectedCompany: [],
+      selectedExperience: [],
+      selectedLocation: [],
+      selectedType: [],
+      selectedSalary: []
+    });
+    
     dispatch(clearFilters());
     setLocalFilters({
       searchInput: '',
@@ -1169,7 +1349,14 @@ const JobList = () => {
     });
     setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
-  }, [dispatch]);
+    
+    showToast('All filters cleared!');
+    
+    // Close sidebar on mobile after clearing
+    if (isMobile) {
+      setIsSidebarOpen(false);
+    }
+  }, [dispatch, isMobile, showToast]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev);
@@ -1196,6 +1383,21 @@ const JobList = () => {
     }
   }, [dispatch]);
 
+  // NEW: Handle pending filter changes
+  const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+    setPendingFilters(prev => {
+      const current = prev[filterType] || [];
+      const updated = isChecked
+        ? [...current, value]
+        : current.filter(item => item !== value);
+      
+      return {
+        ...prev,
+        [filterType]: updated
+      };
+    });
+  }, []);
+
   if (!initialLoadComplete) {
     return <div className="loading">Loading jobs...</div>;
   }
@@ -1220,20 +1422,28 @@ const JobList = () => {
       {/* Mobile filter toggle button */}
       <button className="filter-toggle" onClick={toggleSidebar}>
         <i className="fa fa-filter"></i> Filters
+        {hasUnappliedFilters && <span className="filter-badge">!</span>}
       </button>
 
       {/* Sidebar overlay for mobile */}
       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
 
+      {/* Floating close button - shown when sidebar is open on mobile */}
+      {isMobile && isSidebarOpen && (
+        <button className="sidebar-close" onClick={() => setIsSidebarOpen(false)}>
+          <i className="fa fa-times"></i>
+        </button>
+      )}
+
       <div className="job-list-layout">
         <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-          {/* Close button for mobile */}
+          {/* Header for mobile */}
           {isMobile && (
             <div className="sidebar-header">
-              <h3>Filters</h3>
-              <button className="sidebar-close" onClick={() => setIsSidebarOpen(false)}>
-                <i className="fa fa-times"></i>
-              </button>
+              <h3><i className="fa fa-filter"></i> Filters</h3>
+              {hasUnappliedFilters && (
+                <span className="unapplied-badge">Changes pending</span>
+              )}
             </div>
           )}
           
@@ -1244,15 +1454,10 @@ const JobList = () => {
                 <label key={category.id} className="filter-checkbox">
                   <input
                     type="checkbox"
-                    checked={filters.selectedCategory?.includes(category.id)}
-                    onChange={() => {
-                      const current = filters.selectedCategory || [];
-                      const updated = current.includes(category.id)
-                        ? current.filter((id) => id !== category.id)
-                        : [...current, category.id];
-                      dispatch(setSelectedCategory(updated));
-                    }}
+                    checked={pendingFilters.selectedCategory?.includes(category.id)}
+                    onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
                   />
+                  <span className="checkmark"></span>
                   {category.name}
                 </label>
               ))}
@@ -1264,15 +1469,10 @@ const JobList = () => {
                 <label key={company.id} className="filter-checkbox">
                   <input
                     type="checkbox"
-                    checked={filters.selectedCompany?.includes(company.id)}
-                    onChange={() => {
-                      const current = filters.selectedCompany || [];
-                      const updated = current.includes(company.id)
-                        ? current.filter((id) => id !== company.id)
-                        : [...current, company.id];
-                      dispatch(setSelectedCompany(updated));
-                    }}
+                    checked={pendingFilters.selectedCompany?.includes(company.id)}
+                    onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
                   />
+                  <span className="checkmark"></span>
                   {company.name}
                 </label>
               ))}
@@ -1284,15 +1484,10 @@ const JobList = () => {
                 <label key={level} className="filter-checkbox">
                   <input
                     type="checkbox"
-                    checked={filters.selectedExperience?.includes(level)}
-                    onChange={() => {
-                      const current = filters.selectedExperience || [];
-                      const updated = current.includes(level)
-                        ? current.filter((e) => e !== level)
-                        : [...current, level];
-                      dispatch(setSelectedExperience(updated));
-                    }}
+                    checked={pendingFilters.selectedExperience?.includes(level)}
+                    onChange={(e) => handlePendingFilterChange('selectedExperience', level, e.target.checked)}
                   />
+                  <span className="checkmark"></span>
                   {level}
                 </label>
               ))}
@@ -1304,15 +1499,10 @@ const JobList = () => {
                 <label key={location} className="filter-checkbox">
                   <input
                     type="checkbox"
-                    checked={filters.selectedLocation?.includes(location)}
-                    onChange={() => {
-                      const current = filters.selectedLocation || [];
-                      const updated = current.includes(location)
-                        ? current.filter((l) => l !== location)
-                        : [...current, location];
-                      dispatch(setSelectedLocation(updated));
-                    }}
+                    checked={pendingFilters.selectedLocation?.includes(location)}
+                    onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
                   />
+                  <span className="checkmark"></span>
                   {location}
                 </label>
               ))}
@@ -1324,43 +1514,32 @@ const JobList = () => {
                 <label key={type} className="filter-checkbox">
                   <input
                     type="checkbox"
-                    checked={filters.selectedType?.includes(type)}
-                    onChange={() => {
-                      const current = filters.selectedType || [];
-                      const updated = current.includes(type)
-                        ? current.filter((t) => t !== type)
-                        : [...current, type];
-                      dispatch(setSelectedType(updated));
-                    }}
+                    checked={pendingFilters.selectedType?.includes(type)}
+                    onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
                   />
+                  <span className="checkmark"></span>
                   {type}
                 </label>
               ))}
             </div>
 
-            {/* <div className="FilterGroup">
-              <h4>Salary Range</h4>
-              {salaryRangeOptions.map((range) => (
-                <label key={range} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={filters.selectedSalary?.includes(range)}
-                    onChange={() => {
-                      const current = filters.selectedSalary || [];
-                      const updated = current.includes(range)
-                        ? current.filter((r) => r !== range)
-                        : [...current, range];
-                      dispatch(setSelectedSalary(updated));
-                    }}
-                  />
-                  {range}
-                </label>
-              ))}
-            </div> */}
-
-            <button onClick={handleClearFilters} className="clear-filters-btn">
-              Clear Filters
-            </button>
+            {/* Filter Action Buttons */}
+            <div className="filter-actions">
+              <button 
+                onClick={handleApplyFilters} 
+                className={`apply-filters-btn ${hasUnappliedFilters ? 'highlighted' : ''}`}
+                disabled={!hasUnappliedFilters}
+              >
+                <i className="fa fa-check"></i>
+                Apply Filters
+                {hasUnappliedFilters && <span className="pulse-dot"></span>}
+              </button>
+              
+              <button onClick={handleClearFilters} className="clear-filters-btn">
+                <i className="fa fa-refresh"></i>
+                Clear All
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1467,7 +1646,6 @@ const JobList = () => {
                     <div className="job-info">
                       <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
                       <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-                      {/* <p><strong>Salary:</strong> {formatSalary(job.salary)}</p> */}
                     </div>
 
                     <div className="job-description">

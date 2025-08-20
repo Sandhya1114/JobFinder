@@ -107,4 +107,5 @@ background: linear-gradient(90deg, rgba(249, 233, 191, 1) 5%, rgba(255, 182, 152
         }
         body{
   margin:0px;
+  overflow-x: hidden;
 }
