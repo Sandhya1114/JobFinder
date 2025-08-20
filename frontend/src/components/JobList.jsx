@@ -1461,7 +1461,7 @@ const JobList = () => {
             <div className="sidebar-header">
               <h3><i className="fa fa-filter"></i> Filters</h3>
               {hasUnappliedFilters && (
-                <span className="unapplied-badge">Changes pending</span>
+                // <span className="unapplied-badge">Changes pending</span>
               )}
             </div>
           )}
