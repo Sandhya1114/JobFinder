@@ -885,24 +885,25 @@ h1 {
 .filter-toggle {
   display: none;
   position: fixed;
-  bottom: 35px;
-  width: 94vw;
-  margin: auto;
-  left: 10px;
-  z-index: 1001;
-  background-color: #9684C0;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  background: linear-gradient(135deg, #a396c3 , #764ba2);
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 8px 132px;
+  padding: 15px 30px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 25px #a396c3c7 ;
+  transition: all 0.3s ease;
 }
 
 .filter-toggle:hover {
-  background-color: #7b6d9c;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 12px 35px #a396c3a2 ;
 }
 
 /* Sidebar overlay for mobile - hidden by default */
@@ -1192,8 +1193,20 @@ h1 {
   /* Show mobile filter toggle */
   .filter-toggle {
     display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  
+  .filter-toggle p{
+    color: #fff;
+    text-align: center;
+  }
+    .filter-toggle  .fa-filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+  }
   .job-list-container {
     padding: 10px;
   }

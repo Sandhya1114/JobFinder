@@ -1440,7 +1440,7 @@ const JobList = () => {
     <div className="job-list-container">
       {/* Mobile filter toggle button */}
       <button className="filter-toggle" onClick={toggleSidebar}>
-        <i className="fa fa-filter"></i> Filters
+        <i className="fa fa-filter"></i> <p>Filters</p>
         {hasUnappliedFilters && <span className="filter-badge">!</span>}
       </button>
 
