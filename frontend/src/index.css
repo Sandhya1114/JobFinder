@@ -83,8 +83,9 @@ background: linear-gradient(90deg, rgba(232, 226, 230, 1) 3%, rgba(150, 132, 192
 
 /* background-image: radial-gradient( circle 369px at -2.9% 12.9%,  rgba(247,234,163,1) 0%, rgba(236,180,238,0.56) 46.4%, rgba(163,203,247,1) 100.7% );  */
  /* background-color: #d464d0; */
- background: #B1AB86;
-background: linear-gradient(90deg, #B1AB86 5%, #FEFAE0 95%);
+  background: #e0e0e0;
+ /* background: #B1AB86;
+background: linear-gradient(90deg, #B1AB86 5%, #FEFAE0 95%); */
 /* background: #F9E9BF;
 background: linear-gradient(90deg, rgba(249, 233, 191, 1) 5%, rgba(255, 182, 152, 1) 95%); */
 /* background: linear-gradient(90deg, #5a2e4c, #F5E6CC); */

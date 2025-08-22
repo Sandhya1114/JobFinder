@@ -42,6 +42,8 @@ function Hero() {
 
   return (
     <section className="hero-section">
+      <div class='center'>
+      <div class='blob'></div></div>
       <div className="hero-heading">
         <h1>Find your dream job now</h1>
         <p>5 lakh+ jobs for you to explore</p>
