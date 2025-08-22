@@ -72,7 +72,7 @@ header.shrink .header-options a {
 }
 
 .logo span {
-  color: rgb(132, 36, 132);
+  color: #676452;
 }
 
 /* Sign-in button */
@@ -241,11 +241,11 @@ header.shrink .header-options a {
   font-family: monospace;
   font-size: 1.5rem;
   margin: 0;
-  color: #1a1a1a;
+  color: #000000;
 }
 
 .mobile-logo span {
-  color: rgb(132, 36, 132);
+  color: #676452;
 }
 
 .close-btn {

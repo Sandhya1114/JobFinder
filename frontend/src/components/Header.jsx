@@ -351,7 +351,7 @@ export default function Header({ user }) {
         <div className="logo">
           <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
             <h3>
-              JOBS<span>FINDER</span>
+              HIRE<span>PATH</span>
             </h3>
           </Link>
         </div>

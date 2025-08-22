@@ -983,8 +983,9 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = '';
     };
+    
   }, [isOpen, onClose]);
 
   if (!isOpen || !job) return null;
@@ -1010,7 +1011,7 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
               <span className="modal-company-name">
                 {job.companies?.name || job.company?.name || 'Company not specified'}
               </span>
-              <span className="modal-separator">•</span>
+              <span className="modal-separator">||</span>
               <span className="modal-location">{job.location || 'Location not specified'}</span>
             </div>
           </div>
@@ -1152,7 +1153,7 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
         <div className="modal-footer">
           <div className="modal-actions">
             <button onClick={onSave} className="modal-save-btn">
-              <i className="fa fa-bookmark"></i>
+              {/* <i className='fa fa-bookmark-o' style={{color: 'white'}}></i> */}
               Save Job
             </button>
             {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
@@ -1958,11 +1959,11 @@ const JobList = () => {
           )}
 
           {/* Pagination - Top (Desktop only) */}
-          <Pagination
+          {/* <Pagination
             pagination={pagination}
             onPageChange={handlePageChange}
             onJobsPerPageChange={handleJobsPerPageChange}
-          />
+          /> */}
 
           <div className="jobs-grid">
             {displayJobs.length === 0 ? (

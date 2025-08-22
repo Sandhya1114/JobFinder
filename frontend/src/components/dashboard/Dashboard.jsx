@@ -65,11 +65,11 @@ const Dashboard = ({ user, onSignOut }) => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-header">
-       <h1> Welcome back, {user?.user_metadata?.full_name || user?.user_metadata?.name || 'Saloni Rana'}!</h1>
+      {/* <div className="dashboard-header">
+       <h1> Welcome back, {user?.user_metadata?.full_name || user?.user_metadata?.name || 'Saloni Rana'}!</h1> */}
         {/* <h1>Welcome back, {user?.email || 'User '}!</h1> */}
         {/* <button onClick={handleSignOut}>Sign Out</button> */}
-      </div>
+      {/* </div> */}
       <div className="dashboard-layout">
         <nav className="dashboard-sidebar">
           <div className="nav-tabs">

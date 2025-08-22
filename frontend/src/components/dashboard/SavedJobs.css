@@ -3,7 +3,8 @@
 /* Job Actions Styling */
 .job-actions {
   display: flex;
-  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
   gap: 8px;
   align-items: center;
   margin-top: 12px;
@@ -133,7 +134,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
-  color: #2d3748;
+  color: #b0aa85;
   font-size: 16px;
   font-weight: 600;
 }
@@ -354,8 +355,8 @@
 
 .job-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  border-color: #cbd5e0;
+  box-shadow: 8px 8px 25px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #2d2b23;
 }
 
 .item-header {

@@ -9,19 +9,21 @@ h1 {
 }
 
 .job-card {
-  border: 1px solid #ddd;
+ border-left: 5px solid #676452;
   background-color: #fff;
   padding: 20px;
   border-radius: 12px;
   max-width: 600px;
   margin: 20px auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 8px 8px 10px rgb(0 0 0 / 29%);
 }
 
 .job-card h2 {
   font-size: 20px;
   margin-bottom: 10px;
   color: #222;
+  
 }
 
 .job-card p {
@@ -30,7 +32,7 @@ h1 {
 }
 
 .job-list-container {
-  background-color: #f9f9f985;
+  /* background-color: #f9f9f985; */
   margin: 0 auto;
   padding: 20px;
 }
@@ -38,7 +40,8 @@ h1 {
 /* Filters Section */
 /* Filters Section */
 .filters-section {
-  background: #f8f9fa47;
+  background: #f8f9fae0;
+    padding: 18px;
   /* padding: 20px; */
   border-radius: 8px;
   margin-bottom: 20px;
@@ -73,17 +76,17 @@ h1 {
 }
 
 .clear-filters-btn {
-  padding: 10px 20px;
-  background: #9684C0;
+  padding: 5px 10px;
+  background: #b1ab86;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 30px;
   cursor: pointer;
   font-size: 14px;
 }
 
 .clear-filters-btn:hover {
-  background: #9684C0;
+  background: #878365;
 }
 
 /* Results Count */
@@ -116,6 +119,7 @@ h1 {
 .job-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  
 }
 
 .job-header {
@@ -139,7 +143,7 @@ h1 {
 
 .company-name {
   font-weight: 600;
-  color: #a396c3;
+  color: #b1ab86;
 }
 
 .job-location {
@@ -158,8 +162,8 @@ h1 {
 }
 
 .category-badge {
-  background: #e3f2fd;
-  color: #9684C0;
+  background: #fefae0;
+  color: #000000;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -213,9 +217,9 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
+  /* margin-top: 15px; */
+  /* padding-top: 15px; */
+  /* border-top: 1px solid #eee; */
 }
 
 .posted-date {
@@ -225,7 +229,7 @@ h1 {
 }
 
 .apply-btn {
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -251,7 +255,7 @@ h1 {
 }
 
 .error {
-  color: #9684C0;
+  color: #b1ab86;
   background: #f8d7da;
   border: 1px solid #f5c6cb;
   border-radius: 6px;
@@ -273,7 +277,7 @@ h1 {
   justify-content: center;
   padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9f9f985;
+  /* background-color: #f9f9f985; */
 }
 
 .job-list-layout {
@@ -294,7 +298,7 @@ h1 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #333;
+  color: #b1ab86;
   border-bottom: 1px solid #eee;
   padding-bottom: 4px;
 }
@@ -304,7 +308,7 @@ h1 {
   align-items: center;
   margin-bottom: 8px;
   font-size: 14px;
-  color: #444;
+  color: #b1ab86;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -312,7 +316,7 @@ h1 {
 }
 
 .filter-checkbox:hover {
-  color: #9684C0;
+  color: #b1ab86;
 }
 
 .filter-checkbox input {
@@ -336,13 +340,13 @@ h1 {
 }
 
 .filter-checkbox:hover input ~ .checkmark {
-  border-color: #9684C0;
+  border-color: #b1ab86;
   box-shadow: 0 0 0 2px rgba(150, 132, 192, 0.1);
 }
 
 .filter-checkbox input:checked ~ .checkmark {
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
-  border-color: #9684C0;
+  background: linear-gradient(135deg, #b1ab86 0%, #fefae0 100%);
+  border-color: #fefae0;
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -387,8 +391,8 @@ h1 {
 }
 
 .apply-filters-btn {
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  padding: 8px 15px;
+  background: linear-gradient(135deg, #b1ab86 0%, #b1ab86 100%);
   color: white;
   border: none;
   border-radius: 25px;
@@ -398,7 +402,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  /* gap: 8px; */
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -437,7 +441,7 @@ h1 {
   right: -5px;
   width: 10px;
   height: 10px;
-  background: #ff4757;
+  background: #b1ab86;
   border-radius: 50%;
   animation: pulseNotification 1.5s infinite;
 }
@@ -454,28 +458,41 @@ h1 {
 }
 
 .clear-filters-btn {
-  padding: 10px 20px;
+  padding: 8px 15px;
   background: transparent;
-  color: #9684C0;
-  border: 2px solid #9684C0;
+  color: #b1ab86;
+  border: 2px solid #8e8a6c;
   border-radius: 25px;
   cursor: pointer;
-  font-weight: 600;
+  /* font-weight: 600; */
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  /* gap: 8px; */
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .clear-filters-btn:hover {
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.3);
+}
+.fa-refresh,.fa-check{
+  color:#b1ab86 ;
+}
+.fa-refresh:hover,.fa-check:hover{
+  color: #fff;
+}
+
+.fa-check{
+  color: #ffffff;
+}
+.highlighted:active{
+  color: #ffffff;
 }
 .jobs-content {
   flex: 1;
@@ -510,6 +527,7 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   padding: 20px;
+
 }
 
 .job-header {
@@ -574,7 +592,8 @@ h1 {
 
 .filters-sidebar {
   width: 329px;
-  background-color: #f9f9f9;
+  border:1px solid white;
+  background-color: #f9f9f9a6;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
@@ -606,18 +625,18 @@ h1 {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #9684C0;
+  border-bottom: 2px solid #b1ab86;
 }
 
 .sidebar-header h3 {
   margin: 0;
-  color: #9684C0;
+  color: #b1ab86;
   font-size: 18px;
   font-weight: 600;
 }
 
 .sidebar-close {
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   border: none;
   border-radius: 50%;
@@ -635,10 +654,10 @@ h1 {
   background: #7b6d9c;
 }
 
-.save-btn {
+.job-actions .save-btn {
   display: flex;
   justify-content: center;
-  background-color: rgba(150, 132, 192);
+  background-color: #b1ab86;
   color: white;
   border: none;
   border-radius: 6px;
@@ -650,7 +669,7 @@ h1 {
 
 .save-message {
   background-color: #d4edda;
-  color: #155724;
+  color: #b1ab86;
   border: 1px solid #c3e6cb;
   padding: 12px;
   border-radius: 6px;
@@ -712,7 +731,7 @@ h1 {
   margin: 0px 5px;
 }
 
-.save-btn:hover {
+.job-actions .save-btn:hover {
   background-color: #D7D3BF;
   color: #fff;
 }
@@ -726,7 +745,7 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.42);
+  /* background-color: rgba(255, 255, 255, 0.42); */
   border: 1px solid white;
   border-radius: 50px;
   max-width: 1000px;
@@ -804,7 +823,7 @@ h1 {
   border: none;
   padding: 10px 24px;
   border-radius: 30px;
-  font-size: 24px;
+  font-size: 16px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
@@ -816,10 +835,13 @@ h1 {
 .sticky-search-bar {
   position: sticky;
   top: 15px;
-  z-index: 999;
-  background-color: #ffffff;
-  padding: 10px 20px;
+  z-index: 99;
+  /* background-color: #ffffff; */
+  padding: 5px 15px;
 }
+/* .modal-footer button .fa-bookmark-o{
+ color: transparent;
+} */
 
 /* Mobile infinite scroll styles */
 .mobile-job-info {
@@ -830,7 +852,7 @@ h1 {
   background: rgba(150, 132, 192, 0.1);
   border-radius: 15px;
   font-size: 14px;
-  color: #9684C0;
+  color: #b1ab86;
   font-weight: 600;
 }
 
@@ -853,7 +875,7 @@ h1 {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #9684C0;
+  border-top: 4px solid #b1ab86;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -864,7 +886,7 @@ h1 {
 }
 
 .loading-spinner span {
-  color: #9684C0;
+  color: #b1ab86;
   font-size: 14px;
   font-weight: 500;
 }
@@ -872,7 +894,7 @@ h1 {
 .end-message {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #9684C0, #a396c3);
+  background: linear-gradient(135deg, #b1ab86, #a396c3);
   color: white;
   border-radius: 15px;
   font-size: 16px;
@@ -894,7 +916,7 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  background: linear-gradient(135deg, #a396c3 , #764ba2);
+  background: linear-gradient(135deg, #cac49a , #b1ab86);
   color: white;
   border: none;
   border-radius: 25px;
@@ -902,13 +924,14 @@ h1 {
   cursor: pointer;
   font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 8px 25px #a396c3c7 ;
+  box-shadow: 0 8px 25px #dbd4a6 ;
   transition: all 0.3s ease;
 }
 
 .filter-toggle:hover {
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 12px 35px #a396c3a2 ;
+  box-shadow: 0 12px 35px #b1ab86
+   ;
 }
 
 /* Sidebar overlay for mobile - hidden by default */
@@ -943,13 +966,15 @@ h1 {
   gap: 20px;
   background: transparent;
   border-radius: 12px;
+  background-color: #ffffff85;
 }
 
 .pagination-info {
-  color: #4a5568;
+  color: #ffffff;
   font-size: 15px;
   font-weight: 600;
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background-color: #fff;
+  /* background: linear-gradient(135deg, #b1ab86 0%, #a396c3 100%); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -973,7 +998,7 @@ h1 {
   padding: 12px 20px;
   border: 2px solid transparent;
   background: transparent;
-  color: #9684C0;
+  color: #b1ab86;
   border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
@@ -985,7 +1010,7 @@ h1 {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  border: 2px solid #9684C0;
+  border: 2px solid #b1ab86;
 }
 
 .pagination-btn::before {
@@ -1006,7 +1031,7 @@ h1 {
 .pagination-btn:hover:not(.disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(150, 132, 192, 0.4);
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #b1ab86 0%, #6c6851 100%);
   color: white;
 }
 
@@ -1017,11 +1042,12 @@ h1 {
 
 .pagination-btn.disabled {
   background: transparent;
-  color: #a0aec0;
+  color: #989494;
+  
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-  border-color: #e2e8f0;
+  border-color: #dcd5a6;
 }
 
 .pagination-btn i {
@@ -1033,9 +1059,11 @@ h1 {
   width: 16px;
   height: 16px;
   line-height: 1;
-  color: white;
+  color: #b1ab86;
 }
-
+.pagination-btn i:hover{
+  color: #fff;
+}
 .pagination-btn:hover:not(.disabled) .fa-chevron-left {
   transform: translateX(-2px);
 }
@@ -1054,9 +1082,9 @@ h1 {
 .pagination-number {
   width: 45px;
   height: 45px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #b1ab86;
   background: transparent;
-  color: #4a5568;
+  color: #b1ab86;
   border-radius: 50%;
   cursor: pointer;
   font-size: 14px;
@@ -1077,7 +1105,7 @@ h1 {
   left: 50%;
   width: 0;
   height: 0;
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #b1ab86 0%, #6a664f 100%);
   border-radius: 50%;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translate(-50%, -50%);
@@ -1091,7 +1119,7 @@ h1 {
 
 .pagination-number:hover:not(.dots):not(.active) {
   color: white;
-  border-color: #9684C0;
+  border-color: #aca889;
   transform: translateY(-3px);
   box-shadow: 0 8px 25px rgba(150, 132, 192, 0.3);
 }
@@ -1102,8 +1130,8 @@ h1 {
 }
 
 .pagination-number.active {
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
-  border-color: #9684C0;
+  background: linear-gradient(135deg, #b1ab86 0%, #817d61 100%);
+  border-color: #b1ab86;
   color: white;
   font-weight: 700;
   transform: scale(1.1);
@@ -1127,7 +1155,7 @@ h1 {
   border: none;
   background: transparent;
   cursor: default;
-  color: #9684C0;
+  color: #b1ab86;
   font-weight: 700;
   font-size: 16px;
   transform: none;
@@ -1151,12 +1179,12 @@ h1 {
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: #4a5568;
+  color: #b1ab86;
   font-weight: 600;
   background: transparent;
   padding: 12px 20px;
   border-radius: 25px;
-  border: 1px solid rgba(150, 132, 192, 0.2);
+  border: 2px solid rgba(150, 132, 192, 0.2);
 }
 
 .jobs-per-page label {
@@ -1164,31 +1192,31 @@ h1 {
   align-items: center;
   gap: 12px;
   font-weight: 600;
-  color: #9684C0;
+  color: #ffffff;
 }
 
 .jobs-per-page-select {
   padding: 8px 16px;
-  border: 2px solid #e2e8f0;
+  border: 2px solid #b1ab86;
   border-radius: 20px;
   background: transparent;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   min-width: 80px;
-  color: #4a5568;
+  color: #b1ab86;
   transition: all 0.3s ease;
 }
 
 .jobs-per-page-select:hover {
-  border-color: #9684C0;
+  border-color: #b1ab86;
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.2);
   transform: translateY(-1px);
 }
 
 .jobs-per-page-select:focus {
   outline: none;
-  border-color: #9684C0;
+  border-color: #b1ab86;
   box-shadow: 0 0 0 4px rgba(150, 132, 192, 0.2);
   transform: translateY(-1px);
 }
@@ -1240,12 +1268,14 @@ h1 {
     height: 100vh;
     z-index: 1000;
     transform: translateX(-100%);
-    background-color: #f9f9f9;
+   
     border-radius: 0;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     padding: 20px;
     transition: transform 0.3s ease;
+     border:1px solid white;
+  background-color: #f9f9f9a6;
   }
   
   .filters-sidebar.open {
@@ -1312,7 +1342,9 @@ h1 {
     align-items: stretch;
   }
   
-  .job-actions {
+  .job-footer .job-actions {
+    width: 100%;
+    margin: auto;
     display: flex;
     gap: 10px;
   }
@@ -1330,7 +1362,7 @@ h1 {
     padding: 4px 8px;
     margin-bottom: 6vh;
     gap: 4px;
-    border-radius: 25px;
+    
   }
   
   .search-field {
@@ -1532,18 +1564,20 @@ h1 {
 /* Toast notification styles */
 .toast-popup {
   position: fixed;
-  bottom: 20px;
-  left: 50%;
+  bottom: 5vh;
+  right: 10px;
   transform: translateX(-50%);
-  background: #333;
-  color: white;
+  background: #fffffff1;
+  color: #b1ab86;
   padding: 12px 24px;
   border-radius: 25px;
   font-size: 14px;
   z-index: 1000;
   animation: slideUp 0.3s ease-out;
-  max-width: 90%;
+  max-width: 10%;
+  margin: auto;
   text-align: center;
+  border: 1px solid #fff;
 }
 
 @keyframes slideUp {
@@ -1568,10 +1602,10 @@ h1 {
   
   .job-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.43);
   }
   
-  .job-actions {
+  .job-footer .job-actions {
     flex-direction: row;
     gap: 10px;
     justify-content: space-around;
@@ -1600,12 +1634,12 @@ h1 {
   display: none;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #9684C0;
+  border-bottom: 2px solid #b1ab86;
 }
 
 .sidebar-header h3 {
   margin: 0;
-  color: #9684C0;
+  color: #b1ab86;
   font-size: 18px;
   font-weight: 600;
 }
@@ -1615,7 +1649,7 @@ h1 {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   border: none;
   border-radius: 50%;
@@ -1676,7 +1710,8 @@ h1 {
     height: 100vh;
     z-index: 1000;
     transform: translateX(-100%);
-    background-color: #f9f9f9;
+     border:1px solid white;
+     background-color: #f9f9f9a6;
     border-radius: 0;
     box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
     overflow-y: auto;
@@ -1764,7 +1799,7 @@ h1 {
   align-items: flex-start;
   padding: 30px 30px 20px 30px;
   border-bottom: 2px solid #f0f0f0;
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #b1ab86 0%, #d8d2a5 100%);
   color: white;
 }
 
@@ -1779,6 +1814,8 @@ h1 {
   margin: 0 0 12px 0;
   line-height: 1.2;
   color: white;
+  padding-left: 14px;
+  text-align: left;
 }
 
 .modal-company-info {
@@ -1787,6 +1824,9 @@ h1 {
   gap: 8px;
   font-size: 16px;
   opacity: 0.95;
+  justify-content: start;
+    margin-left: 1.0rem;
+    margin-bottom: 2vh;
 }
 
 .modal-company-name {
@@ -1806,8 +1846,8 @@ h1 {
   border: 2px solid rgba(255, 255, 255, 0.3);
   color: white;
   border-radius: 50%;
-  width: 45px;
-  height: 45px;
+  width: 60px;
+  height: 60px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1844,13 +1884,13 @@ h1 {
 }
 
 .modal-tab:hover {
-  color: #9684C0;
+  color: #b1ab86;
   background: rgba(150, 132, 192, 0.05);
 }
 
 .modal-tab.active {
-  color: #9684C0;
-  border-bottom-color: #9684C0;
+  color: #b1ab86;
+  border-bottom-color: #b1ab86;
   background: white;
 }
 
@@ -1897,7 +1937,7 @@ h1 {
 }
 
 .modal-category-badge {
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #b1ab86 0%, #c5bf95 100%);
   color: white !important;
   padding: 6px 16px;
   border-radius: 20px;
@@ -1922,7 +1962,7 @@ h1 {
   color: #343a40;
   margin: 0 0 15px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid #9684C0;
+  border-bottom: 2px solid #b1ab86;
   position: relative;
 }
 
@@ -1936,7 +1976,7 @@ h1 {
   left: 0;
   width: 50px;
   height: 2px;
-  background: linear-gradient(90deg, #9684C0, #a396c3);
+  background: linear-gradient(90deg, #b1ab86, #b1ab86);
 }
 
 .modal-description p {
@@ -1969,7 +2009,7 @@ h1 {
   position: absolute;
   left: 0;
   top: 0;
-  color: #9684C0;
+  color: #b1ab86;
   font-weight: bold;
   font-size: 16px;
 }
@@ -2002,6 +2042,7 @@ h1 {
   padding: 25px 30px;
   border-top: 2px solid #f0f0f0;
   background: #f8f9fa;
+  margin: auto;
 }
 
 .modal-actions {
@@ -2030,19 +2071,19 @@ h1 {
 
 .modal-save-btn {
   background: transparent;
-  color: #9684C0;
-  border: 2px solid #9684C0;
+  color: #b1ab86;
+  border: 2px solid #b1ab86;
 }
 
 .modal-save-btn:hover {
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(150, 132, 192, 0.3);
 }
 
 .modal-apply-btn {
-  background: linear-gradient(135deg, #9684C0 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #b1ab86 0%, #c8c297 100%);
   color: white;
   border: 2px solid transparent;
 }
@@ -2093,8 +2134,8 @@ h1 {
 
 .view-details-btn {
   background: transparent;
-  color: #9684C0;
-  border: 2px solid #9684C0;
+  color: #b1ab86;
+  border: 2px solid #b1ab86;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -2108,7 +2149,7 @@ h1 {
 }
 
 .view-details-btn:hover {
-  background: #9684C0;
+  background: #b1ab86;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.3);
@@ -2210,7 +2251,7 @@ h1 {
   }
 
   /* Mobile job actions */
-  .job-actions {
+  .job-footer .job-actions {
     flex-direction: column;
     gap: 8px;
     align-items: stretch;
@@ -2281,7 +2322,7 @@ h1 {
 
   .modal-tab.active {
     background: #2d3748;
-    color: #9684C0;
+    color: #b1ab86;
   }
 
   .modal-quick-info {
