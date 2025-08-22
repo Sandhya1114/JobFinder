@@ -167,7 +167,7 @@ p {
 }
 
 /* Typography */
-h3 {
+.card h3 {
   margin: 10px 0 15px 0;
   font-size: 1.6em;
   font-weight: 700;
