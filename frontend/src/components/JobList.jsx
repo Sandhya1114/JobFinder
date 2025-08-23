@@ -1888,7 +1888,7 @@ const JobList = () => {
 
         <div className="jobs-content">
           {/* Search Bar in JobList */}
-          {isJobPage && (
+          {/* {isJobPage && (
             <div className="search-bar sticky-search-bar">
               <div className="search-field">
                 <span className="icon"><i className="fa fa-search"></i></span>
@@ -1946,7 +1946,7 @@ const JobList = () => {
                 Search
               </button>
             </div>
-          )}
+          )} */}
 
           {/* Mobile job count info */}
           {isMobile && (

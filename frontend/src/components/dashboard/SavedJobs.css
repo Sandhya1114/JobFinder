@@ -356,9 +356,9 @@
 .job-card:hover {
   transform: translateY(-2px);
   box-shadow: 8px 8px 25px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid #2d2b23;
+  border-left: 5px solid #5D61BF;
 }
-
+/* #676452 */
 .item-header {
   display: flex;
   justify-content: space-between;
