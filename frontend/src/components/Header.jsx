@@ -334,9 +334,9 @@ const HeaderSearchBar = ({ onSearch }) => {
       {/* Expanded search overlay */}
       <div className={`search-overlay ${isExpanded ? 'active' : ''}`} onClick={() => setIsExpanded(false)}>
         <div className="search-overlay-content" onClick={(e) => e.stopPropagation()}>
-          <button className="search-close-btn" onClick={() => setIsExpanded(false)}>
+          {/* <button className="search-close-btn" onClick={() => setIsExpanded(false)}>
             <i className="fa fa-times"></i>
-          </button>
+          </button> */}
           
           <div className="search-bar">
             <div className="search-field">
