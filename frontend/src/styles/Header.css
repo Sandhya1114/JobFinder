@@ -98,7 +98,7 @@ header.shrink .header-options a {
 .user-avatar {
   width: 50px;
   height: 50px;
-  background-color: #020202be;
+  background-color: #020202;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -621,7 +621,8 @@ header.shrink .header-options a {
   align-items: center;
   background: rgb(255 255 255 / 13%);
   border-radius: 25px;
-  padding: 8px 16px;
+  padding: 3px 8px;
+  /* padding: 8px 16px; */
   margin: 0 20px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -647,6 +648,7 @@ header.shrink .header-options a {
     height: 38px;
     width: 38px;
     border-radius: 30px;
+     box-shadow: rgba(7, 7, 7, 0.366) 2px 2px 5px;
 }
 
 .header-search-compact .search-placeholder {
@@ -661,7 +663,7 @@ header.shrink .header-options a {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
   z-index: 9999;
@@ -835,7 +837,7 @@ header.shrink .header-options a {
 
 .jobs-page .header-options.desktop-nav a {
   margin: 0px 15px;
-      font-size: 2em;
+      font-size: 20px;
 }
 
 .jobs-page .accounts-btn.desktop-account {
