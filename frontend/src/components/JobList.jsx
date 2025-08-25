@@ -1987,7 +1987,7 @@ const JobList = () => {
             </div>
           )}
           
-          <div className="filters-section">
+         <div className="filters-section">
             {/* Filter Action Buttons */}
             <div className="filter-actions">
               <button 
@@ -2006,79 +2006,273 @@ const JobList = () => {
               </button>
             </div>
 
-            <div className="FilterGroup">
-              <h4>Category</h4>
-              {categories.map((category) => (
-                <label key={category.id} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={pendingFilters.selectedCategory?.includes(category.id)}
-                    onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
-                  />
-                  <span className="checkmark"></span>
-                  {category.name}
-                </label>
-              ))}
+            {/* Schedule Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Schedule</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={() => {}}
+              >
+                <option value="">Select Schedule</option>
+                <option value="full-time">Full Time</option>
+                <option value="part-time">Part Time</option>
+                <option value="flexible">Flexible</option>
+              </select>
             </div>
 
-            <div className="FilterGroup">
-              <h4>Company</h4>
-              {companies.map((company) => (
-                <label key={company.id} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={pendingFilters.selectedCompany?.includes(company.id)}
-                    onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
-                  />
-                  <span className="checkmark"></span>
-                  {company.name}
-                </label>
-              ))}
+            {/* Categories Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Categories</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const categoryId = parseInt(e.target.value);
+                    const isSelected = pendingFilters.selectedCategory?.includes(categoryId);
+                    handlePendingFilterChange('selectedCategory', categoryId, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Category</option>
+                {categories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+              {pendingFilters.selectedCategory?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedCategory.map((categoryId) => {
+                    const category = categories.find(c => c.id === categoryId);
+                    return category ? (
+                      <span key={categoryId} className="selected-filter-tag">
+                        {category.name}
+                        <button 
+                          onClick={() => handlePendingFilterChange('selectedCategory', categoryId, false)}
+                          className="remove-filter"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
 
-            <div className="FilterGroup">
-              <h4>Experience</h4>
-              {experienceOptions.map((level) => (
-                <label key={level} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={pendingFilters.selectedExperience?.includes(level)}
-                    onChange={(e) => handlePendingFilterChange('selectedExperience', level, e.target.checked)}
-                  />
-                  <span className="checkmark"></span>
-                  {level}
-                </label>
-              ))}
+            {/* Industries/Companies Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Industries</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const companyId = parseInt(e.target.value);
+                    const isSelected = pendingFilters.selectedCompany?.includes(companyId);
+                    handlePendingFilterChange('selectedCompany', companyId, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Industry</option>
+                {companies.map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </select>
+              {pendingFilters.selectedCompany?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedCompany.map((companyId) => {
+                    const company = companies.find(c => c.id === companyId);
+                    return company ? (
+                      <span key={companyId} className="selected-filter-tag">
+                        {company.name}
+                        <button 
+                          onClick={() => handlePendingFilterChange('selectedCompany', companyId, false)}
+                          className="remove-filter"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
 
-            <div className="FilterGroup">
-              <h4>Location</h4>
-              {locationOptions.map((location) => (
-                <label key={location} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={pendingFilters.selectedLocation?.includes(location)}
-                    onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
-                  />
-                  <span className="checkmark"></span>
-                  {location}
-                </label>
-              ))}
+            {/* Experience Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Experience</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const experience = e.target.value;
+                    const isSelected = pendingFilters.selectedExperience?.includes(experience);
+                    handlePendingFilterChange('selectedExperience', experience, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Experience</option>
+                {experienceOptions.map((level) => (
+                  <option key={level} value={level}>
+                    {level}
+                  </option>
+                ))}
+              </select>
+              {pendingFilters.selectedExperience?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedExperience.map((experience) => (
+                    <span key={experience} className="selected-filter-tag">
+                      {experience}
+                      <button 
+                        onClick={() => handlePendingFilterChange('selectedExperience', experience, false)}
+                        className="remove-filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="FilterGroup">
-              <h4>Type</h4>
-              {typeOptions.map((type) => (
-                <label key={type} className="filter-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={pendingFilters.selectedType?.includes(type)}
-                    onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
-                  />
-                  <span className="checkmark"></span>
-                  {type}
-                </label>
-              ))}
+            {/* Distance/Location Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Distance</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const location = e.target.value;
+                    const isSelected = pendingFilters.selectedLocation?.includes(location);
+                    handlePendingFilterChange('selectedLocation', location, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Location</option>
+                {locationOptions.map((location) => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+              {pendingFilters.selectedLocation?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedLocation.map((location) => (
+                    <span key={location} className="selected-filter-tag">
+                      {location}
+                      <button 
+                        onClick={() => handlePendingFilterChange('selectedLocation', location, false)}
+                        className="remove-filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Job Type Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Job Type</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const type = e.target.value;
+                    const isSelected = pendingFilters.selectedType?.includes(type);
+                    handlePendingFilterChange('selectedType', type, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Job Type</option>
+                {typeOptions.map((type) => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+              {pendingFilters.selectedType?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedType.map((type) => (
+                    <span key={type} className="selected-filter-tag">
+                      {type}
+                      <button 
+                        onClick={() => handlePendingFilterChange('selectedType', type, false)}
+                        className="remove-filter"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Salary Filter */}
+            <div className="filter-dropdown-group">
+              <label className="filter-label">Salary Range</label>
+              <select 
+                className="filter-dropdown"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    const salary = e.target.value;
+                    const isSelected = pendingFilters.selectedSalary?.includes(salary);
+                    handlePendingFilterChange('selectedSalary', salary, !isSelected);
+                    e.target.value = ""; // Reset dropdown
+                  }
+                }}
+              >
+                <option value="">Select Salary Range</option>
+                {salaryRangeOptions.map((range) => {
+                  const [min, max] = range.split('-');
+                  const formatNumber = (num) => parseInt(num).toLocaleString();
+                  const displayText = max ? 
+                    `$${formatNumber(min)} - $${formatNumber(max)}` : 
+                    `$${formatNumber(min)}+`;
+                  return (
+                    <option key={range} value={range}>
+                      {displayText}
+                    </option>
+                  );
+                })}
+              </select>
+              {pendingFilters.selectedSalary?.length > 0 && (
+                <div className="selected-filters">
+                  {pendingFilters.selectedSalary.map((salary) => {
+                    const [min, max] = salary.split('-');
+                    const formatNumber = (num) => parseInt(num).toLocaleString();
+                    const displayText = max ? 
+                      `$${formatNumber(min)} - $${formatNumber(max)}` : 
+                      `$${formatNumber(min)}+`;
+                    return (
+                      <span key={salary} className="selected-filter-tag">
+                        {displayText}
+                        <button 
+                          onClick={() => handlePendingFilterChange('selectedSalary', salary, false)}
+                          className="remove-filter"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
