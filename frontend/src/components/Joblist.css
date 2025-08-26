@@ -1774,7 +1774,7 @@ h1 {
   background: white;
   border-radius: 16px;
   width: 100%;
-  max-width: 800px;
+  max-width: 50vw;
   max-height: 90vh;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -1801,8 +1801,9 @@ h1 {
   align-items: flex-start;
   padding: 30px 30px 20px 30px;
   border-bottom: 2px solid #f0f0f0;
-  background: linear-gradient(135deg, #000 0%, #d8d2a5 100%);
+  /* background: linear-gradient(135deg, #000 0%, #d8d2a5 100%); */
   color: white;
+  background-color: #bfbcbcb0;
 }
 
 .modal-title-section {
@@ -1815,7 +1816,7 @@ h1 {
   font-weight: 700;
   margin: 0 0 12px 0;
   line-height: 1.2;
-  color: white;
+  color: rgb(0, 0, 0);
   padding-left: 14px;
   text-align: left;
 }
@@ -1827,12 +1828,12 @@ h1 {
   font-size: 16px;
   opacity: 0.95;
   justify-content: start;
-    margin-left: 1.0rem;
-    margin-bottom: 2vh;
+  margin-left: 1.0rem;
+  margin-bottom: 2vh;
 }
 
 .modal-company-name {
-  font-weight: 600;
+  font-weight: 300;
 }
 
 .modal-separator {
@@ -1939,7 +1940,8 @@ h1 {
 }
 
 .modal-category-badge {
-  background: linear-gradient(135deg, #000 0%, #c5bf95 100%);
+  background-color: #000;
+  /* background: linear-gradient(135deg, #000 0%, #c5bf95 100%); */
   color: white !important;
   padding: 6px 16px;
   border-radius: 20px;
@@ -2043,7 +2045,7 @@ h1 {
 .modal-footer {
   padding: 25px 30px;
   border-top: 2px solid #f0f0f0;
-  background: #f8f9fa;
+  /* background: #f8f9fa; */
   margin: auto;
 }
 
@@ -2058,9 +2060,9 @@ h1 {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 15px 30px;
+  padding: 15px 20px;
   border: none;
-  border-radius: 25px;
+  border-radius: 35px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -2246,10 +2248,11 @@ h1 {
 
   .modal-save-btn,
   .modal-apply-btn {
-    padding: 12px 20px;
+    /* padding: 12px 20px; */
     font-size: 14px;
     min-width: unset;
-    width: 100%;
+    /* width: 100%; */
+   
   }
 
   /* Mobile job actions */
@@ -2668,7 +2671,7 @@ h1 {
 .filter-dropdown-header {
   padding: 15px 20px 10px 20px;
   border-bottom: 2px solid #f8f9fa;
-  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
+    background: linear-gradient(135deg, #000 0%, #7f7f80 100%);
   border-radius: 12px 12px 0 0;
 }
 
@@ -2750,7 +2753,7 @@ h1 {
 }
 
 .filter-option input:checked ~ .checkmark-mini {
-  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
+    background: linear-gradient(135deg, #000 0%, #7f7f80 100%);
   border-color: #000;
   transform: translateY(-50%) scale(1.1);
 }
@@ -2810,7 +2813,7 @@ h1 {
 }
 
 .apply-btn-mini {
-  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #000 0%, #7f7f80 100%);
   color: white;
 }
 

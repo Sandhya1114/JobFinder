@@ -212,7 +212,7 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
             </button>
             {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
               <button onClick={onApply} className="modal-apply-btn">
-                <i className="fa fa-external-link"></i>
+                {/* <i className="fa fa-external-link"></i> */}
                 Apply Now
               </button>
             ) : (
