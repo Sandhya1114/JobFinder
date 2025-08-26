@@ -849,3 +849,173 @@ background: rgb(255 255 255 / 58%);
 .jobs-page .accounts-btn.desktop-account {
   margin-left: 10px;
 }
+/* Add these styles to your existing Header.css file */
+
+/* Active navigation styles for desktop */
+.header-options a {
+  margin: 0px 30px;
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: monospace;
+  padding: 8px 16px;
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Active state for desktop navigation */
+.header-options a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Hover effect for non-active links */
+.header-options a:not(.active):hover {
+  background: rgba(103, 100, 82, 0.1);
+  color: #676452;
+  transform: translateY(-1px);
+}
+
+/* Shrinked nav links with active state */
+header.shrink .header-options a {
+  margin: 0px 15px;
+  font-size: 18px;
+  font-weight: 900;
+  padding: 6px 12px;
+}
+
+header.shrink .header-options a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+}
+
+/* Mobile navigation active styles */
+.mobile-nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-decoration: none;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: monospace;
+  padding: 18px 20px;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 2px solid transparent;
+}
+
+.mobile-nav-links a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(132, 36, 132, 0.1) 0%, rgba(132, 36, 132, 0.05) 100%);
+  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+/* Active state for mobile navigation */
+.mobile-nav-links a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));;
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(103, 100, 82, 0.4);
+  transform: translateX(5px);
+}
+
+.mobile-nav-links a.active::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  left: 0;
+}
+
+.mobile-nav-links a.active .nav-icon {
+  color: white !important;
+  transform: scale(1.1);
+}
+
+/* Hover effect for non-active mobile links */
+.mobile-nav-links a:not(.active):hover::before {
+  left: 0;
+}
+
+.mobile-nav-links a:not(.active):hover {
+  transform: translateX(10px);
+  border-color: rgba(132, 36, 132, 0.3);
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+}
+
+.nav-icon {
+  font-size: 20px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-links a:not(.active):hover .nav-icon {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.nav-text {
+  z-index: 1;
+  position: relative;
+}
+
+/* Jobs page specific styles with active navigation */
+.jobs-page .header-options.desktop-nav a {
+  margin: 0px 15px;
+  font-size: 20px;
+}
+
+.jobs-page .header-options.desktop-nav a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+}
+
+/* Alternative color scheme option - you can choose this instead */
+/* 
+.header-options a.active {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+.mobile-nav-links a.active {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white !important;
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+}
+*/
+
+/* Pulse animation for active items (optional) */
+@keyframes activeGlow {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(103, 100, 82, 0.5);
+  }
+}
+
+.header-options a.active {
+  animation: activeGlow 2s infinite;
+}
+
+.mobile-nav-links a.active {
+  animation: activeGlow 2s infinite;
+}

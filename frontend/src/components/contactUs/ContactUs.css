@@ -81,7 +81,7 @@ select.form-input {
   padding: 0.9rem;
   border-radius: 10px;
   border: none;
-  background: linear-gradient(to right, #9684C0, #7f719fff);
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -91,7 +91,7 @@ select.form-input {
 }
 
 .submit-button:hover {
-  background: linear-gradient(to right, #9684C0, #7f719fff);
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
