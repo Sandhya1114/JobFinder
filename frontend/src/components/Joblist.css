@@ -141,6 +141,8 @@ h1 {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  height: 5vh;
+  max-height: 5vh;
 }
 
 .company-name {
