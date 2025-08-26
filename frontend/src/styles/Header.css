@@ -741,6 +741,11 @@ background: rgb(255 255 255 / 58%);
   color: #6f6f6f;
   border-radius: 25px;
 }
+.jobs-page .header-options.desktop-nav{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .search-overlay .search-btn {
   background-color: #10131d;

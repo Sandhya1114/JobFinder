@@ -493,17 +493,21 @@ export default function Header({ user }) {
 
         {/* Desktop Navigation */}
         <div className="header-options desktop-nav">
-          <a href="/">Home</a>
+          <div>
+             <a href="/">Home</a>
           <a href="/jobs">Jobs</a>
           <a href="/about">About</a>
           <a href="/contact">Contact Us</a>
-        </div>
-
-        {/* Header Search Bar - only show on jobs page */}
+          </div>
+          
+          {/* Header Search Bar - only show on jobs page */}
         {isJobsPage && (
           <HeaderSearchBar onSearch={handleHeaderSearch} />
         )}
 
+        </div>
+
+        
         {/* Desktop User Account */}
         <div className="accounts-btn desktop-account" ref={userMenuRef}>
           {user ? (

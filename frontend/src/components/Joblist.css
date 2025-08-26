@@ -104,6 +104,8 @@ h1 {
   justify-content: center;
   flex-wrap: wrap;
   gap: 20px;
+  width: 80vw;
+    margin: auto;
 }
 
 .job-card {
@@ -273,10 +275,9 @@ h1 {
 
 .job-list-container {
   margin-top: 3vh;
-  width: 80vw;
-  display: flex;
+  /* display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 20px; */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   /* background-color: #f9f9f985; */
 }
@@ -591,10 +592,9 @@ h1 {
   color: #333;
 }
 
-/* FIXED: Hide sidebar by default on ALL screen sizes */
 .filters-sidebar {
   width: 329px;
-  border: 1px solid white;
+  border:1px solid white;
   background-color: #f9f9f9a6;
   border-radius: 12px;
   padding: 20px;
@@ -605,18 +605,6 @@ h1 {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
-  
-  /* FIXED: Hide by default with transform */
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: fixed;
-  left: 0;
-  z-index: 1000;
-}
-
-/* FIXED: Show sidebar when open class is added */
-.filters-sidebar.open {
-  transform: translateX(0);
 }
 
 .filters-sidebar::-webkit-scrollbar {
@@ -922,65 +910,30 @@ h1 {
   50% { transform: scale(1.05); }
 }
 
-/* FIXED: Filter toggle button - proper sizing and positioning */
+/* Mobile filter toggle - hidden by default */
 .filter-toggle {
+  display: none;
   position: fixed;
-  top: 15vh;
-    left: 12vw;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 999;
-  background: linear-gradient(135deg, #cac49a, #5D61BF);
+  background: linear-gradient(135deg, #cac49a , #5D61BF);
   color: white;
   border: none;
   border-radius: 25px;
-  padding: 12px 20px; /* FIXED: Reduced padding */
+  padding: 15px 30px;
   cursor: pointer;
-  font-size: 14px; /* FIXED: Reduced font size */
+  font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 8px 25px rgba(219, 212, 166, 0.4);
+  box-shadow: 0 8px 25px #dbd4a6 ;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: auto; /* FIXED: Ensure height is auto, not 100vh */
-  min-height: 44px; /* FIXED: Set minimum height instead */
-  width: auto; /* FIXED: Auto width */
-  white-space: nowrap;
 }
 
 .filter-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(93, 97, 191, 0.4);
-}
-
-.filter-toggle p {
-  color: #fff;
-  margin: 0;
-  font-weight: 600;
-  font-size: 14px; /* FIXED: Consistent font size */
-}
-
-.filter-toggle .fa-sliders,
-.filter-toggle .fa-times {
-  color: #fff;
-  font-size: 14px; /* FIXED: Reduced icon size */
-}
-
-.filter-toggle .filter-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 18px; /* FIXED: Smaller badge */
-  height: 18px;
-  background: #ff4757;
-  color: white;
-  border-radius: 50%;
-  font-size: 10px; /* FIXED: Smaller font */
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: pulseNotification 1.5s infinite;
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 12px 35px #5D61BF
+   ;
 }
 
 /* Sidebar overlay for mobile - hidden by default */
@@ -1270,34 +1223,25 @@ h1 {
   transform: translateY(-1px);
 }
 
-/* FIXED: Mobile responsive design */
+/* Responsive Design - ONLY for smaller screens */
 @media (max-width: 768px) {
-  /* FIXED: Mobile filter toggle positioning */
+  /* Show mobile filter toggle */
   .filter-toggle {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: auto;
-    padding: 14px 24px; /* FIXED: Slightly larger for mobile touch */
-    font-size: 15px;
-    min-height: 48px; /* FIXED: Better touch target */
+    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-
-  .filter-toggle:hover {
-    transform: translateX(-50%) translateY(-2px);
+  .filter-toggle p{
+    color: #fff;
+    text-align: center;
   }
-  
-  .filter-toggle p {
-    font-size: 15px;
+    .filter-toggle  .fa-filter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
   }
-  
-  .filter-toggle .fa-filter,
-  .filter-toggle .fa-sliders,
-  .filter-toggle .fa-times {
-    font-size: 16px;
-  }
-
   .job-list-container {
     padding: 10px;
   }
@@ -1315,10 +1259,9 @@ h1 {
   /* Show sidebar header on mobile */
   .sidebar-header {
     display: flex;
-    margin-top: 10vh; /* FIXED: Reduced top margin */
   }
   
-  /* FIXED: Mobile sidebar - full overlay */
+  /* Mobile sidebar overlay */
   .filters-sidebar {
     position: fixed;
     top: 0;
@@ -1327,13 +1270,14 @@ h1 {
     height: 100vh;
     z-index: 1000;
     transform: translateX(-100%);
+   
     border-radius: 0;
-    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
     padding: 20px;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid white;
-    background-color: #f9f9f9a6;
+    transition: transform 0.3s ease;
+     border:1px solid white;
+  background-color: #f9f9f9a6;
   }
   
   .filters-sidebar.open {
@@ -1352,11 +1296,14 @@ h1 {
     padding: 8px 16px;
   }
   
-  .jobs-grid {
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-  }
+ .jobs-grid {
+        /* display: flex
+; */
+        justify-content: center;
+        /* width: 93vw; */
+        align-items: center;
+        margin: auto;
+    }
   
   .job-card {
     width: 100%;
@@ -1404,15 +1351,20 @@ h1 {
     gap: 10px;
   }
   .apply-btn{
-    width: 82vw;
-    margin-left: 6px;
-  }
+  width: 82vw;
+   margin-left: 6px;}
+  /* .apply-btn,
+  .save-btn {
+    flex: 1;
+    text-align: center;
+  } */
   
   .search-bar {
     max-width: 100%;
     padding: 4px 8px;
     margin-bottom: 6vh;
     gap: 4px;
+    
   }
   
   .search-field {
@@ -1453,6 +1405,15 @@ h1 {
     width: 0.5px;
   }
   
+  /* Shorter placeholders for mobile */
+  .search-field input::placeholder {
+    content: "Skills, jobs...";
+  }
+  
+  .location-input::placeholder {
+    content: "Location";
+  }
+  
   .fa {
     display: flex;
     justify-content: center;
@@ -1461,15 +1422,22 @@ h1 {
     font-size: 19px;
   }
   
-  .icon .fa-search {
-    display: flex;
+  .search-field input:focus {
+    border: none;
+    outline: none;
   }
-
-  /* FIXED: Smaller filter toggle for very small screens */
-  .filter-toggle {
-    padding: 12px 20px;
-    font-size: 14px;
-    min-height: 44px;
+  
+  .experience-dropdown:focus {
+    border: none;
+    outline: none;
+  }
+  
+  .location-input:focus {
+    border: none;
+    outline: none;
+  }
+  .icon .fa-search{
+    display: flex;
   }
 }
 
@@ -1489,29 +1457,6 @@ h1 {
 @media (max-width: 768px) {
   .pagination-container {
     display: none !important;
-  }
-}
-
-/* FIXED: Desktop - ensure sidebar is hidden by default */
-@media (min-width: 769px) {
-  .filters-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1000;
-  }
-  
-  .filters-sidebar.open {
-    transform: translateX(0);
-  }
-
-  /* FIXED: Adjust job content margin when sidebar is open */
-  .job-list-layout:has(.filters-sidebar.open) .jobs-content {
-    margin-left: 329px;
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
@@ -1548,7 +1493,6 @@ h1 {
     color: #e2e8f0;
   }
 }
-
 /* Mobile Infinite Scroll Styles */
 .mobile-infinite-loader {
   padding: 20px;
@@ -1668,6 +1612,16 @@ h1 {
     gap: 10px;
     justify-content: space-around;
   }
+/*   
+  .apply-btn, .save-btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: 600;
+    border-radius: 8px;
+  }
+   */
+  
+  
 }
 
 /* Pagination hidden on mobile */
@@ -1676,6 +1630,119 @@ h1 {
     display: none;
   }
 }
+/* Alternative: Floating close button in top-right corner of screen */
+
+.sidebar-header {
+  display: none;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #5D61BF;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  color: #5D61BF;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Floating close button - positioned fixed to screen */
+.sidebar-close {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #5D61BF;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(150, 132, 192, 0.4);
+  z-index: 1003; /* Above everything */
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-close:hover {
+  background: #7b6d9c;
+  transform: scale(1.1) rotate(90deg);
+  box-shadow: 0 6px 20px rgba(150, 132, 192, 0.6);
+}
+
+.sidebar-close:active {
+  transform: scale(0.9) rotate(90deg);
+}
+
+.sidebar-close i {
+  display: flex;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  /* Show sidebar header on mobile */
+  .sidebar-header {
+    display: flex;
+    justify-content: flex-start; /* Only show title, close button is floating */
+    align-items: center;
+    margin-top: 15vh;
+  }
+  
+  /* Show floating close button when sidebar is open */
+  .filters-sidebar.open ~ * .sidebar-close,
+  .sidebar-overlay.show ~ * .sidebar-close,
+  body:has(.filters-sidebar.open) .sidebar-close,
+  .filters-sidebar.open .sidebar-close {
+    display: flex;
+  }
+  
+  /* Enhanced mobile sidebar */
+  .filters-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    transform: translateX(-100%);
+     border:1px solid white;
+     background-color: #f9f9f9a6;
+    border-radius: 0;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    padding: 20px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .filters-sidebar.open {
+    transform: translateX(0);
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .filters-sidebar {
+    width: 100%;
+  }
+  
+  .sidebar-close {
+    width: 55px;
+    height: 55px;
+    font-size: 22px;
+    top: 15px;
+    right: 15px;
+    margin-top: 14vh;
+  }
+}
+
+/* Add these styles to your existing Joblist.css file */
 
 /* Modal Styles */
 .modal-overlay {
@@ -1760,8 +1827,8 @@ h1 {
   font-size: 16px;
   opacity: 0.95;
   justify-content: start;
-  margin-left: 1.0rem;
-  margin-bottom: 2vh;
+    margin-left: 1.0rem;
+    margin-bottom: 2vh;
 }
 
 .modal-company-name {
@@ -2135,7 +2202,122 @@ h1 {
     font-size: 16px;
   }
 
-  
+  .modal-tabs {
+    padding: 0 15px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .modal-tab {
+    padding: 12px 20px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .modal-tab-content {
+    padding: 20px 15px;
+  }
+
+  .modal-quick-info {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .modal-description h3,
+  .modal-requirements h3,
+  .modal-responsibilities h3,
+  .modal-additional-details h3 {
+    font-size: 18px;
+  }
+
+  .modal-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-footer {
+    padding: 20px 15px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .modal-save-btn,
+  .modal-apply-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* Mobile job actions */
+  .job-footer .job-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .view-details-btn {
+    margin-right: 0;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .save-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 5px;
+  }
+
+  .modal-job-title {
+    font-size: 20px;
+  }
+
+  .modal-company-info {
+    font-size: 13px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .modal-separator {
+    display: none;
+  }
+
+  .modal-tab {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+
+  .modal-tab-content {
+    padding: 15px 10px;
+  }
+}
+
+/* Dark mode support for modal */
+@media (prefers-color-scheme: dark) {
+  .modal-content {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+
+  .modal-header {
+    border-bottom-color: #4a5568;
+  }
+
+  .modal-tabs {
+    background: #374151;
+    border-bottom-color: #4a5568;
+  }
+
   .modal-tab {
     color: #9ca3af;
   }
@@ -2184,7 +2366,7 @@ h1 {
 /* Updated CSS fixes for hiding sidebar initially */
 
 /* Filter toggle button - visible for both desktop and mobile */
-/* .filter-toggle {
+.filter-toggle {
   position: fixed;
   top: 30px;
   left: 30px;
@@ -2236,10 +2418,10 @@ h1 {
   align-items: center;
   justify-content: center;
   animation: pulseNotification 1.5s infinite;
-} */
+}
 
 /* MAIN FIX: Hide sidebar initially on ALL screen sizes */
-/* .filters-sidebar {
+.filters-sidebar {
   position: fixed;
   top: 0;
   left: 0;
@@ -2254,32 +2436,32 @@ h1 {
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: #ccc transparent;
-  
+  /* HIDE BY DEFAULT */
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-} */
+}
 
 /* Show sidebar when open class is applied */
-/* .filters-sidebar.open {
+.filters-sidebar.open {
   transform: translateX(0);
-} */
+}
 
 /* Scrollbar styling for sidebar */
-/* .filters-sidebar::-webkit-scrollbar {
+.filters-sidebar::-webkit-scrollbar {
   width: 6px;
-} */
+}
 
-/* .filters-sidebar::-webkit-scrollbar-track {
+.filters-sidebar::-webkit-scrollbar-track {
   background: transparent;
 }
 
 .filters-sidebar::-webkit-scrollbar-thumb {
   background-color: #ccc;
   border-radius: 6px;
-} */
+}
 
 /* Jobs content should take full width when sidebar is hidden */
-/* .job-list-layout {
+.job-list-layout {
   display: flex;
   width: 100%;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2290,10 +2472,10 @@ h1 {
   padding: 20px;
   width: 100%;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-} */
+}
 
 /* Sidebar overlay for when sidebar is open */
-/* .sidebar-overlay {
+.sidebar-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -2304,15 +2486,15 @@ h1 {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
-} */
+}
 
-/* .sidebar-overlay.show {
+.sidebar-overlay.show {
   opacity: 1;
   visibility: visible;
-} */
+}
 
 /* Sidebar header - hidden by default, shown on mobile when sidebar is open */
-/* .sidebar-header {
+.sidebar-header {
   display: none;
   justify-content: space-between;
   align-items: center;
@@ -2326,12 +2508,12 @@ h1 {
   color: #5D61BF;
   font-size: 18px;
   font-weight: 600;
-} */
+}
 
 /* Mobile specific styles */
-/* @media (max-width: 768px) { */
+@media (max-width: 768px) {
   /* Adjust filter toggle position for mobile */
-  /* .filter-toggle {
+  .filter-toggle {
     position: fixed;
     bottom: 30px;
     left: 50%;
@@ -2341,32 +2523,32 @@ h1 {
   
   .filter-toggle:hover {
     transform: translateX(-50%) translateY(-2px);
-  } */
+  }
 
   /* Show sidebar header on mobile */
-  /* .sidebar-header {
+  .sidebar-header {
     display: flex;
-    margin-top: 60px; 
+    margin-top: 60px; /* Space for mobile status bar */
   }
-   */
+  
   /* Full width sidebar on mobile */
-  /* .filters-sidebar {
+  .filters-sidebar {
     width: 280px;
     border-radius: 0;
-  } */
+  }
   
   /* Full width on very small screens */
-  /* @media (max-width: 480px) {
+  @media (max-width: 480px) {
     .filters-sidebar {
       width: 100%;
     }
   }
-} */
+}
 
 /* Ensure proper body scroll prevention when sidebar is open */
-/* .body-no-scroll {
+.body-no-scroll {
   overflow: hidden !important;
-} */
+}
 
 /* Desktop specific - ensure sidebar starts hidden */
 @media (min-width: 769px) {
@@ -2382,5 +2564,391 @@ h1 {
   /* No need for overlay on desktop, but keep it for consistency */
   .sidebar-overlay {
     background-color: rgba(0, 0, 0, 0.3);
+  }
+}
+/* Horizontal Filters - Desktop Only */
+.horizontal-filters {
+  display: none; /* Hidden by default, shown only on desktop */
+  background: linear-gradient(135deg, #3d3e3e1f 0%, #e9ecef1e 100%);
+  padding: 20px;
+  /* margin: 20px 0; */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+  width: 80vw;
+  margin:auto;
+}
+
+.filter-dropdown-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Individual Filter Dropdown */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-dropdown-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: #d9d9d9;
+  border: 2px solid #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  transition: all 0.3s ease;
+  min-width: 140px;
+  justify-content: space-between;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-dropdown-btn:hover {
+  border-color: #5D61BF;
+  color: #5D61BF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(93, 97, 191, 0.15);
+}
+
+.filter-dropdown-btn i:first-child {
+  color: #6c757d;
+  font-size: 14px;
+  display: flex;
+}
+
+.filter-dropdown-btn:hover i:first-child {
+  color: #5D61BF;
+}
+
+.filter-dropdown-btn i:last-child {
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  display: flex;
+}
+
+.filter-dropdown.active .filter-dropdown-btn i:last-child {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Content */
+.filter-dropdown-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  min-width: 280px;
+  max-width: 320px;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e0e0e0;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 5px;
+}
+
+.filter-dropdown:hover .filter-dropdown-content,
+.filter-dropdown.active .filter-dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Dropdown Header */
+.filter-dropdown-header {
+  padding: 15px 20px 10px 20px;
+  border-bottom: 2px solid #f8f9fa;
+  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.filter-dropdown-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* Filter Options */
+.filter-options {
+  padding: 15px 20px;
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+.filter-options::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #495057;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+  padding-left: 30px;
+  transition: all 0.2s ease;
+}
+
+.filter-option:hover {
+  color: #5D61BF;
+  background: rgba(93, 97, 191, 0.05);
+  border-radius: 6px;
+  margin: 0 -10px 12px -10px;
+  padding: 8px 10px 8px 40px;
+}
+
+.filter-option input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  left: 0;
+}
+
+.checkmark-mini {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 16px;
+  width: 16px;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-radius: 3px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-option:hover input ~ .checkmark-mini {
+  border-color: #5D61BF;
+  box-shadow: 0 0 0 2px rgba(93, 97, 191, 0.1);
+}
+
+.filter-option input:checked ~ .checkmark-mini {
+  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
+  border-color: #5D61BF;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.checkmark-mini:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 4px;
+  top: 1px;
+  width: 3px;
+  height: 7px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.filter-option input:checked ~ .checkmark-mini:after {
+  display: block;
+  animation: checkmarkMini 0.3s ease-in-out;
+}
+
+@keyframes checkmarkMini {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+/* Dropdown Actions */
+.filter-dropdown-actions {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  border-top: 1px solid #f0f0f0;
+  background: #f8f9fa;
+  border-radius: 0 0 12px 12px;
+  justify-content: space-between;
+}
+
+.apply-btn-mini,
+.clear-btn-mini {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.apply-btn-mini {
+  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
+  color: white;
+}
+
+.apply-btn-mini:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(93, 97, 191, 0.3);
+}
+
+.clear-btn-mini {
+  background: transparent;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+
+.clear-btn-mini:hover {
+  background: #e9ecef;
+  color: #495057;
+  border-color: #adb5bd;
+}
+
+/* Active state for dropdown */
+.filter-dropdown.active .filter-dropdown-btn {
+  border-color: #5D61BF;
+  color: #5D61BF;
+  background: rgba(93, 97, 191, 0.05);
+}
+
+/* Show horizontal filters only on desktop */
+@media (min-width: 769px) {
+  .horizontal-filters {
+    display: block;
+  }
+  
+  /* Hide mobile filter toggle on desktop */
+  .filter-toggle {
+    display: none !important;
+  }
+  
+  /* Hide mobile sidebar completely on desktop */
+  .filters-sidebar {
+    display: none !important;
+  }
+  
+  /* Adjust jobs content margin for desktop */
+  .jobs-content {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .job-list-layout {
+    flex-direction: column;
+  }
+}
+
+/* Mobile specific - keep existing sidebar behavior */
+@media (max-width: 768px) {
+  .horizontal-filters {
+    display: none !important;
+  }
+}
+
+/* Filter badges for active filters */
+.filter-dropdown-btn.has-active-filters {
+  background: rgba(93, 97, 191, 0.1);
+  border-color: #5D61BF;
+  color: #5D61BF;
+  position: relative;
+}
+
+.filter-dropdown-btn.has-active-filters::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background: #ff4757;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Improved dropdown positioning for better UX */
+.filter-dropdown-content {
+  /* Ensure dropdown doesn't go off-screen */
+  right: 0;
+  left: auto;
+}
+
+.filter-dropdown:first-child .filter-dropdown-content {
+  left: 0;
+  right: auto;
+}
+
+.filter-dropdown:nth-child(2) .filter-dropdown-content,
+.filter-dropdown:nth-child(3) .filter-dropdown-content {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.filter-dropdown:nth-child(2):hover .filter-dropdown-content,
+.filter-dropdown:nth-child(3):hover .filter-dropdown-content,
+.filter-dropdown:nth-child(2).active .filter-dropdown-content,
+.filter-dropdown:nth-child(3).active .filter-dropdown-content {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Responsive adjustments for smaller desktop screens */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .filter-dropdown-group {
+    gap: 10px;
+  }
+  
+  .filter-dropdown-btn {
+    min-width: 120px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+  
+  .filter-dropdown-content {
+    min-width: 250px;
+  }
+}
+
+/* Very large screens */
+@media (min-width: 1200px) {
+  .horizontal-filters {
+    /* padding: 25px; */
+    /* margin: 25px 0; */
+  }
+  
+  .filter-dropdown-group {
+    gap: 20px;
+  }
+  
+  .filter-dropdown-btn {
+    min-width: 160px;
+    padding: 14px 24px;
+    font-size: 15px;
   }
 }
