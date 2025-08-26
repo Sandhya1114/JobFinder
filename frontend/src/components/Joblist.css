@@ -77,7 +77,7 @@ h1 {
 
 .clear-filters-btn {
   padding: 5px 10px;
-  background: #5D61BF;
+  background: #000;
   color: white;
   border: none;
   border-radius: 30px;
@@ -145,13 +145,13 @@ h1 {
 
 .company-name {
   font-weight: 600;
-  color: #5D61BF;
+  color: #000;
 }
 
 .job-location {
   width: 56%;
   text-align: right;
-  color: #5D61BF;
+  color: #000;
   font-size: 14px;
 }
 
@@ -164,7 +164,7 @@ h1 {
 }
 
 .category-badge {
-  background: #5D61BF;
+  background: #000;
   color: #ffffff;
   padding: 4px 12px;
   border-radius: 20px;
@@ -179,7 +179,7 @@ h1 {
 .job-info p {
   margin: 5px 0;
   font-size: 14px;
-  color: #5D61BF;
+  color: #000;
 }
 
 .job-description {
@@ -187,7 +187,7 @@ h1 {
 }
 
 .job-description p {
-  color: #5D61BF;
+  color: #000;
   line-height: 1.5;
   font-size: 14px;
   text-align: left;
@@ -231,7 +231,7 @@ h1 {
 }
 
 .apply-btn {
-  background: #5D61BF;
+  background: #000;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -242,7 +242,7 @@ h1 {
 }
 
 .apply-btn:hover {
-  background: #5D61BF;
+  background: #000;
 }
 
 /* Loading and Error States */
@@ -257,7 +257,7 @@ h1 {
 }
 
 .error {
-  color: #5D61BF;
+  color: #000;
   background: #f8d7da;
   border: 1px solid #f5c6cb;
   border-radius: 6px;
@@ -300,7 +300,7 @@ h1 {
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 10px;
-  color: #5D61BF;
+  color: #000;
   border-bottom: 1px solid #eee;
   padding-bottom: 4px;
 }
@@ -310,7 +310,7 @@ h1 {
   align-items: center;
   margin-bottom: 8px;
   font-size: 14px;
-  color: #5D61BF;
+  color: #000;
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -318,7 +318,7 @@ h1 {
 }
 
 .filter-checkbox:hover {
-  color: #5D61BF;
+  color: #000;
 }
 
 .filter-checkbox input {
@@ -342,12 +342,12 @@ h1 {
 }
 
 .filter-checkbox:hover input ~ .checkmark {
-  border-color: #5D61BF;
+  border-color: #000;
   box-shadow: 0 0 0 2px rgba(150, 132, 192, 0.1);
 }
 
 .filter-checkbox input:checked ~ .checkmark {
-  background: linear-gradient(135deg, #5D61BF 0%, #fefae0 100%);
+  background: linear-gradient(135deg, #000 0%, #fefae0 100%);
   border-color: #fefae0;
   transform: translateY(-50%) scale(1.1);
 }
@@ -394,7 +394,7 @@ h1 {
 
 .apply-filters-btn {
   padding: 8px 15px;
-  background: linear-gradient(135deg, #5D61BF 0%, #5D61BF 100%);
+  background: linear-gradient(135deg, #000 0%, #000 100%);
   color: white;
   border: none;
   border-radius: 25px;
@@ -443,7 +443,7 @@ h1 {
   right: -5px;
   width: 10px;
   height: 10px;
-  background: #5D61BF;
+  background: #000;
   border-radius: 50%;
   animation: pulseNotification 1.5s infinite;
 }
@@ -462,7 +462,7 @@ h1 {
 .clear-filters-btn {
   padding: 8px 15px;
   background: transparent;
-  color: #5D61BF;
+  color: #000;
   border: 2px solid #8e8a6c;
   border-radius: 25px;
   cursor: pointer;
@@ -478,13 +478,13 @@ h1 {
 }
 
 .clear-filters-btn:hover {
-  background: #5D61BF;
+  background: #000;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.3);
 }
 .fa-refresh,.fa-check{
-  color:#5D61BF ;
+  color:#000 ;
 }
 .fa-refresh:hover,.fa-check:hover{
   color: #fff;
@@ -627,18 +627,18 @@ h1 {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #5D61BF;
+  border-bottom: 2px solid #000;
 }
 
 .sidebar-header h3 {
   margin: 0;
-  color: #5D61BF;
+  color: #000;
   font-size: 18px;
   font-weight: 600;
 }
 
 .sidebar-close {
-  background: #5D61BF;
+  background: #000;
   color: white;
   border: none;
   border-radius: 50%;
@@ -659,10 +659,10 @@ h1 {
 .job-actions .save-btn {
   display: flex;
   justify-content: center;
-  background-color: #5D61BF;
+  background-color: #000;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 34px;
   cursor: pointer;
   font-weight: bold;
   margin: 0px 5px;
@@ -671,7 +671,7 @@ h1 {
 
 .save-message {
   background-color: #d4edda;
-  color: #5D61BF;
+  color: #000;
   border: 1px solid #c3e6cb;
   padding: 12px;
   border-radius: 6px;
@@ -854,7 +854,7 @@ h1 {
   background: rgba(150, 132, 192, 0.1);
   border-radius: 15px;
   font-size: 14px;
-  color: #5D61BF;
+  color: #000;
   font-weight: 600;
 }
 
@@ -877,7 +877,7 @@ h1 {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #5D61BF;
+  border-top: 4px solid #000;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -888,7 +888,7 @@ h1 {
 }
 
 .loading-spinner span {
-  color: #5D61BF;
+  color: #000;
   font-size: 14px;
   font-weight: 500;
 }
@@ -896,7 +896,7 @@ h1 {
 .end-message {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #5D61BF, #a396c3);
+  background: linear-gradient(135deg, #000, #a396c3);
   color: white;
   border-radius: 15px;
   font-size: 16px;
@@ -918,7 +918,7 @@ h1 {
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  background: linear-gradient(135deg, #cac49a , #5D61BF);
+  background: linear-gradient(135deg, #cac49a , #000);
   color: white;
   border: none;
   border-radius: 25px;
@@ -932,7 +932,7 @@ h1 {
 
 .filter-toggle:hover {
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 12px 35px #5D61BF
+  box-shadow: 0 12px 35px #000
    ;
 }
 
@@ -976,7 +976,7 @@ h1 {
   font-size: 15px;
   font-weight: 600;
   background-color: #fff;
-  /* background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%); */
+  /* background: linear-gradient(135deg, #000 0%, #a396c3 100%); */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -1000,7 +1000,7 @@ h1 {
   padding: 12px 20px;
   border: 2px solid transparent;
   background: transparent;
-  color: #5D61BF;
+  color: #000;
   border-radius: 25px;
   cursor: pointer;
   font-size: 14px;
@@ -1012,7 +1012,7 @@ h1 {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  border: 2px solid #5D61BF;
+  border: 2px solid #000;
 }
 
 .pagination-btn::before {
@@ -1033,7 +1033,7 @@ h1 {
 .pagination-btn:hover:not(.disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(150, 132, 192, 0.4);
-  background: linear-gradient(135deg, #5D61BF 0%, #6c6851 100%);
+  background: linear-gradient(135deg, #000 0%, #6c6851 100%);
   color: white;
 }
 
@@ -1061,7 +1061,7 @@ h1 {
   width: 16px;
   height: 16px;
   line-height: 1;
-  color: #5D61BF;
+  color: #000;
 }
 .pagination-btn i:hover{
   color: #fff;
@@ -1084,9 +1084,9 @@ h1 {
 .pagination-number {
   width: 45px;
   height: 45px;
-  border: 2px solid #5D61BF;
+  border: 2px solid #000;
   background: transparent;
-  color: #5D61BF;
+  color: #000;
   border-radius: 50%;
   cursor: pointer;
   font-size: 14px;
@@ -1107,7 +1107,7 @@ h1 {
   left: 50%;
   width: 0;
   height: 0;
-  background: linear-gradient(135deg, #5D61BF 0%, #6a664f 100%);
+  background: linear-gradient(135deg, #000 0%, #6a664f 100%);
   border-radius: 50%;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translate(-50%, -50%);
@@ -1132,8 +1132,8 @@ h1 {
 }
 
 .pagination-number.active {
-  background: linear-gradient(135deg, #5D61BF 0%, #817d61 100%);
-  border-color: #5D61BF;
+  background: linear-gradient(135deg, #000 0%, #817d61 100%);
+  border-color: #000;
   color: white;
   font-weight: 700;
   transform: scale(1.1);
@@ -1157,7 +1157,7 @@ h1 {
   border: none;
   background: transparent;
   cursor: default;
-  color: #5D61BF;
+  color: #000;
   font-weight: 700;
   font-size: 16px;
   transform: none;
@@ -1181,7 +1181,7 @@ h1 {
   align-items: center;
   gap: 12px;
   font-size: 15px;
-  color: #5D61BF;
+  color: #000;
   font-weight: 600;
   background: transparent;
   padding: 12px 20px;
@@ -1199,26 +1199,26 @@ h1 {
 
 .jobs-per-page-select {
   padding: 8px 16px;
-  border: 2px solid #5D61BF;
+  border: 2px solid #000;
   border-radius: 20px;
   background: transparent;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   min-width: 80px;
-  color: #5D61BF;
+  color: #000;
   transition: all 0.3s ease;
 }
 
 .jobs-per-page-select:hover {
-  border-color: #5D61BF;
+  border-color: #000;
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.2);
   transform: translateY(-1px);
 }
 
 .jobs-per-page-select:focus {
   outline: none;
-  border-color: #5D61BF;
+  border-color: #000;
   box-shadow: 0 0 0 4px rgba(150, 132, 192, 0.2);
   transform: translateY(-1px);
 }
@@ -1570,7 +1570,7 @@ h1 {
   right: 10px;
   transform: translateX(-50%);
   background: #fffffff1;
-  color: #5D61BF;
+  color: #000;
   padding: 12px 24px;
   border-radius: 25px;
   font-size: 14px;
@@ -1636,12 +1636,12 @@ h1 {
   display: none;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #5D61BF;
+  border-bottom: 2px solid #000;
 }
 
 .sidebar-header h3 {
   margin: 0;
-  color: #5D61BF;
+  color: #000;
   font-size: 18px;
   font-weight: 600;
 }
@@ -1651,7 +1651,7 @@ h1 {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: #5D61BF;
+  background: #000;
   color: white;
   border: none;
   border-radius: 50%;
@@ -1801,7 +1801,7 @@ h1 {
   align-items: flex-start;
   padding: 30px 30px 20px 30px;
   border-bottom: 2px solid #f0f0f0;
-  background: linear-gradient(135deg, #5D61BF 0%, #d8d2a5 100%);
+  background: linear-gradient(135deg, #000 0%, #d8d2a5 100%);
   color: white;
 }
 
@@ -1886,13 +1886,13 @@ h1 {
 }
 
 .modal-tab:hover {
-  color: #5D61BF;
+  color: #000;
   background: rgba(150, 132, 192, 0.05);
 }
 
 .modal-tab.active {
-  color: #5D61BF;
-  border-bottom-color: #5D61BF;
+  color: #000;
+  border-bottom-color: #000;
   background: white;
 }
 
@@ -1939,7 +1939,7 @@ h1 {
 }
 
 .modal-category-badge {
-  background: linear-gradient(135deg, #5D61BF 0%, #c5bf95 100%);
+  background: linear-gradient(135deg, #000 0%, #c5bf95 100%);
   color: white !important;
   padding: 6px 16px;
   border-radius: 20px;
@@ -1964,7 +1964,7 @@ h1 {
   color: #343a40;
   margin: 0 0 15px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid #5D61BF;
+  border-bottom: 2px solid #000;
   position: relative;
 }
 
@@ -1978,7 +1978,7 @@ h1 {
   left: 0;
   width: 50px;
   height: 2px;
-  background: linear-gradient(90deg, #5D61BF, #5D61BF);
+  background: linear-gradient(90deg, #000, #000);
 }
 
 .modal-description p {
@@ -2011,7 +2011,7 @@ h1 {
   position: absolute;
   left: 0;
   top: 0;
-  color: #5D61BF;
+  color: #000;
   font-weight: bold;
   font-size: 16px;
 }
@@ -2073,19 +2073,19 @@ h1 {
 
 .modal-save-btn {
   background: transparent;
-  color: #5D61BF;
-  border: 2px solid #5D61BF;
+  color: #000;
+  border: 2px solid #000;
 }
 
 .modal-save-btn:hover {
-  background: #5D61BF;
+  background: #000;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(150, 132, 192, 0.3);
 }
 
 .modal-apply-btn {
-  background: #5D61BF;
+  background: #000;
   color: white;
   border: 2px solid transparent;
 }
@@ -2136,10 +2136,10 @@ h1 {
 
 .view-details-btn {
   background: transparent;
-  color: #5D61BF;
-  border: 2px solid #5D61BF;
+  color: #000;
+  border: 2px solid #000;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 36px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
@@ -2151,7 +2151,7 @@ h1 {
 }
 
 .view-details-btn:hover {
-  background: #5D61BF;
+  background: #000;
   color: white;
   transform: translateY(-1px);
   box-shadow: 0 4px 15px rgba(150, 132, 192, 0.3);
@@ -2324,7 +2324,7 @@ h1 {
 
   .modal-tab.active {
     background: #2d3748;
-    color: #5D61BF;
+    color: #000;
   }
 
   .modal-quick-info {
@@ -2371,7 +2371,7 @@ h1 {
   top: 30px;
   left: 30px;
   z-index: 999;
-  background: linear-gradient(135deg, #cac49a, #5D61BF);
+  background: linear-gradient(135deg, #cac49a, #000);
   color: white;
   border: none;
   border-radius: 25px;
@@ -2388,7 +2388,7 @@ h1 {
 
 .filter-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 35px #5D61BF;
+  box-shadow: 0 12px 35px #000;
 }
 
 .filter-toggle p {
@@ -2500,12 +2500,12 @@ h1 {
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #5D61BF;
+  border-bottom: 2px solid #000;
 }
 
 .sidebar-header h3 {
   margin: 0;
-  color: #5D61BF;
+  color: #000;
   font-size: 18px;
   font-weight: 600;
 }
@@ -2612,8 +2612,8 @@ h1 {
 }
 
 .filter-dropdown-btn:hover {
-  border-color: #5D61BF;
-  color: #5D61BF;
+  border-color: #000;
+  color: #000;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(93, 97, 191, 0.15);
 }
@@ -2625,7 +2625,7 @@ h1 {
 }
 
 .filter-dropdown-btn:hover i:first-child {
-  color: #5D61BF;
+  color: #000;
 }
 
 .filter-dropdown-btn i:last-child {
@@ -2668,7 +2668,7 @@ h1 {
 .filter-dropdown-header {
   padding: 15px 20px 10px 20px;
   border-bottom: 2px solid #f8f9fa;
-  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
   border-radius: 12px 12px 0 0;
 }
 
@@ -2717,7 +2717,7 @@ h1 {
 }
 
 .filter-option:hover {
-  color: #5D61BF;
+  color: #000;
   background: rgba(93, 97, 191, 0.05);
   border-radius: 6px;
   margin: 0 -10px 12px -10px;
@@ -2745,13 +2745,13 @@ h1 {
 }
 
 .filter-option:hover input ~ .checkmark-mini {
-  border-color: #5D61BF;
+  border-color: #000;
   box-shadow: 0 0 0 2px rgba(93, 97, 191, 0.1);
 }
 
 .filter-option input:checked ~ .checkmark-mini {
-  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
-  border-color: #5D61BF;
+  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
+  border-color: #000;
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -2810,7 +2810,7 @@ h1 {
 }
 
 .apply-btn-mini {
-  background: linear-gradient(135deg, #5D61BF 0%, #a396c3 100%);
+  background: linear-gradient(135deg, #000 0%, #a396c3 100%);
   color: white;
 }
 
@@ -2833,8 +2833,8 @@ h1 {
 
 /* Active state for dropdown */
 .filter-dropdown.active .filter-dropdown-btn {
-  border-color: #5D61BF;
-  color: #5D61BF;
+  border-color: #000;
+  color: #000;
   background: rgba(93, 97, 191, 0.05);
 }
 
@@ -2875,8 +2875,8 @@ h1 {
 /* Filter badges for active filters */
 .filter-dropdown-btn.has-active-filters {
   background: rgba(93, 97, 191, 0.1);
-  border-color: #5D61BF;
-  color: #5D61BF;
+  border-color: #000;
+  color: #000;
   position: relative;
 }
 
