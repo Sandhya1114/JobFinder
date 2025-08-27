@@ -404,7 +404,7 @@ const JobList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const location = useLocation();
   const isJobPage = location.pathname === '/jobs';
-  
+
   // Separate state for input fields to avoid losing user input
   const [localFilters, setLocalFilters] = useState({
     searchInput: '',
@@ -852,199 +852,221 @@ const JobList = () => {
           {hasUnappliedFilters && !isSidebarOpen && <span className="filter-badge">!</span>}
         </button>
       )}
-
-      {/* Desktop Horizontal Filters */}
-      {!isMobile && (
-        <div className="horizontal-filters">
-          <div className="filter-dropdown-group">
-            {/* Schedule Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-calendar"></i>
-                Schedule
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Schedule</h4>
-                </div>
-                <div className="filter-options">
-                  {typeOptions.map((type) => (
-                    <label key={type} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedType?.includes(type)}
-                        onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      {type}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Industries/Categories Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-industry"></i>
-                Industries
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Industries</h4>
-                </div>
-                <div className="filter-options">
-                  {categories.map((category) => (
-                    <label key={category.id} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedCategory?.includes(category.id)}
-                        onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      {category.name}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Experience Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-user"></i>
-                Experience
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Experience Level</h4>
-                </div>
-                <div className="filter-options">
-                  {experienceOptions.map((experience) => (
-                    <label key={experience} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedExperience?.includes(experience)}
-                        onChange={(e) => handlePendingFilterChange('selectedExperience', experience, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      {experience}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Distance/Location Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-map-marker"></i>
-                Distance
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Location</h4>
-                </div>
-                <div className="filter-options">
-                  {locationOptions.map((location) => (
-                    <label key={location} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedLocation?.includes(location)}
-                        onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      {location}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Company Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-building"></i>
-                Company
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Companies</h4>
-                </div>
-                <div className="filter-options">
-                  {companies.map((company) => (
-                    <label key={company.id} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedCompany?.includes(company.id)}
-                        onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      {company.name}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
-
-            {/* Salary Filter */}
-            <div className="filter-dropdown">
-              <button className="filter-dropdown-btn">
-                <i className="fa fa-dollar"></i>
-                Salary
-                <i className="fa fa-chevron-down"></i>
-              </button>
-              <div className="filter-dropdown-content">
-                <div className="filter-dropdown-header">
-                  <h4>Salary Range</h4>
-                </div>
-                <div className="filter-options">
-                  {salaryRangeOptions.map((range) => (
-                    <label key={range} className="filter-option">
-                      <input
-                        type="checkbox"
-                        checked={pendingFilters.selectedSalary?.includes(range)}
-                        onChange={(e) => handlePendingFilterChange('selectedSalary', range, e.target.checked)}
-                      />
-                      <span className="checkmark-mini"></span>
-                      ${range.replace('-', ' - ' )}
-                    </label>
-                  ))}
-                </div>
-                <div className="filter-dropdown-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-                  <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-                </div>
-              </div>
-            </div>
+{!isMobile && (
+  <div className="horizontal-filters">
+    <div className="filter-dropdown-group">
+      {/* Schedule Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('schedule')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-calendar"></i>
+          Schedule
+          <i className={`fa ${activeDropdown === 'schedule' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Schedule</h4>
+          </div>
+          <div className="filter-options">
+            {typeOptions.map((type) => (
+              <label key={type} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedType?.includes(type)}
+                  onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                {type}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* Industries/Categories Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('industries')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-industry"></i>
+          Industries
+          <i className={`fa ${activeDropdown === 'industries' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Industries</h4>
+          </div>
+          <div className="filter-options">
+            {categories.map((category) => (
+              <label key={category.id} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedCategory?.includes(category.id)}
+                  onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                {category.name}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Experience Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('experience')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-user"></i>
+          Experience
+          <i className={`fa ${activeDropdown === 'experience' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Experience Level</h4>
+          </div>
+          <div className="filter-options">
+            {experienceOptions.map((experience) => (
+              <label key={experience} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedExperience?.includes(experience)}
+                  onChange={(e) => handlePendingFilterChange('selectedExperience', experience, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                {experience}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Distance/Location Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('distance')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-map-marker"></i>
+          Distance
+          <i className={`fa ${activeDropdown === 'distance' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Location</h4>
+          </div>
+          <div className="filter-options">
+            {locationOptions.map((location) => (
+              <label key={location} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedLocation?.includes(location)}
+                  onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                {location}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Company Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('company')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-building"></i>
+          Company
+          <i className={`fa ${activeDropdown === 'company' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Companies</h4>
+          </div>
+          <div className="filter-options">
+            {companies.map((company) => (
+              <label key={company.id} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedCompany?.includes(company.id)}
+                  onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                {company.name}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Salary Filter */}
+      <div 
+        className="filter-dropdown"
+        onMouseEnter={() => setActiveDropdown('salary')}
+        onMouseLeave={() => setActiveDropdown(null)}
+      >
+        <button className="filter-dropdown-btn">
+          <i className="fa fa-dollar"></i>
+          Salary
+          <i className={`fa ${activeDropdown === 'salary' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </button>
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>Salary Range</h4>
+          </div>
+          <div className="filter-options">
+            {salaryRangeOptions.map((range) => (
+              <label key={range} className="filter-option">
+                <input
+                  type="checkbox"
+                  checked={pendingFilters.selectedSalary?.includes(range)}
+                  onChange={(e) => handlePendingFilterChange('selectedSalary', range, e.target.checked)}
+                />
+                <span className="checkmark-mini"></span>
+                ${range.replace('-', ' - ' )}
+              </label>
+            ))}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
+            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Sidebar overlay */}
       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
