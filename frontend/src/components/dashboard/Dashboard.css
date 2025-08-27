@@ -12,6 +12,7 @@
   /* background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); */
   color: #1a202c;
   position: relative;
+  background-color: #fff;
 }
 
 .dashboard-container::before {
@@ -21,16 +22,16 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
+  /* background: 
     radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 80% 20%, rgba(0, 0, 0, 0.05) 0%, transparent 50%); */
   pointer-events: none;
   z-index: 0;
 }
 
 .dashboard-header {
-  /* background: rgba(255, 255, 255, 0.25); */
-  /* backdrop-filter: blur(20px); */
+  background: rgb(226 226 226 / 71%); 
+  /* backdrop-filter: blur(20px);
   /* -webkit-backdrop-filter: blur(20px); */
   /* border: 1px solid rgba(255, 255, 255, 0.2); */
   border-top: none;
@@ -105,7 +106,7 @@
 .dashboard-sidebar {
   width: 20vw;
   height: 93vh;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgb(255, 255, 255);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -203,7 +204,7 @@
   top: 0;
   right: 0;
   left: 20vw; /* Account for sidebar width */
-  background: rgba(255, 255, 255, 0.25);
+  background: rgb(255, 255, 255);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -240,11 +241,12 @@
 }
 
 .sidebar-logo h3 span {
-  background: linear-gradient(135deg, #000000, #4a5568);
+  background:#5a5a58;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 800;
+  font-weight: 900;
+  font-size: 2rem;
 }
 
 .sidebar-logo a {
@@ -266,8 +268,8 @@
 }
 
 .profile-avatar {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   background: linear-gradient(135deg, #1a202c 0%, #4a5568 100%);
   color: white;
   border-radius: 50%;
@@ -318,7 +320,7 @@
   right: 0;
   min-width: 250px;
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(100px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 16px;
@@ -423,7 +425,7 @@
 .dashboard-sidebar {
   width: 20vw;
   height:100vh;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgb(255, 255, 255);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
