@@ -1805,7 +1805,7 @@ h1 {
   border-bottom: 2px solid #f0f0f0;
   /* background: linear-gradient(135deg, #000 0%, #d8d2a5 100%); */
   color: white;
-  background-color: #bfbcbcb0;
+
 }
 
 .modal-title-section {
@@ -1832,6 +1832,7 @@ h1 {
   justify-content: start;
   margin-left: 1.0rem;
   margin-bottom: 2vh;
+  color: #000;
 }
 
 .modal-company-name {

@@ -69,10 +69,12 @@ header.shrink .header-options a {
   margin-left: 33px;
   font-family: monospace;
   font-size: 20px;
+  
 }
 
 .logo span {
   color: #5a5a58;
+  font-size: 3rem;
 }
 
 /* Sign-in button */
