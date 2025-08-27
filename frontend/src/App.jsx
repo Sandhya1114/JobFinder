@@ -175,10 +175,10 @@ function App() {
   return (
     <Router>
       <div className="root">
-        <Header user={user} />
+       
         <Routes>
-          <Route path="/" element={<><Hero /><Main /><Footer /></>} />
-          <Route path="/jobs" element={<JobList />} />
+          <Route path="/" element={<> <Header user={user} /><Hero /><Main /><Footer /></>} />
+          <Route path="/jobs" element={<><Header user={user}/><JobList /></>} />
           <Route
             path="/auth"
             element={
@@ -190,8 +190,8 @@ function App() {
               />
             }
           />
-          <Route path="/about" element={<><AboutUs /><Footer /></>} />
-          <Route path="/contact" element={<><ContactUs /><Footer /></>} />
+          <Route path="/about" element={<> <Header user={user} /><AboutUs /><Footer /></>} />
+          <Route path="/contact" element={<> <Header user={user} /><ContactUs /><Footer /></>} />
           <Route
             path="/dashboard"
             element={<Dashboard user={user} onSignOut={handleSignOut} />}
