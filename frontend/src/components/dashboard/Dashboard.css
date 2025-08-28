@@ -203,7 +203,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  left: 20vw; /* Account for sidebar width */
+  left: 15vw; /* Account for sidebar width */
   background: rgb(255, 255, 255);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
