@@ -69,10 +69,19 @@ const Dashboard = ({ user, onSignOut }) => {
 
   return (
     <div className="dashboard-container">
+      
       {/* Fixed Header with Avatar */}
       <div className="dashboard-header">
         <h1>Welcome back, {user?.user_metadata?.full_name || user?.user_metadata?.name || 'Saloni Rana'}!</h1>
         <div className='profileSign'>
+          <div className='searchjobinDesh'>
+              <Link to="/jobs" style={{ textDecoration: "none"}}>
+              <h3>
+                search jobs
+              </h3>
+         </Link>
+          </div>
+          
           <div className="profile-avatar" onClick={toggleDropdown}>
             {user?.user_metadata?.full_name
               ? user.user_metadata.full_name.split(' ')[0][0].toUpperCase()
