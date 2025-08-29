@@ -1,7 +1,7 @@
-// Updated DashboardOverview.jsx - Professional layout inspired by the provided image
+// Enhanced DashboardOverview.jsx - Modern, Stylish, and Animated
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveTab } from '../../redux/dashboardSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchProfile } from '../../redux/profileSlice';
 import { fetchEducation } from '../../redux/educationSlice';
 import { fetchSkills } from '../../redux/skillsSlice';
@@ -11,6 +11,8 @@ import './DashboardOverview.css';
 
 const DashboardOverview = ({ stats }) => {
   const dispatch = useDispatch();
+  const [isVisible, setIsVisible] = useState(false);
+  const [animatedCounts, setAnimatedCounts] = useState({});
   
   // Get data from all sections
   const profile = useSelector(state => state.profile?.data || {});
@@ -27,7 +29,33 @@ const DashboardOverview = ({ stats }) => {
     dispatch(fetchSkills());
     dispatch(fetchWorkExperience());
     dispatch(fetchResumes());
+    setIsVisible(true);
   }, [dispatch]);
+
+  // Animate counters
+  useEffect(() => {
+    const counters = {
+      skills: skills.length,
+      education: education.length,
+      experience: workExperience.length,
+      resumes: resumes.length,
+      savedJobs: stats.savedJobs || 0
+    };
+
+    Object.keys(counters).forEach(key => {
+      const targetValue = counters[key];
+      let currentValue = 0;
+      const increment = Math.ceil(targetValue / 30);
+      const timer = setInterval(() => {
+        currentValue += increment;
+        if (currentValue >= targetValue) {
+          currentValue = targetValue;
+          clearInterval(timer);
+        }
+        setAnimatedCounts(prev => ({ ...prev, [key]: currentValue }));
+      }, 50);
+    });
+  }, [skills, education, workExperience, resumes, stats]);
 
   // Helper function to get user initials
   const getUserInitials = () => {
@@ -63,346 +91,548 @@ const DashboardOverview = ({ stats }) => {
   const statCards = [
     {
       title: 'Skills',
-      count: skills.length,
+      count: animatedCounts.skills || 0,
       icon: 'fas fa-tools',
-      color: '#d69e2e',
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       className: 'skills',
       action: () => dispatch(setActiveTab('skills'))
     },
     {
       title: 'Education',
-      count: education.length,
+      count: animatedCounts.education || 0,
       icon: 'fas fa-graduation-cap',
-      color: '#9f7aea',
+      color: '#f093fb',
+      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
       className: 'education',
       action: () => dispatch(setActiveTab('education'))
     },
     {
       title: 'Experience',
-      count: workExperience.length,
+      count: animatedCounts.experience || 0,
       icon: 'fas fa-briefcase',
-      color: '#e53e3e',
+      color: '#4facfe',
+      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
       className: 'experience',
       action: () => dispatch(setActiveTab('experience'))
     },
     {
       title: 'Resumes',
-      count: resumes.length,
+      count: animatedCounts.resumes || 0,
       icon: 'fas fa-file-alt',
-      color: '#38a169',
+      color: '#43e97b',
+      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
       className: 'resumes',
       action: () => dispatch(setActiveTab('resumes'))
     },
     {
       title: 'Saved Jobs',
-      count: stats.savedJobs || 0,
+      count: animatedCounts.savedJobs || 0,
       icon: 'fas fa-bookmark',
-      color: '#3182ce',
+      color: '#fa709a',
+      gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
       className: 'saved-jobs',
       action: () => dispatch(setActiveTab('saved-jobs'))
     }
   ];
 
   const quickActions = [
-    { icon: 'fas fa-user-edit', label: 'Update Profile', action: () => dispatch(setActiveTab('profile')) },
-    { icon: 'fas fa-plus', label: 'Add Skills', action: () => dispatch(setActiveTab('skills')) },
-    { icon: 'fas fa-briefcase', label: 'Add Experience', action: () => dispatch(setActiveTab('experience')) },
-    { icon: 'fas fa-upload', label: 'Upload Resume', action: () => dispatch(setActiveTab('resumes')) }
+    { icon: 'fas fa-user-edit', label: 'Update Profile', action: () => dispatch(setActiveTab('profile')), color: '#667eea' },
+    { icon: 'fas fa-plus', label: 'Add Skills', action: () => dispatch(setActiveTab('skills')), color: '#f093fb' },
+    { icon: 'fas fa-briefcase', label: 'Add Experience', action: () => dispatch(setActiveTab('experience')), color: '#4facfe' },
+    { icon: 'fas fa-upload', label: 'Upload Resume', action: () => dispatch(setActiveTab('resumes')), color: '#43e97b' }
   ];
 
+  const getLatestWorkExperience = () => {
+    return workExperience
+      .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+      .slice(0, 3);
+  };
+
+  const getLatestEducation = () => {
+    return education
+      .sort((a, b) => new Date(b.start_date) - new Date(a.start_date))
+      .slice(0, 2);
+  };
+
+  const getSkillCategories = () => {
+    const grouped = groupSkillsByCategory();
+    return Object.entries(grouped).slice(0, 4);
+  };
+
+  const getRecentResumes = () => {
+    return resumes
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 3);
+  };
+
   return (
-    <div className="dashboard-overview">
-      {/* Profile Header Card */}
-      <div className="profile-header-card">
-        <div className="profile-header-content">
-          <div className="profile-avatar-large">
-            {getUserInitials()}
+    <div className={`dashboard-overview ${isVisible ? 'animate-in' : ''}`}>
+      
+      {/* Welcome Hero Section */}
+      <div className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1 className="hero-title">
+              Welcome back, {profile.name || user?.user_metadata?.full_name || 'there'}!
+            </h1>
+            <p className="hero-subtitle">
+              Your career journey continues here. Let's make today productive.
+            </p>
           </div>
-          <div className="profile-header-info">
-            <h2 className="profile-name">
-              {profile.name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Your Name'}
-            </h2>
-            <div className="profile-email">
-              <i className="fas fa-envelope"></i>
-              <span>{profile.email || user?.email || 'your.email@example.com'}</span>
+          <div className="hero-avatar">
+            <div className="profile-avatar-hero">
+              {getUserInitials()}
             </div>
-            {(profile.location || profile.phone) && (
-              <div className="profile-location">
-                {profile.location && (
-                  <>
-                    <i className="fas fa-map-marker-alt"></i>
-                    <span>{profile.location}</span>
-                  </>
-                )}
-                {profile.phone && (
-                  <>
-                    <i className="fas fa-phone"></i>
-                    <span>{profile.phone}</span>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-          <div className="profile-header-actions">
-            <button 
-              className="profile-action-btn primary"
-              onClick={() => dispatch(setActiveTab('profile'))}
-            >
-              <i className="fas fa-edit"></i>
-              Edit Profile
-            </button>
-            <button className="profile-action-btn secondary">
-              <i className="fas fa-eye"></i>
-              Public View
-            </button>
+            <div className="hero-pulse"></div>
           </div>
         </div>
       </div>
 
-      {/* Stats Overview */}
-      <div className="stats-overview">
+      {/* Interactive Stats Cards */}
+      <div className="stats-overview-modern">
         {statCards.map((stat, index) => (
           <div 
             key={index}
-            className={`stat-card-new ${stat.className}`}
+            className={`stat-card-modern ${stat.className}`}
             onClick={stat.action}
+            style={{ 
+              '--delay': `${index * 0.1}s`,
+              '--gradient': stat.gradient
+            }}
           >
-            <div className="stat-header">
-              <div 
-                className="stat-icon-new"
-                style={{ backgroundColor: stat.color }}
-              >
+            <div className="stat-card-background"></div>
+            <div className="stat-card-content">
+              <div className="stat-icon-modern">
                 <i className={stat.icon}></i>
               </div>
-              <div className="stat-count-new">{stat.count}</div>
+              <div className="stat-info">
+                <div className="stat-count-modern">{stat.count}</div>
+                <div className="stat-label-modern">{stat.title}</div>
+              </div>
             </div>
-            <div className="stat-label-new">{stat.title}</div>
+            <div className="stat-card-glow"></div>
           </div>
         ))}
       </div>
 
-      {/* Work Experience Card */}
-      <div className="content-card">
-        <div className="content-card-header">
-          <h3 className="content-card-title">
-            <i className="fas fa-briefcase"></i>
-            Job Experience
-            <span style={{ fontSize: '14px', fontWeight: 'normal', color: '#718096' }}>
-              {workExperience.length} job{workExperience.length !== 1 ? 's' : ''} history
-            </span>
-          </h3>
-          <button 
-            className="view-all-btn"
-            onClick={() => dispatch(setActiveTab('experience'))}
-          >
-            + Add More
-          </button>
-        </div>
-        <div className="content-card-body">
-          {workExperience.length > 0 ? (
-            <div className="timeline-items">
-              {workExperience.slice(0, 3).map((exp, index) => (
-                <div key={index} className="timeline-item-card">
-                  <div className="timeline-content-card">
-                    <div className="timeline-header">
-                      <div>
-                        <h4 className="timeline-title">{exp.job_title}</h4>
-                        <p className="timeline-subtitle">
-                          <i className="fas fa-building"></i>
-                          {exp.company}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="timeline-meta">
-                      <span className="timeline-meta-item">
-                        <i className="fas fa-calendar"></i>
-                        {new Date(exp.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} - 
-                        {exp.is_current ? ' Present' : ` ${new Date(exp.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
-                      </span>
-                      <span className="timeline-meta-item">
-                        <i className="fas fa-map-marker-alt"></i>
-                        {exp.location}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {workExperience.length > 3 && (
-                <div style={{ textAlign: 'center', marginTop: '16px' }}>
-                  <button 
-                    className="view-all-btn"
-                    onClick={() => dispatch(setActiveTab('experience'))}
-                  >
-                    View all {workExperience.length} experiences
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="empty-content">
-              <i className="fas fa-briefcase"></i>
-              <h4>No Experience Added</h4>
-              <p>Add your work experience to showcase your professional journey</p>
-              <button 
-                className="add-first-btn"
-                onClick={() => dispatch(setActiveTab('experience'))}
-              >
-                Add Your First Experience
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Education Card */}
-      <div className="content-card">
-        <div className="content-card-header">
-          <h3 className="content-card-title">
-            <i className="fas fa-graduation-cap"></i>
-            Education
-          </h3>
-          <button 
-            className="view-all-btn"
-            onClick={() => dispatch(setActiveTab('education'))}
-          >
-            + Add More
-          </button>
-        </div>
-        <div className="content-card-body">
-          {education.length > 0 ? (
-            <div className="timeline-items">
-              {education.slice(0, 2).map((edu, index) => (
-                <div key={index} className="timeline-item-card">
-                  <div className="timeline-content-card">
-                    <div className="timeline-header">
-                      <div>
-                        <h4 className="timeline-title">{edu.degree}</h4>
-                        <p className="timeline-subtitle">
-                          <i className="fas fa-university"></i>
-                          {edu.institution}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="timeline-meta">
-                      <span className="timeline-meta-item">
-                        <i className="fas fa-book"></i>
-                        {edu.field_of_study}
-                      </span>
-                      <span className="timeline-meta-item">
-                        <i className="fas fa-calendar"></i>
-                        {edu.start_date ? new Date(edu.start_date).toLocaleDateString('en-US', { year: 'numeric' }) : 'N/A'} - 
-                        {edu.is_current ? ' Present' : (edu.end_date ? ` ${new Date(edu.end_date).toLocaleDateString('en-US', { year: 'numeric' })}` : ' N/A')}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-content">
-              <i className="fas fa-graduation-cap"></i>
-              <h4>No Education Added</h4>
-              <p>Add your educational background</p>
-              <button 
-                className="add-first-btn"
-                onClick={() => dispatch(setActiveTab('education'))}
-              >
-                Add Education
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Skills Card */}
-      <div className="content-card">
-        <div className="content-card-header">
-          <h3 className="content-card-title">
-            <i className="fas fa-tools"></i>
-            Skills
-          </h3>
-          <button 
-            className="view-all-btn"
-            onClick={() => dispatch(setActiveTab('skills'))}
-          >
-            + Add More
-          </button>
-        </div>
-        <div className="content-card-body">
-          {skills.length > 0 ? (
-            <div className="skills-preview">
-              {skills.slice(0, 10).map((skill, index) => (
-                <span key={index} className="skill-tag-preview">
-                  {skill.skill_name}
-                  {skill.is_verified && <i className="fas fa-certificate skill-verified"></i>}
-                </span>
-              ))}
-              {skills.length > 10 && (
-                <span className="skill-tag-preview" style={{ background: '#e2e8f0' }}>
-                  +{skills.length - 10} more
-                </span>
-              )}
-            </div>
-          ) : (
-            <div className="empty-content">
-              <i className="fas fa-tools"></i>
-              <h4>No Skills Added</h4>
-              <p>Add your technical and professional skills</p>
-              <button 
-                className="add-first-btn"
-                onClick={() => dispatch(setActiveTab('skills'))}
-              >
-                Add Skills
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="quick-actions-new">
-        <h3 className="quick-actions-title">
-          <i className="fas fa-bolt"></i>
-          Quick Actions
-        </h3>
-        <div className="quick-actions-grid">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              className="quick-action-card"
-              onClick={action.action}
-            >
-              <i className={action.icon}></i>
-              {action.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Profile Completion */}
-      <div className="profile-completion-new">
+      {/* Profile Completion with Animation */}
+      <div className="profile-completion-modern">
         <div className="completion-header">
           <h3 className="completion-title">
-            <i className="fas fa-tasks"></i>
-            Profile Completion
+            <i className="fas fa-chart-line"></i>
+            Profile Strength
           </h3>
+          <div className="completion-score">
+            <span className="score-number">{calculateProfileCompletion()}</span>
+            <span className="score-label">% Complete</span>
+          </div>
         </div>
-        <div className="completion-bar">
+        <div className="completion-bar-modern">
           <div 
-            className="completion-fill" 
-            style={{ width: `${calculateProfileCompletion()}%` }}
+            className="completion-fill-modern" 
+            style={{ 
+              width: `${calculateProfileCompletion()}%`,
+              '--completion': `${calculateProfileCompletion()}%`
+            }}
           ></div>
         </div>
-        <div className="completion-percentage">
-          {calculateProfileCompletion()}% Complete
+        <div className="completion-sections">
+          <div className={`section-indicator ${profile.name && profile.email ? 'complete' : ''}`}>
+            <i className="fas fa-user"></i>
+            <span>Basic Info</span>
+          </div>
+          <div className={`section-indicator ${education.length > 0 ? 'complete' : ''}`}>
+            <i className="fas fa-graduation-cap"></i>
+            <span>Education</span>
+          </div>
+          <div className={`section-indicator ${skills.length > 0 ? 'complete' : ''}`}>
+            <i className="fas fa-tools"></i>
+            <span>Skills</span>
+          </div>
+          <div className={`section-indicator ${workExperience.length > 0 ? 'complete' : ''}`}>
+            <i className="fas fa-briefcase"></i>
+            <span>Experience</span>
+          </div>
+          <div className={`section-indicator ${resumes.length > 0 ? 'complete' : ''}`}>
+            <i className="fas fa-file-alt"></i>
+            <span>Resume</span>
+          </div>
         </div>
-        <div className="completion-tips">
-          {!profile.name && (
-            <div className="completion-tip">
-              <i className="fas fa-exclamation-circle"></i>
-              Upload at least one resume
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="overview-grid">
+        
+        {/* Profile Summary Card */}
+        <div className="overview-card profile-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-user-circle"></i>
+              Profile Summary
+            </h3>
+            <button 
+              className="card-action-btn"
+              onClick={() => dispatch(setActiveTab('profile'))}
+            >
+              <i className="fas fa-edit"></i>
+              Edit
+            </button>
+          </div>
+          <div className="card-content">
+            {profile.name || profile.email ? (
+              <div className="profile-summary">
+                <div className="profile-basic">
+                  <div className="profile-avatar-small">
+                    {getUserInitials()}
+                  </div>
+                  <div className="profile-details">
+                    <h4>{profile.name || 'Name not set'}</h4>
+                    <p className="profile-email-small">
+                      <i className="fas fa-envelope"></i>
+                      {profile.email || user?.email || 'Email not set'}
+                    </p>
+                    {profile.location && (
+                      <p className="profile-location-small">
+                        <i className="fas fa-map-marker-alt"></i>
+                        {profile.location}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                {profile.about && (
+                  <div className="profile-about-preview">
+                    <p>{profile.about.substring(0, 120)}...</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="empty-preview">
+                <i className="fas fa-user-plus"></i>
+                <p>Complete your profile to get started</p>
+                <button 
+                  className="setup-btn"
+                  onClick={() => dispatch(setActiveTab('profile'))}
+                >
+                  Setup Profile
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Latest Work Experience */}
+        <div className="overview-card experience-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-briefcase"></i>
+              Recent Experience
+            </h3>
+            <button 
+              className="card-action-btn"
+              onClick={() => dispatch(setActiveTab('experience'))}
+            >
+              <i className="fas fa-plus"></i>
+              Add More
+            </button>
+          </div>
+          <div className="card-content">
+            {workExperience.length > 0 ? (
+              <div className="experience-preview">
+                {getLatestWorkExperience().map((exp, index) => (
+                  <div key={index} className="experience-item-preview">
+                    <div className="experience-timeline-dot"></div>
+                    <div className="experience-details">
+                      <h4 className="experience-title">{exp.job_title}</h4>
+                      <p className="experience-company">
+                        <i className="fas fa-building"></i>
+                        {exp.company}
+                      </p>
+                      <div className="experience-meta">
+                        <span className="experience-dates">
+                          <i className="fas fa-calendar"></i>
+                          {new Date(exp.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} - 
+                          {exp.is_current ? ' Present' : ` ${new Date(exp.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
+                        </span>
+                        {exp.is_current && (
+                          <span className="current-indicator">
+                            <i className="fas fa-circle"></i>
+                            Current
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {workExperience.length > 3 && (
+                  <div className="view-more-indicator">
+                    <span>+{workExperience.length - 3} more experiences</span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="empty-preview">
+                <i className="fas fa-briefcase"></i>
+                <p>Add your work experience</p>
+                <button 
+                  className="setup-btn"
+                  onClick={() => dispatch(setActiveTab('experience'))}
+                >
+                  Add Experience
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Education Overview */}
+        <div className="overview-card education-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-graduation-cap"></i>
+              Education
+            </h3>
+            <button 
+              className="card-action-btn"
+              onClick={() => dispatch(setActiveTab('education'))}
+            >
+              <i className="fas fa-plus"></i>
+              Add More
+            </button>
+          </div>
+          <div className="card-content">
+            {education.length > 0 ? (
+              <div className="education-preview">
+                {getLatestEducation().map((edu, index) => (
+                  <div key={index} className="education-item-preview">
+                    <div className="education-icon">
+                      <i className="fas fa-university"></i>
+                    </div>
+                    <div className="education-details">
+                      <h4 className="education-degree">{edu.degree}</h4>
+                      <p className="education-institution">{edu.institution}</p>
+                      <p className="education-field">{edu.field_of_study}</p>
+                      <div className="education-dates">
+                        <i className="fas fa-calendar"></i>
+                        {edu.start_date ? new Date(edu.start_date).getFullYear() : 'N/A'} - 
+                        {edu.is_current ? ' Present' : (edu.end_date ? ` ${new Date(edu.end_date).getFullYear()}` : ' N/A')}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-preview">
+                <i className="fas fa-graduation-cap"></i>
+                <p>Add your educational background</p>
+                <button 
+                  className="setup-btn"
+                  onClick={() => dispatch(setActiveTab('education'))}
+                >
+                  Add Education
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Skills Overview */}
+        <div className="overview-card skills-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-tools"></i>
+              Skills Portfolio
+            </h3>
+            <button 
+              className="card-action-btn"
+              onClick={() => dispatch(setActiveTab('skills'))}
+            >
+              <i className="fas fa-plus"></i>
+              Add Skills
+            </button>
+          </div>
+          <div className="card-content">
+            {skills.length > 0 ? (
+              <div className="skills-preview-modern">
+                {getSkillCategories().map(([category, categorySkills]) => (
+                  <div key={category} className="skill-category-preview">
+                    <div className="category-header">
+                      <h4 className="category-name">{category}</h4>
+                      <span className="category-count">{categorySkills.length}</span>
+                    </div>
+                    <div className="skills-tags-preview">
+                      {categorySkills.slice(0, 3).map((skill, index) => (
+                        <span key={index} className="skill-tag-modern">
+                          {skill.skill_name}
+                          {skill.is_verified && (
+                            <i className="fas fa-certificate skill-verified"></i>
+                          )}
+                        </span>
+                      ))}
+                      {categorySkills.length > 3 && (
+                        <span className="skill-tag-modern more-indicator">
+                          +{categorySkills.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-preview">
+                <i className="fas fa-tools"></i>
+                <p>Showcase your skills and expertise</p>
+                <button 
+                  className="setup-btn"
+                  onClick={() => dispatch(setActiveTab('skills'))}
+                >
+                  Add Skills
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Resumes Overview */}
+        <div className="overview-card resumes-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-file-alt"></i>
+              Resume Library
+            </h3>
+            <button 
+              className="card-action-btn"
+              onClick={() => dispatch(setActiveTab('resumes'))}
+            >
+              <i className="fas fa-upload"></i>
+              Upload
+            </button>
+          </div>
+          <div className="card-content">
+            {resumes.length > 0 ? (
+              <div className="resumes-preview">
+                {getRecentResumes().map((resume, index) => (
+                  <div key={index} className="resume-item-preview">
+                    <div className="resume-icon-preview">
+                      <i className="fas fa-file-pdf"></i>
+                    </div>
+                    <div className="resume-details-preview">
+                      <h4 className="resume-title-preview">
+                        {resume.title}
+                        {resume.is_primary && (
+                          <span className="primary-indicator">
+                            <i className="fas fa-star"></i>
+                          </span>
+                        )}
+                      </h4>
+                      <p className="resume-date-preview">
+                        <i className="fas fa-clock"></i>
+                        {new Date(resume.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <button 
+                      className="resume-view-btn"
+                      onClick={() => window.open(resume.file_url, '_blank')}
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-preview">
+                <i className="fas fa-file-upload"></i>
+                <p>Upload your resumes for quick job applications</p>
+                <button 
+                  className="setup-btn"
+                  onClick={() => dispatch(setActiveTab('resumes'))}
+                >
+                  Upload Resume
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions Card */}
+        <div className="overview-card quick-actions-overview">
+          <div className="card-header">
+            <h3 className="card-title">
+              <i className="fas fa-bolt"></i>
+              Quick Actions
+            </h3>
+          </div>
+          <div className="card-content">
+            <div className="quick-actions-grid-modern">
+              {quickActions.map((action, index) => (
+                <button
+                  key={index}
+                  className="quick-action-btn-modern"
+                  onClick={action.action}
+                  style={{ '--action-color': action.color }}
+                >
+                  <div className="action-icon">
+                    <i className={action.icon}></i>
+                  </div>
+                  <span>{action.label}</span>
+                </button>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Activity Timeline */}
+      <div className="overview-card activity-overview">
+        <div className="card-header">
+          <h3 className="card-title">
+            <i className="fas fa-clock"></i>
+            Recent Activity
+          </h3>
+        </div>
+        <div className="card-content">
+          <div className="activity-timeline">
+            {/* Show recent additions/updates */}
+            {workExperience.length > 0 && (
+              <div className="activity-item">
+                <div className="activity-icon work">
+                  <i className="fas fa-briefcase"></i>
+                </div>
+                <div className="activity-content">
+                  <p>Added work experience: <strong>{workExperience[0].job_title}</strong></p>
+                  <span className="activity-time">Recently added</span>
+                </div>
+              </div>
+            )}
+            {education.length > 0 && (
+              <div className="activity-item">
+                <div className="activity-icon education">
+                  <i className="fas fa-graduation-cap"></i>
+                </div>
+                <div className="activity-content">
+                  <p>Added education: <strong>{education[0].degree}</strong></p>
+                  <span className="activity-time">Recently added</span>
+                </div>
+              </div>
+            )}
+            {skills.length > 0 && (
+              <div className="activity-item">
+                <div className="activity-icon skills">
+                  <i className="fas fa-tools"></i>
+                </div>
+                <div className="activity-content">
+                  <p>Added <strong>{skills.length}</strong> skills to portfolio</p>
+                  <span className="activity-time">Recently updated</span>
+                </div>
+              </div>
+            )}
+            {(!workExperience.length && !education.length && !skills.length) && (
+              <div className="empty-activity">
+                <i className="fas fa-plus-circle"></i>
+                <p>Start building your profile to see activity here</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
