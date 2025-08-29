@@ -44,7 +44,14 @@
   position: relative;
   z-index: 100;
 }
-
+.dashboard-header h1{
+  background: linear-gradient(135deg, #2d3748 0%, #1414147e 50%, #5a5a58 100%);
+  background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: textGradient 3s ease infinite;
+}
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
@@ -180,9 +187,9 @@
 }
 
 /* ============ OVERVIEW SECTION ============ */
-.dashboard-overview {
+/* .dashboard-overview {
   max-width: 800px;
-}
+} */
 
 .welcome-section {
   margin-bottom: 2rem;
@@ -268,8 +275,8 @@
 }
 
 .profile-avatar {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   background: linear-gradient(135deg, #1a202c 0%, #4a5568 100%);
   color: white;
   border-radius: 50%;
@@ -288,6 +295,19 @@
     inset 0 2px 0 rgba(255, 255, 255, 0.2);
   position: relative;
   overflow: hidden;
+  border-radius: 50%;
+    background: linear-gradient(135deg, #5a5a58 0%, #fdfdfd 100%);
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    color: white;
+   
+    flex-shrink: 0;
+    
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1)
 }
 
 .profile-avatar:hover {
@@ -413,8 +433,9 @@
 /* ============ DASHBOARD LAYOUT ADJUSTMENTS ============ */
 .dashboard-layout {
   display: flex;
-  width: 96vw;
+  width: 100vw;
   margin: 0 auto;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   min-height: calc(100vh - 80px);
   position: relative;
   z-index: 1;
@@ -444,10 +465,25 @@
 .dashboard-content {
   flex: 1;
   padding: 2rem;
-  margin-left: 20vw; /* Account for fixed sidebar */
+  margin-left: 16vw;
   overflow-y: auto;
 }
+.searchjobinDesh h3{
+  background: linear-gradient(135deg, #5a5a58 0%, #fdfdfd 100%);
+    color: white;
 
+    box-shadow: 0 8px 25px rgba(48, 49, 53, 0.4);
+    padding: 14px 28px;
+    border: 1px solid #fff;
+    border-radius: 16px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-right: 3vw;
+}
+.searchjobinDesh h3:hover{
+  background: linear-gradient(135deg, #494948 0%, #b6b0b0 100%);
+}
 /* Welcome Message Update */
 .dashboard-content h1 {
   margin: 0 0 2rem;
@@ -1815,6 +1851,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   overflow: hidden;
   transition: all 0.3s ease;
+  width: 50vw;
 }
 
 .resume-card:hover {
@@ -2601,4 +2638,7 @@ a:focus-visible {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
+}
+.skils-section{
+  margin-left: 15vw;
 }
