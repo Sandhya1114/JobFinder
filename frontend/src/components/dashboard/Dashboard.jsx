@@ -22,6 +22,20 @@ const Dashboard = ({ user, onSignOut }) => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownOpen && !event.target.closest('.profile-section')) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownOpen]);
+
   useEffect(() => {
     if (user === null) {
       navigate('/auth');
@@ -67,37 +81,54 @@ const Dashboard = ({ user, onSignOut }) => {
     }
   };
 
+  const getUserInitials = () => {
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name.split(' ').map(name => name[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (user?.user_metadata?.name) {
+      return user.user_metadata.name.split(' ').map(name => name[0]).join('').toUpperCase().slice(0, 2);
+    }
+    return 'U';
+  };
+
+  const getDisplayName = () => {
+    return user?.user_metadata?.full_name || user?.user_metadata?.name || 'User';
+  };
+
   return (
     <div className="dashboard-container">
       
-      {/* Fixed Header with Avatar */}
+      {/* Modern Fixed Header */}
       <div className="dashboard-header">
-        <h1>Welcome back, {user?.user_metadata?.full_name || user?.user_metadata?.name || 'Saloni Rana'}!</h1>
-        <div className='profileSign'>
-          <div className='searchjobinDesh'>
-              <Link to="/jobs" style={{ textDecoration: "none"}}>
-              <h3>
-                search jobs
-              </h3>
-         </Link>
-          </div>
+        <div className="header-welcome">
+          <h1>Welcome back, {getDisplayName().split(' ')[0]}!</h1>
+        </div>
+        
+        <div className="header-right">
+          {/* Modern Search Jobs Button */}
+          <Link to="/jobs" className="search-jobs-btn">
+            <i className="fas fa-search"></i>
+            <span>Search Jobs</span>
+          </Link>
           
-          <div className="profile-avatar" onClick={toggleDropdown}>
-            {user?.user_metadata?.full_name
-              ? user.user_metadata.full_name.split(' ')[0][0].toUpperCase()
-              : 'U'}
-          </div>
-          {dropdownOpen && (
-            <div className="dropdown">
-              <div className="user-email">
-                {user?.user_metadata?.email || 'user'}
-              </div>
-              <button onClick={handleSignOut} className='signoutdashboard'>
-                <i className="fas fa-sign-out-alt"></i>
-                Sign Out
-              </button>
+          {/* Profile Section with Dropdown */}
+          <div className="profile-section">
+            <div className="profile-avatar" onClick={toggleDropdown}>
+              {getUserInitials()}
             </div>
-          )}
+            
+            {dropdownOpen && (
+              <div className="dropdown">
+                <div className="user-email">
+                  {user?.email || user?.user_metadata?.email || 'user@example.com'}
+                </div>
+                <button onClick={handleSignOut} className='signoutdashboard'>
+                  <i className="fas fa-sign-out-alt"></i>
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -130,10 +161,20 @@ const Dashboard = ({ user, onSignOut }) => {
 
         {/* Main Content */}
         <main className="dashboard-content">
+          {error && (
+            <div className="error-banner">
+              <span>{error}</span>
+              <button onClick={() => window.location.reload()}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          )}
           
-          {error && <div className="error-banner">{error}</div>}
           {loading ? (
-            <div className="loading-spinner">Loading dashboard...</div>
+            <div className="loading-spinner">
+              <div className="spinner"></div>
+              <p>Loading dashboard...</p>
+            </div>
           ) : (
             renderActiveSection()
           )}
