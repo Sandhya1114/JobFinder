@@ -1105,13 +1105,14 @@
 /* ============ UPDATED DASHBOARD HEADER (Top-right only) ============ */
 .dashboard-header {
   position: fixed;
-  top: 0;
-  right: 0;
-  left: 15.1vw; /* Account for sidebar width */
-  background: rgb(255, 255, 255);
+top: 12px;
+    right: 3vw;
+    left: 20.1vw;
+    background: rgb(255 255 255 / 17%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 35px;
   padding: 1rem 2rem;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
@@ -1126,21 +1127,25 @@
 
 /* Logo in Sidebar */
 .sidebar-logo {
-  padding: 1.5rem;
+  padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 1rem;
+  /* margin-top: 1rem; */
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
-.sidebar-logo h3 {
-  margin: 0;
-  font-size: 1.5rem;
+.sidebar-logo a{
+   padding-top: 3vh;
+   padding-bottom: 1vh;
+}
+.sidebar-logo h3{
+  margin:0;
+  font-size: 1.7rem;
   font-weight: 700;
-  color: #1a202c;
+  color: #000000;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: -0.5px;
+  letter-spacing: 0.7px;
   text-align: center;
 }
 
@@ -1336,7 +1341,7 @@
   min-height: calc(100vh - 80px);
   position: relative;
   z-index: 1;
-   margin-top: 5vh;
+   /* margin-top: 5vh; */
   padding-top: 80px; /* Account for fixed header */
 }
 
