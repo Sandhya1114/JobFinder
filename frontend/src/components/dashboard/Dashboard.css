@@ -50,7 +50,7 @@
   overflow: hidden;
 }
 
-.sidebar-logo::before {
+/* .sidebar-logo::before {
   content: '';
   position: absolute;
   top: 0;
@@ -69,9 +69,9 @@
 @keyframes logoShimmer {
   0% { left: -100%; }
   100% { left: 100%; }
-}
+} */
 
-.sidebar-logo h3 {
+/* .sidebar-logo h3 {
   margin: 0;
   font-size: 1.75rem;
   font-weight: 900;
@@ -101,9 +101,9 @@
   25% { background-position: 50% 0%; }
   50% { background-position: 100% 50%; }
   75% { background-position: 50% 100%; }
-}
+} */
 
-.sidebar-logo h3 span {
+/* .sidebar-logo h3 span {
   background: linear-gradient(135deg, 
     #ec4899 0%, 
     #f59e0b 50%, 
@@ -116,8 +116,8 @@
   font-weight: 900;
   animation: spanColorPulse 3s ease-in-out infinite alternate;
   filter: drop-shadow(0 2px 4px rgba(236, 72, 153, 0.3));
-}
-
+} */
+/* 
 @keyframes spanColorPulse {
   from { 
     background-position: 0% 50%;
@@ -127,7 +127,7 @@
     background-position: 100% 50%;
     filter: drop-shadow(0 4px 8px rgba(245, 158, 11, 0.4));
   }
-}
+} */
 
 .sidebar-logo a {
   text-decoration: none;
@@ -276,7 +276,7 @@
     0 4px 30px rgba(99, 102, 241, 0.15),
     0 8px 60px rgba(168, 85, 247, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  z-index: 10;
+  /* z-index: 10; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -286,7 +286,7 @@
 }
 
 /* Animated colorful background shimmer */
-.dashboard-header::before {
+/* .dashboard-header::before {
   content: '';
   position: absolute;
   top: 0;
@@ -301,10 +301,10 @@
     transparent
   );
   animation: headerShimmer 4s ease-in-out infinite;
-}
+} */
 
 /* Floating Balloon Animations */
-.dashboard-header::after {
+/* .dashboard-header::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -317,11 +317,11 @@
   );
   border-radius: 50%;
   animation: float 8s ease-in-out infinite;
-  z-index: 1;
-}
+  z-index: 1; */
+/* } */
 
 /* Additional floating balloons */
-.dashboard-header .balloon-1 {
+/* .dashboard-header .balloon-1 {
   content: '';
   position: absolute;
   top: 20%;
@@ -335,9 +335,9 @@
   border-radius: 50%;
   animation: floatLeft 10s ease-in-out infinite;
   z-index: 1;
-}
+} */
 
-.dashboard-header .balloon-2 {
+/* .dashboard-header .balloon-2 {
   content: '';
   position: absolute;
   top: 60%;
@@ -351,8 +351,8 @@
   border-radius: 50%;
   animation: floatRight 12s ease-in-out infinite;
   z-index: 1;
-}
-
+} */
+/* 
 .dashboard-header .balloon-3 {
   content: '';
   position: absolute;
@@ -367,7 +367,7 @@
   border-radius: 50%;
   animation: floatCenter 15s ease-in-out infinite;
   z-index: 1;
-}
+} */
 
 /* Balloon Animation Keyframes */
 @keyframes float {
@@ -862,7 +862,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-weight: 900;
-  animation: spanGlow 2s ease-in-out infinite alternate;
+  /* animation: spanGlow 2s ease-in-out infinite alternate; */
 }
 
 @keyframes spanGlow {
@@ -1119,7 +1119,7 @@
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  z-index: 100;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content:space-between;
