@@ -42,11 +42,11 @@ function Hero() {
 
   return (
     <section className="hero-section">
-      <div class='center'>
-        <div class='blob'></div>
-        <div class='particle particle1'></div>
-        <div class='particle particle2'></div>
-        <div class='particle particle3'></div>
+      <div className='center'>
+        <div className='blob'></div>
+        <div className='particle particle1'></div>
+        <div className='particle particle2'></div>
+        <div className='particle particle3'></div>
     </div>
       <div className="hero-heading">
         <h1>Find your dream job now</h1>
