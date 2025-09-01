@@ -48,11 +48,12 @@ const Dashboard = ({ user, onSignOut }) => {
     { id: 'overview', label: 'Overview', icon: 'fas fa-chart-pie' },
     { id: 'profile', label: 'Profile', icon: 'fas fa-user' },
     { id: 'saved-jobs', label: 'Saved Jobs', icon: 'fas fa-bookmark' },
-    { id: 'education', label: 'Education', icon: 'fas fa-graduation-cap' },
+    { id: 'education', label: 'Education', icon: 'fas fa-user-graduate' },
     { id: 'skills', label: 'Skills', icon: 'fas fa-tools' },
     { id: 'experience', label: 'Experience', icon: 'fas fa-briefcase' },
     { id: 'resumes', label: 'Resumes', icon: 'fas fa-file-alt' }
   ];
+  
 
   const renderActiveSection = () => {
     switch (activeTab) {
@@ -151,7 +152,7 @@ const Dashboard = ({ user, onSignOut }) => {
                 key={tab.id}
                 className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
                 onClick={() => dispatch(setActiveTab(tab.id))}
-              >
+              >  
                 <i className={`tab-icon ${tab.icon}`}></i>
                 <span className="tab-label">{tab.label}</span>
               </button>

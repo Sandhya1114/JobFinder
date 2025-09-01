@@ -31,7 +31,7 @@
 /* ============ ENHANCED DASHBOARD HEADER ============ */
 /* Add missing profile section container */
 .profile-section {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   position: relative;
 }
@@ -276,7 +276,7 @@
     0 4px 30px rgba(99, 102, 241, 0.15),
     0 8px 60px rgba(168, 85, 247, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  z-index: 100;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1046,25 +1046,25 @@
   text-align: left;
   cursor: pointer;
   transition: all 0.3s ease;
-  color: #1a202c;
+  color: #606060;
   font-weight: 500;
   text-decoration: none;
   margin-bottom: 0.5rem;
 }
 
 .nav-tab:hover {
-  background: rgba(255, 255, 255, 0.25);
+    background: #f2f2f2;
   transform: translateX(4px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); */
 }
 
 .nav-tab.active {
-  background: rgba(255, 255, 255, 0.8);
+  background: #f2f2f2;
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   color: rgb(0, 0, 0);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); */
 }
 
 .tab-icon {
@@ -1074,12 +1074,14 @@
 }
 
 .tab-label {
-  font-size: 0.875rem;
+      font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.5px;
 }
 
 .dashboard-content {
   flex: 1;
-  padding: 2rem;
+  /* padding: 2rem; */
   overflow-y: auto;
 }
 
@@ -1105,10 +1107,10 @@
 /* ============ UPDATED DASHBOARD HEADER (Top-right only) ============ */
 .dashboard-header {
   position: fixed;
-top: 12px;
-    right: 3vw;
-    left: 20.1vw;
-    background: rgb(255 255 255 / 17%);
+  top: 12px;
+  right: 3vw;
+  left: 17.7vw;
+  background: rgb(255 255 255 / 17%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgb(255, 255, 255);
@@ -1137,7 +1139,7 @@ top: 12px;
 }
 .sidebar-logo a{
    padding-top: 3vh;
-   padding-bottom: 1vh;
+   padding-bottom: 2vh;
 }
 .sidebar-logo h3{
   margin:0;
@@ -1367,7 +1369,7 @@ top: 12px;
 .dashboard-content {
   flex: 1;
   padding: 2rem;
-  margin-left: 16vw;
+  margin-left: 15vw;
   overflow-y: auto;
 }
 .searchjobinDesh h3{
@@ -2145,6 +2147,7 @@ top: 12px;
 /* ============ PROFILE PREVIEW ============ */
 .profile-preview {
   margin-top: 2rem;
+  width: 50vw;
 }
 
 .profile-preview h3 {
