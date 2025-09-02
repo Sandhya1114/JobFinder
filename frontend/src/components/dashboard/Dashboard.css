@@ -485,13 +485,13 @@
 
 /* Vibrant colorful search button */
 .search-jobs-btn {
-  background: linear-gradient(135deg, 
+  /* background: linear-gradient(135deg, 
     #000000 0%, 
     #000000 100%
-  );
+  ); */
   background-size: 300% 300%;
-  color: white;
-  border: none;
+  color: rgb(5, 5, 5);
+  border: 1px solid black;
   padding: 0.75rem 1.5rem;
   border-radius: 20px;
   font-weight: 700;
@@ -503,7 +503,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   box-shadow: 
-    0 8px 25px rgba(0, 0, 0, 0.4),
+    0 8px 25px rgba(183, 183, 183, 0.4),
     0 4px 15px rgba(255, 255, 255, 0.3),
     inset 0 1px 0 rgba(0, 0, 0, 0.3);
   text-decoration: none;
@@ -532,7 +532,7 @@
   left: 100%;
 }
 
-.search-jobs-btn:hover {
+/* .search-jobs-btn:hover {
   transform: translateY(-5px) scale(1.05);
   box-shadow: 
     0 15px 40px rgba(99, 102, 241, 0.5),
@@ -545,7 +545,7 @@
 .search-jobs-btn:active {
   transform: translateY(-2px) scale(1.02);
   transition: all 0.1s ease;
-}
+} */
 
 /* Colorful profile avatar with rainbow effects */
 .profile-avatar {
@@ -1108,14 +1108,14 @@
 /* ============ UPDATED DASHBOARD HEADER (Top-right only) ============ */
 .dashboard-header {
   position: fixed;
-  top: 12px;
-  right: 3vw;
-  left: 17.7vw;
+  /* top: 12px;
+  right: 3vw; */
+  left: 15.3vw;
   background: rgb(255 255 255 / 17%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgb(255, 255, 255);
-  border-radius: 35px;
+  /* border-radius: 35px; */
   padding: 1rem 2rem;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
