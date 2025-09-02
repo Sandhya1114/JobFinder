@@ -1,918 +1,410 @@
-/* LinkedIn-inspired Dashboard Overview Styles */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* Purple Dashboard Styles - Matching Purple UI Design */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* CSS Variables for LinkedIn-like colors */
-:root {
-  --linkedin-blue: #0066cc;
-  --linkedin-blue-hover: #0052a3;
-  --linkedin-dark-blue: #004182;
-  --linkedin-light-blue: #e7f3ff;
-  --linkedin-gray: #666666;
-  --linkedin-light-gray: #f3f2ef;
-  --linkedin-border: #e0e0e0;
-  --linkedin-text: #000000;
-  --linkedin-text-light: #666666;
-  --linkedin-background: #f3f2ef;
-  --linkedin-white: #ffffff;
-  --linkedin-success: #057642;
-  --linkedin-warning: #f5c75d;
-}
-
-/* Base styles */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--linkedin-background);
-  margin: 0;
-  padding: 0;
-  color: var(--linkedin-text);
-  line-height: 1.5;
-}
-
-.dashboard-overview {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--linkedin-background);
+.purple-dashboard {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #f8f9fc;
   min-height: 100vh;
+  padding: 24px;
+  color: #2d3748;
 }
 
-/* LinkedIn-style Profile Header */
-.linkedin-profile-header {
-  background: var(--linkedin-white);
+/* Header Section */
+.purple-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  background: white;
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+}
+
+.purple-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.purple-user-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.purple-user-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a202c;
+  margin: 0 0 4px 0;
+}
+
+.purple-user-role {
+  color: #718096;
+  margin: 0;
+  font-size: 14px;
+}
+
+.purple-btn {
+  padding: 12px 24px;
   border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.08);
-  margin-bottom: 24px;
-  overflow: hidden;
-  position: relative;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
 }
 
-.profile-cover {
-  height: 120px;
-  background: #020024;
-background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
-  position: relative;
-  overflow: hidden;
+.purple-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.cover-gradient {
+.purple-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Metrics Cards Row */
+.purple-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.purple-metric-card {
+  padding: 32px;
+  border-radius: 16px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  min-height: 140px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.purple-metric-card:hover {
+  transform: translateY(-2px);
+}
+
+.purple-metric-card::before {
+  content: '';
   position: absolute;
   top: 0;
-  left: 0;
   right: 0;
-  bottom: 0;
-  background: #020024;
-background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(30px, -30px);
 }
 
-.profile-main-content {
-  padding: 0 24px 24px 24px;
-  position: relative;
-}
-
-.profile-info-section {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-top: -60px;
+.purple-metric-content {
   position: relative;
   z-index: 2;
 }
 
-.profile-avatar-section {
+.purple-metric-header {
   display: flex;
-  flex-direction: column;
-  /* gap: 20px; */
-  flex: 1;
-}
-
-.profile-avatar-linkedin {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: var(--linkedin-white);
-  box-shadow: 0 0 0 4px var(--linkedin-white), 0 2px 8px rgba(0,0,0,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 600;
-  color: var(--linkedin-blue);
-  position: relative;
-  flex-shrink: 0;
-}
-
-.avatar-inner-linkedin {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--linkedin-blue) 0%, var(--linkedin-dark-blue) 100%);
-  color: var(--linkedin-white);
-}
-
-.avatar-status-indicator {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--linkedin-success);
-  border: 3px solid var(--linkedin-white);
-}
-
-.profile-basic-info {
-  /* padding-top: 60px; */
-  flex: 1;
-}
-
-.profile-name-linkedin {
-  font-size: 32px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-  color: var(--linkedin-text);
-  line-height: 1.2;
-}
-
-.profile-headline {
-  font-size: 18px;
-  font-weight: 400;
-  color: var(--linkedin-text);
-  margin: 0 0 8px 0;
-}
-
-.profile-location-info {
-  margin-bottom: 12px;
-}
-
-.location-details {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.location-item,
-.contact-item {
-  font-size: 14px;
-  color: var(--linkedin-text-light);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.location-item i,
-.contact-item i {
-  font-size: 12px;
-}
-
-.contact-item {
-  color: var(--linkedin-blue);
-  cursor: pointer;
-}
-
-.contact-item:hover {
-  text-decoration: underline;
-}
-
-.profile-connections {
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 16px;
 }
 
-.connections-count {
-  font-size: 14px;
-  color: var(--linkedin-blue);
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.connections-count:hover {
-  text-decoration: underline;
-}
-
-.profile-actions-linkedin {
-  display: flex;
-  gap: 12px;
-  margin-top: 5vh;
-  align-items: flex-start;
-  padding-top: 60px;
-  flex-shrink: 0;
-}
-
-.btn-primary-linkedin {
-  background: var(--linkedin-blue);
-  color: var(--linkedin-white);
-  border: 1px solid var(--linkedin-blue);
-  border-radius: 24px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.btn-primary-linkedin:hover {
-  background: var(--linkedin-blue-hover);
-  border-color: var(--linkedin-blue-hover);
-}
-
-.btn-secondary-linkedin {
-  background: transparent;
-  color: var(--linkedin-blue);
-  border: 1px solid var(--linkedin-blue);
-  border-radius: 24px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary-linkedin:hover {
-  background: var(--linkedin-light-blue);
-  border-color: var(--linkedin-blue-hover);
-}
-
-.btn-icon-linkedin {
-  background: transparent;
-  color: var(--linkedin-text-light);
-  border: 1px solid var(--linkedin-border);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-icon-linkedin:hover {
-  background: var(--linkedin-light-gray);
-  border-color: var(--linkedin-gray);
-  color: var(--linkedin-text);
-}
-
-/* Profile Completion Card */
-.profile-completion-card {
-  background: var(--linkedin-light-blue);
-  border: 1px solid #cce7ff;
-  border-radius: 8px;
-  padding: 16px;
-  margin-top: 24px;
-  position: relative;
-}
-
-.completion-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.completion-header h3 {
+.purple-metric-title {
   font-size: 16px;
-  font-weight: 600;
-  margin: 0;
-  color: var(--linkedin-text);
-}
-
-.completion-percentage {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--linkedin-blue);
-}
-
-.completion-progress-bar {
-  background: #ffffff;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-
-.progress-fill {
-  background: var(--linkedin-blue);
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.completion-text {
-  font-size: 14px;
-  color: var(--linkedin-text-light);
-  margin: 0;
-}
-
-/* Stats Grid */
-.stats-grid-linkedin {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stat-card-linkedin {
-  background: var(--linkedin-white);
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.08);
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: relative;
-}
-
-.stat-card-linkedin:hover {
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.12);
-  transform: translateY(-2px);
-}
-
-.stat-icon {
-  font-size: 24px;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  background: var(--linkedin-light-blue);
-}
-
-.stat-content h3 {
-  font-size: 28px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: var(--linkedin-text);
-}
-
-.stat-content p {
-  font-size: 14px;
-  color: var(--linkedin-text-light);
-  margin: 0;
   font-weight: 500;
+  margin: 0;
+  opacity: 0.9;
 }
 
-.stat-arrow {
-  margin-left: auto;
-  color: var(--linkedin-text-light);
+.purple-metric-icon {
+  font-size: 24px;
+  opacity: 0.8;
+}
+
+.purple-metric-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.purple-metric-change {
   font-size: 14px;
-  opacity: 0;
-  transition: all 0.2s ease;
-}
-
-.stat-card-linkedin:hover .stat-arrow {
-  opacity: 1;
-  transform: translateX(4px);
+  font-weight: 500;
+  opacity: 0.9;
 }
 
 /* Main Content Grid */
-.content-grid-linkedin {
+.purple-content-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
+  gap: 32px;
 }
 
-.content-left,
-.content-right {
+.purple-content-left {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-/* Content Cards */
-.content-card-linkedin {
-  background: var(--linkedin-white);
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.08);
+.purple-content-right {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Purple Cards */
+.purple-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
-.card-header {
-  padding: 20px 20px 0 20px;
+.purple-card-header {
+  padding: 24px 24px 0 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--linkedin-border);
-  margin-bottom: 0;
-  padding-bottom: 16px;
 }
 
-.card-header h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-  color: var(--linkedin-text);
-}
-
-.edit-btn {
-  background: transparent;
-  border: none;
-  color: var(--linkedin-text-light);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  font-size: 16px;
-}
-
-.edit-btn:hover {
-  background: var(--linkedin-light-gray);
-  color: var(--linkedin-text);
-}
-
-.card-content {
-  padding: 20px;
-}
-
-/* About Section */
-.about-text {
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--linkedin-text);
-  margin: 0;
-}
-
-/* Empty States */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-}
-
-.empty-state.small {
-  padding: 20px;
-}
-
-.empty-state p {
-  font-size: 14px;
-  color: var(--linkedin-text-light);
-  margin: 0 0 16px 0;
-}
-
-.add-about-btn,
-.add-experience-btn,
-.add-education-btn,
-.add-skills-btn,
-.add-resume-btn {
-  background: transparent;
-  color: var(--linkedin-blue);
-  border: 1px solid var(--linkedin-blue);
-  border-radius: 24px;
-  padding: 8px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-about-btn:hover,
-.add-experience-btn:hover,
-.add-education-btn:hover,
-.add-skills-btn:hover,
-.add-resume-btn:hover {
-  background: var(--linkedin-light-blue);
-}
-
-/* Experience Section */
-.experience-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.experience-item {
-  display: flex;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--linkedin-border);
-}
-
-.experience-item:last-child {
-  border-bottom: none;
-}
-
-.company-logo {
-  width: 48px;
-  height: 48px;
-  background: var(--linkedin-light-gray);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--linkedin-text-light);
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.experience-details h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: var(--linkedin-text);
-}
-
-.company-name {
-  font-size: 14px;
-  color: var(--linkedin-text);
-  margin: 0 0 4px 0;
-  font-weight: 500;
-}
-
-.duration,
-.location {
-  font-size: 12px;
-  color: var(--linkedin-text-light);
-  margin: 0 0 4px 0;
-}
-
-.current-badge {
-  display: inline-block;
-  background: var(--linkedin-success);
-  color: var(--linkedin-white);
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.show-more-btn {
-  background: transparent;
-  border: none;
-  color: var(--linkedin-text-light);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  padding: 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.show-more-btn:hover {
-  color: var(--linkedin-text);
-}
-
-/* Education Section */
-.education-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.education-item {
-  display: flex;
-  gap: 16px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--linkedin-border);
-}
-
-.education-item:last-child {
-  border-bottom: none;
-}
-
-.school-logo {
-  width: 48px;
-  height: 48px;
-  background: var(--linkedin-light-gray);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--linkedin-text-light);
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.education-details h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 4px 0;
-  color: var(--linkedin-text);
-}
-
-.degree,
-.field {
-  font-size: 14px;
-  color: var(--linkedin-text);
-  margin: 0 0 4px 0;
-}
-
-.education-details .duration {
-  font-size: 12px;
-  color: var(--linkedin-text-light);
-  margin: 0;
-}
-
-/* Skills Section */
-.skills-section {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.skills-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.skill-badge-linkedin {
-  background: var(--linkedin-light-gray);
-  color: var(--linkedin-text);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--linkedin-border);
-  transition: all 0.2s ease;
-}
-
-.skill-badge-linkedin:hover {
-  background: var(--linkedin-light-blue);
-  border-color: var(--linkedin-blue);
-}
-
-.skill-badge-linkedin .verified {
-  color: var(--linkedin-success);
-  font-size: 12px;
-}
-
-/* Resume Section */
-.resumes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.resume-item-linkedin {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border: 1px solid var(--linkedin-border);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.resume-item-linkedin:hover {
-  border-color: var(--linkedin-blue);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-}
-
-.resume-icon {
-  width: 40px;
-  height: 40px;
-  background: #d32f2f;
-  color: var(--linkedin-white);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.purple-card-title {
   font-size: 18px;
-  flex-shrink: 0;
-}
-
-.resume-details {
-  flex: 1;
-}
-
-.resume-details h4 {
-  font-size: 14px;
   font-weight: 600;
-  margin: 0 0 4px 0;
-  color: var(--linkedin-text);
-}
-
-.upload-date {
-  font-size: 12px;
-  color: var(--linkedin-text-light);
+  color: #1a202c;
   margin: 0;
 }
 
-.primary-badge {
-  display: inline-block;
-  background: var(--linkedin-warning);
-  color: #000;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
+/* Activity Table */
+.purple-activity-table {
+  min-height: 400px;
+}
+
+.purple-table-container {
+  padding: 0 24px 24px 24px;
+  margin-top: 20px;
+}
+
+.purple-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.purple-table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.purple-table td {
+  padding: 16px 16px;
+  border-bottom: 1px solid #f7fafc;
+  font-size: 14px;
+}
+
+.purple-assignee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.purple-assignee-avatar {
+  width: 46px;
+    height: 46px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.purple-subject {
+  color: #2d3748;
+  font-weight: 500;
+}
+
+.purple-status {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 4px;
 }
 
-.view-resume-btn {
-  background: transparent;
+.purple-status.status-done {
+  background: #c6f6d5;
+  color: #22543d;
+}
+
+.purple-status.status-active {
+  background: #fed7d7;
+  color: #742a2a;
+}
+
+.purple-status.status-ongoing {
+  background: #feebc8;
+  color: #7b341e;
+}
+
+.purple-status.status-pending {
+  background: #e6fffa;
+  color: #234e52;
+}
+
+.purple-status.status-neutral {
+  background: #edf2f7;
+  color: #4a5568;
+}
+
+.purple-date,
+.purple-tracking {
+  color: #718096;
+  font-size: 13px;
+}
+
+/* Calendar */
+.purple-calendar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   border: none;
-  color: var(--linkedin-blue);
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  font-size: 16px;
 }
 
-.view-resume-btn:hover {
-  background: var(--linkedin-light-blue);
-}
-
-/* Activity Section */
-.activity-list-linkedin {
+.purple-calendar-header {
   display: flex;
-  flex-direction: column;
+  justify-content: between;
+  align-items: center;
+  padding: 24px;
   gap: 16px;
 }
 
-.activity-item-linkedin {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.activity-icon {
+.purple-calendar-nav {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  background: var(--linkedin-light-gray);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
   font-size: 14px;
-  flex-shrink: 0;
 }
 
-.activity-details {
+.purple-calendar-title {
   flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-.activity-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--linkedin-text);
-  margin: 0 0 4px 0;
+.purple-calendar-grid {
+  padding: 0 24px 24px 24px;
 }
 
-.activity-subtitle {
-  font-size: 13px;
-  color: var(--linkedin-text-light);
-  margin: 0 0 4px 0;
+.purple-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
 }
 
-.activity-date {
+.purple-day-label {
+  text-align: center;
+  padding: 8px 4px;
   font-size: 12px;
-  color: var(--linkedin-text-light);
+  font-weight: 500;
+  opacity: 0.8;
 }
 
-/* Quick Actions */
-.quick-actions-list {
-  display: flex;
-  flex-direction: column;
+.purple-calendar-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
   gap: 4px;
 }
 
-.quick-action-item {
-  background: transparent;
-  border: none;
-  padding: 12px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.purple-calendar-date {
+  aspect-ratio: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   font-size: 14px;
-  font-weight: 500;
-  color: var(--linkedin-text);
-  text-align: left;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.quick-action-item:hover {
-  background: var(--linkedin-light-gray);
+.purple-calendar-date:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.quick-action-item i:first-child {
-  width: 20px;
-  text-align: center;
-  color: var(--linkedin-blue);
+.purple-calendar-date.today {
+  background: white;
+  color: #667eea;
+  font-weight: 600;
 }
 
-.quick-action-item i:last-child {
-  margin-left: auto;
-  color: var(--linkedin-text-light);
-  font-size: 12px;
+.purple-calendar-date.other-month {
+  opacity: 0.3;
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .content-grid-linkedin {
-    grid-template-columns: 1fr;
-  }
-  
-  .content-right {
-    order: -1;
-  }
+.purple-event-dot {
+  position: absolute;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  background: #68d391;
+  border-radius: 50%;
 }
 
-@media (max-width: 768px) {
-  .dashboard-overview {
-    padding: 12px;
-  }
-  
-  .profile-info-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 20px;
-  }
-  
-  .profile-avatar-section {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 16px;
-  }
-  
-  .profile-basic-info {
-    padding-top: 16px;
-  }
-  
-  .profile-actions-linkedin {
-    padding-top: 16px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .stats-grid-linkedin {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-  
-  .stat-card-linkedin {
-    padding: 16px;
-  }
-  
-  .profile-name-linkedin {
-    font-size: 24px;
-  }
-  
-  .profile-headline {
-    font-size: 16px;
-  }
+/* Profile Completion */
+.purple-completion-content {
+  padding: 24px;
+  display: flex;
+  gap: 24px;
+  align-items: center;
 }
 
-@media (max-width: 480px) {
-  .stats-grid-linkedin {
-    grid-template-columns: 1fr;
-  }
-  
-  .profile-actions-linkedin {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .btn-primary-linkedin,
-  .btn-secondary-linkedin {
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .profile-avatar-linkedin {
-    width: 100px;
-    height: 100px;
-    font-size: 40px;
-  }
-  
-  .profile-main-content {
-    padding: 0 16px 16px 16px;
-  }
-  
-  .card-content {
-    padding: 16px;
-  }
-  
-  .card-header {
-    padding: 16px 16px 0 16px;
-    padding-bottom: 12px;
-  }
+.purple-completion-circle {
+  flex-shrink: 0;
 }
+
+.purple-circle-progress {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgb(255, 154, 248) 0deg,
+    rgb(254, 207, 239) calc(var(--progress) * 3.6deg),
+    #e2e8f0 calc(var(--progress) * 3.6deg),
+    #ffffff 360deg
+    
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;}
