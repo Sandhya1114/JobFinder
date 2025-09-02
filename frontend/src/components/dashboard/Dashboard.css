@@ -280,7 +280,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 70px;
+  /* height: 70px; */
   position: relative;
   overflow: hidden;
 }
@@ -837,6 +837,7 @@
 
 .sidebar-logo h3 {
   margin: 0;
+  margin-top: 4vh;
   font-size: 1.75rem;
   font-weight: 800;
   color: #1a202c;
@@ -861,7 +862,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 900;
+  /* font-weight: 900; */
   /* animation: spanGlow 2s ease-in-out infinite alternate; */
 }
 
@@ -1123,7 +1124,7 @@
   display: flex;
   align-items: center;
   justify-content:space-between;
-  height: 40px;
+  /* height: 40px; */
  
 }
 
@@ -1143,6 +1144,7 @@
 }
 .sidebar-logo h3{
   margin:0;
+  margin-top: 3vh;
   font-size: 1.7rem;
   font-weight: 700;
   color: #000000;
@@ -1156,7 +1158,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 900;
+  /* font-weight: 900; */
   /* font-size: 2rem; */
 }
 
@@ -1629,7 +1631,7 @@
 }
 
 .activity-icon {
-  background: rgba(0, 0, 0, 0.8);
+  /* background: rgba(0, 0, 0, 0.8); */
   color: white;
   padding: 0.5rem;
   border-radius: 10px;
