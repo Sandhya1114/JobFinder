@@ -124,12 +124,13 @@ const Dashboard = ({ user, onSignOut }) => {
               className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => dispatch(setActiveTab(tab.id))}
             >
-              <div className="nav-icon">
-                <i className={tab.icon}></i>
-              </div>
+             
               {!sidebarCollapsed && (
                 <span className="nav-label">{tab.label}</span>
               )}
+               <div className="nav-icon">
+                <i className={tab.icon}></i>
+              </div>
               {activeTab === tab.id && <div className="active-indicator"></div>}
             </div>
           ))}
