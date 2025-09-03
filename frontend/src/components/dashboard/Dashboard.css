@@ -2576,6 +2576,7 @@ a:focus-visible {
 .nav-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
   margin: 4px 0;
   border-radius: 12px;
