@@ -17,9 +17,14 @@ const Dashboard = ({ user, onSignOut }) => {
   const { activeTab, stats, loading, error } = useSelector(state => state.dashboard);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   // Close dropdown when clicking outside
@@ -45,15 +50,14 @@ const Dashboard = ({ user, onSignOut }) => {
   }, [user, dispatch, navigate]);
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: 'fas fa-chart-pie' },
+    { id: 'overview', label: 'Dashboard', icon: 'fas fa-chart-pie' },
     { id: 'profile', label: 'Profile', icon: 'fas fa-user' },
     { id: 'saved-jobs', label: 'Saved Jobs', icon: 'fas fa-bookmark' },
-    { id: 'education', label: 'Education', icon: 'fas fa-user-graduate' },
+    { id: 'education', label: 'Education', icon: 'fas fa-graduation-cap' },
     { id: 'skills', label: 'Skills', icon: 'fas fa-tools' },
     { id: 'experience', label: 'Experience', icon: 'fas fa-briefcase' },
     { id: 'resumes', label: 'Resumes', icon: 'fas fa-file-alt' }
   ];
-  
 
   const renderActiveSection = () => {
     switch (activeTab) {
@@ -97,74 +101,145 @@ const Dashboard = ({ user, onSignOut }) => {
   };
 
   return (
-    <div className="dashboard-container">
-      
-      {/* Modern Fixed Header */}
-      {/* <div className="dashboard-header">
-        <div className="header-welcome">
-          <h1>Welcome back, {getDisplayName().split(' ')[0]}!</h1>
-        </div>
-        
-        <div className="header-right"> */}
-          {/* Modern Search Jobs Button */}
-          {/* <Link to="/jobs" className="search-jobs-btn">
-            <i className="fas fa-search"></i>
-            <span>Search Jobs</span>
-          </Link> */}
-          
-          {/* Profile Section with Dropdown */}
-          {/* <div className="profile-section">
-            <div className="profile-avatar" onClick={toggleDropdown}>
-              {getUserInitials()}
-            </div> */}
-{/*             
-            {dropdownOpen && (
-              <div className="dropdown">
-                <div className="user-email">
-                  {user?.email || user?.user_metadata?.email || 'user@example.com'}
-                </div>
-                <button onClick={handleSignOut} className='signoutdashboard'>
-                  <i className="fas fa-sign-out-alt"></i>
-                  <span>Sign Out</span>
-                </button>
-              </div>
-            )}
+    <div className="modern-dashboard">
+      {/* Modern Sidebar */}
+      <nav className={`modern-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        {/* Logo Section */}
+        <div className="sidebar-brand">
+          <div className="brand-icon">
+            <i className="fas fa-briefcase"></i>
           </div>
-        </div>
-      </div> */}
-
-      <div className="dashboard-layout">
-        {/* Sidebar with Logo and Navigation */}
-        <nav className="dashboard-sidebar">
-          {/* Logo in Sidebar */}
-          <div className="sidebar-logo">
-            <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
-              <h3>
-                HIRE<span>PATH</span>
-              </h3>
+          {!sidebarCollapsed && (
+            <Link to="/" className="brand-text">
+              HIRE<span>PATH</span>
             </Link>
-          </div>
-          
-          {/* Navigation Tabs */}
-          <div className="nav-tabs">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`nav-tab ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => dispatch(setActiveTab(tab.id))}
-              >  
-                <i className={`tab-icon ${tab.icon}`}></i>
-                <span className="tab-label">{tab.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
+          )}
+        </div>
 
-        {/* Main Content */}
-        <main className="dashboard-content">
+        {/* Navigation Menu */}
+        <div className="nav-menu">
+          {tabs.map((tab, index) => (
+            <div
+              key={tab.id}
+              className={`nav-item ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => dispatch(setActiveTab(tab.id))}
+            >
+              <div className="nav-icon">
+                <i className={tab.icon}></i>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="nav-label">{tab.label}</span>
+              )}
+              {activeTab === tab.id && <div className="active-indicator"></div>}
+            </div>
+          ))}
+        </div>
+
+        {/* Sidebar Toggle */}
+        <div className="sidebar-toggle" onClick={toggleSidebar}>
+          <i className={`fas ${sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'}`}></i>
+        </div>
+      </nav>
+
+      {/* Main Content Area */}
+      <div className={`main-content ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        {/* Modern Header */}
+        <header className="modern-header">
+          {/* Left Section */}
+          <div className="header-left">
+            <div className="breadcrumb">
+              <span className="breadcrumb-item">Dashboard</span>
+              <i className="fas fa-chevron-right"></i>
+              <span className="breadcrumb-current">
+                {tabs.find(tab => tab.id === activeTab)?.label || 'Overview'}
+              </span>
+            </div>
+          </div>
+
+          {/* Center Section */}
+          <div className="header-center">
+            <div className="search-container">
+              <i className="fas fa-search search-icon"></i>
+              <input 
+                type="text" 
+                placeholder="Search projects..." 
+                className="search-input"
+              />
+            </div>
+          </div>
+
+          {/* Right Section */}
+          <div className="header-right">
+            {/* Quick Actions */}
+            <div className="header-actions">
+              <Link to="/jobs" className="action-btn search-jobs">
+                <i className="fas fa-search"></i>
+                <span>Search Jobs</span>
+              </Link>
+              
+              <button className="action-btn notification">
+                <i className="fas fa-bell"></i>
+                <span className="notification-badge">3</span>
+              </button>
+            </div>
+
+            {/* User Profile */}
+            <div className="user-profile" onClick={toggleDropdown}>
+              <div className="user-info">
+                <span className="user-name">{getDisplayName().split(' ')[0]}</span>
+                <span className="user-role">Project Manager</span>
+              </div>
+              <div className="user-avatar">
+                {getUserInitials()}
+              </div>
+              <i className="fas fa-chevron-down dropdown-arrow"></i>
+
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="user-dropdown">
+                  <div className="dropdown-header">
+                    <div className="dropdown-avatar">
+                      {getUserInitials()}
+                    </div>
+                    <div className="dropdown-info">
+                      <h4>{getDisplayName()}</h4>
+                      <p>{user?.email || user?.user_metadata?.email || 'user@example.com'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="dropdown-menu">
+                    <a href="#" className="dropdown-item">
+                      <i className="fas fa-user"></i>
+                      <span>My Profile</span>
+                    </a>
+                    <a href="#" className="dropdown-item">
+                      <i className="fas fa-cog"></i>
+                      <span>Settings</span>
+                    </a>
+                    <a href="#" className="dropdown-item">
+                      <i className="fas fa-question-circle"></i>
+                      <span>Help & Support</span>
+                    </a>
+                    <div className="dropdown-divider"></div>
+                    <button onClick={handleSignOut} className="dropdown-item logout">
+                      <i className="fas fa-sign-out-alt"></i>
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+
+        {/* Content Area */}
+        <main className="content-area">
           {error && (
             <div className="error-banner">
-              <span>{error}</span>
+              <div className="error-content">
+                <i className="fas fa-exclamation-triangle"></i>
+                <span>{error}</span>
+              </div>
               <button onClick={() => window.location.reload()}>
                 <i className="fas fa-times"></i>
               </button>
@@ -172,12 +247,16 @@ const Dashboard = ({ user, onSignOut }) => {
           )}
           
           {loading ? (
-            <div className="loading-spinner">
-              <div className="spinner"></div>
+            <div className="loading-container">
+              <div className="loading-spinner">
+                <div className="spinner"></div>
+              </div>
               <p>Loading dashboard...</p>
             </div>
           ) : (
-            renderActiveSection()
+            <div className="content-wrapper">
+              {renderActiveSection()}
+            </div>
           )}
         </main>
       </div>
