@@ -100,24 +100,24 @@ const Dashboard = ({ user, onSignOut }) => {
     <div className="dashboard-container">
       
       {/* Modern Fixed Header */}
-      <div className="dashboard-header">
+      {/* <div className="dashboard-header">
         <div className="header-welcome">
           <h1>Welcome back, {getDisplayName().split(' ')[0]}!</h1>
         </div>
         
-        <div className="header-right">
+        <div className="header-right"> */}
           {/* Modern Search Jobs Button */}
-          <Link to="/jobs" className="search-jobs-btn">
+          {/* <Link to="/jobs" className="search-jobs-btn">
             <i className="fas fa-search"></i>
             <span>Search Jobs</span>
-          </Link>
+          </Link> */}
           
           {/* Profile Section with Dropdown */}
-          <div className="profile-section">
+          {/* <div className="profile-section">
             <div className="profile-avatar" onClick={toggleDropdown}>
               {getUserInitials()}
-            </div>
-            
+            </div> */}
+{/*             
             {dropdownOpen && (
               <div className="dropdown">
                 <div className="user-email">
@@ -131,7 +131,7 @@ const Dashboard = ({ user, onSignOut }) => {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="dashboard-layout">
         {/* Sidebar with Logo and Navigation */}

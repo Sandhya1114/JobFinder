@@ -1524,7 +1524,7 @@
   color: #4a5568;
 }
 
-.stats-grid {
+/* .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
@@ -1568,7 +1568,7 @@
   justify-content: center;
   width: 60px;
   height: 60px;
-}
+} */
 
 .stat-content h3 {
   margin: 0;
