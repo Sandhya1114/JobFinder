@@ -1,4 +1,4 @@
-// Purple-Style DashboardOverview.jsx - Matching Purple dashboard design
+// Enhanced Purple Dashboard with Jobs, Education, Skills, Resume sections
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveTab } from '../../redux/dashboardSlice';
 import { useEffect } from 'react';
@@ -60,25 +60,27 @@ const DashboardOverview = ({ stats }) => {
     return Math.round((completion / totalSections) * 100);
   };
 
-  // Purple-style metric cards (matching the colorful cards in reference)
+  // Purple-style metric cards
   const metricsCards = [
     {
       title: 'Total Skills',
       value: skills.length,
-      change: skills.length > 5 ? 'Advanced' : 'Growing',
+      change: skills.length > 5 ? 'Advanced Level' : 'Growing',
       changeType: 'positive',
       icon: 'fas fa-brain',
-      gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-      color: '#ff9a9e'
+      gradient: 'linear-gradient(135deg, #ffbf96 0%, #fe7096 100%)',
+      color: '#ff9a9e',
+      onClick: () => dispatch(setActiveTab('skills'))
     },
     {
       title: 'Work Experience',
-      value: `${workExperience.length} Job${workExperience.length !== 1 ? 's' : ''}`,
+      value: workExperience.length,
       change: workExperience.some(exp => exp.is_current) ? 'Currently Working' : 'Available',
       changeType: workExperience.some(exp => exp.is_current) ? 'positive' : 'neutral',
       icon: 'fas fa-briefcase',
-      gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-      color: '#a8edea'
+      gradient: 'linear-gradient(135deg, #90caf9 0%, #90caf9 100%)',
+      color: '#a8edea',
+      onClick: () => dispatch(setActiveTab('experience'))
     },
     {
       title: 'Education',
@@ -86,8 +88,29 @@ const DashboardOverview = ({ stats }) => {
       change: education.some(edu => edu.is_current) ? 'In Progress' : 'Completed',
       changeType: 'positive',
       icon: 'fas fa-graduation-cap',
-      gradient: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)',
-      color: '#d299c2'
+      gradient: 'linear-gradient(135deg, #cd84b8ff 0%, #fff7c2ff 100%)',
+      color: '#d299c2',
+      onClick: () => dispatch(setActiveTab('education'))
+    },
+    {
+      title: 'Resume Library',
+      value: resumes.length,
+      change: resumes.some(r => r.is_primary) ? 'Primary Set' : 'Ready to Upload',
+      changeType: 'positive',
+      icon: 'fas fa-file-alt',
+      gradient: 'linear-gradient(135deg, #84d9d2 0%, #07cdae 100%)',
+      color: '#a8e6cf',
+      onClick: () => dispatch(setActiveTab('resumes'))
+    },
+    {
+      title: 'Saved Jobs',
+      value: stats?.savedJobs || 0,
+      change: 'Job Applications',
+      changeType: 'neutral',
+      icon: 'fas fa-bookmark',
+      gradient: 'linear-gradient(135deg, #ffd93d 0%, #ff6b95 100%)',
+      color: '#ffd93d',
+      onClick: () => dispatch(setActiveTab('jobs'))
     }
   ];
 
@@ -151,7 +174,7 @@ const DashboardOverview = ({ stats }) => {
       });
     }
 
-    return activities.slice(0, 4);
+    return activities.slice(0, 6);
   };
 
   const getStatusClass = (status) => {
@@ -179,7 +202,7 @@ const DashboardOverview = ({ stats }) => {
             <h2 className="purple-user-name">
               {profile.name || user?.user_metadata?.full_name || user?.user_metadata?.name || 'Your Name'}
             </h2>
-            <p className="purple-user-role">Profile Overview</p>
+            <p className="purple-user-role">Profile Overview Dashboard</p>
           </div>
         </div>
         <div className="purple-header-right">
@@ -190,10 +213,15 @@ const DashboardOverview = ({ stats }) => {
         </div>
       </div>
 
-      {/* Metrics Cards Row */}
+      {/* Enhanced Metrics Cards Row */}
       <div className="purple-metrics-row">
         {metricsCards.map((metric, index) => (
-          <div key={index} className="purple-metric-card" style={{ background: metric.gradient }}>
+          <div 
+            key={index} 
+            className="purple-metric-card clickable" 
+            style={{ background: metric.gradient }}
+            onClick={metric.onClick}
+          >
             <div className="purple-metric-content">
               <div className="purple-metric-header">
                 <h3 className="purple-metric-title">{metric.title}</h3>
@@ -217,16 +245,16 @@ const DashboardOverview = ({ stats }) => {
           <div className="purple-card purple-activity-table">
             <div className="purple-card-header">
               <h3 className="purple-card-title">Recent Profile Activity</h3>
+              <span className="purple-activity-count">{getRecentActivity().length} updates</span>
             </div>
             <div className="purple-table-container">
               <table className="purple-table">
                 <thead>
                   <tr>
-                    <th>Assignee</th>
-                    <th>Subject</th>
+                    <th>User</th>
+                    <th>Activity</th>
                     <th>Status</th>
-                    <th>Last Update</th>
-                    {/* <th>Tracking ID</th> */}
+                    <th>Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -251,11 +279,242 @@ const DashboardOverview = ({ stats }) => {
                           year: 'numeric'
                         })}
                       </td>
-                      {/* <td className="purple-tracking">{activity.trackingId}</td> */}
                     </tr>
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* Skills Section */}
+          <div className="purple-card purple-skills-section">
+            <div className="purple-card-header">
+              <h3 className="purple-card-title">Skills Overview</h3>
+              <button 
+                className="purple-btn purple-btn-primary purple-btn-sm"
+                onClick={() => dispatch(setActiveTab('skills'))}
+              >
+                <i className="fas fa-plus"></i>
+                Add Skills
+              </button>
+            </div>
+            <div className="purple-skills-content">
+              {skills.length > 0 ? (
+                <div className="purple-skills-categories">
+                  {Object.entries(groupSkillsByCategory()).slice(0, 3).map(([category, categorySkills]) => (
+                    <div key={category} className="purple-skill-category">
+                      <h4 className="purple-category-title">{category}</h4>
+                      <div className="purple-skills-list">
+                        {categorySkills.slice(0, 6).map((skill, index) => (
+                          <span key={index} className="purple-skill-tag">
+                            {skill.skill_name}
+                            {skill.is_verified && <i className="fas fa-check-circle"></i>}
+                          </span>
+                        ))}
+                        {categorySkills.length > 6 && (
+                          <span className="purple-skill-more">+{categorySkills.length - 6} more</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="purple-empty-state">
+                  <i className="fas fa-brain purple-empty-icon"></i>
+                  <p>No skills added yet. Add your first skill to get started!</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Education Section */}
+          <div className="purple-card purple-education-section">
+            <div className="purple-card-header">
+              <h3 className="purple-card-title">Education Background</h3>
+              <button 
+                className="purple-btn purple-btn-primary purple-btn-sm"
+                onClick={() => dispatch(setActiveTab('education'))}
+              >
+                <i className="fas fa-plus"></i>
+                Add Education
+              </button>
+            </div>
+            <div className="purple-education-content">
+              {education.length > 0 ? (
+                <div className="purple-education-list">
+                  {education.slice(0, 3).map((edu, index) => (
+                    <div key={index} className="purple-education-item">
+                      <div className="purple-education-icon">
+                        <i className="fas fa-university"></i>
+                      </div>
+                      <div className="purple-education-details">
+                        <h4 className="purple-education-degree">{edu.degree}</h4>
+                        <p className="purple-education-institution">{edu.institution}</p>
+                        <div className="purple-education-meta">
+                          <span>{edu.field_of_study}</span>
+                          <span className="purple-education-date">
+                            {edu.start_date ? new Date(edu.start_date).getFullYear() : 'N/A'} - 
+                            {edu.is_current ? ' Present' : (edu.end_date ? ` ${new Date(edu.end_date).getFullYear()}` : ' N/A')}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {education.length > 3 && (
+                    <div className="purple-view-more">
+                      <button onClick={() => dispatch(setActiveTab('education'))}>
+                        View all {education.length} education records
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="purple-empty-state">
+                  <i className="fas fa-graduation-cap purple-empty-icon"></i>
+                  <p>No education records added yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="purple-content-right">
+          {/* Profile Completion */}
+          <div className="purple-card purple-completion">
+            <div className="purple-card-header">
+              <h3 className="purple-card-title">Profile Completion</h3>
+              <span className="purple-completion-percentage">{calculateProfileCompletion()}%</span>
+            </div>
+            <div className="purple-completion-content">
+              <div className="purple-completion-circle">
+                <div className="purple-circle-progress" style={{ '--progress': calculateProfileCompletion() }}>
+                  <span className="purple-percentage">{calculateProfileCompletion()}%</span>
+                </div>
+              </div>
+              <div className="purple-completion-items">
+                <div className={`purple-completion-item ${profile.name ? 'completed' : ''}`}>
+                  <i className={profile.name ? 'fas fa-check-circle' : 'far fa-circle'}></i>
+                  <span>Basic Information</span>
+                </div>
+                <div className={`purple-completion-item ${workExperience.length > 0 ? 'completed' : ''}`}>
+                  <i className={workExperience.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
+                  <span>Work Experience</span>
+                </div>
+                <div className={`purple-completion-item ${education.length > 0 ? 'completed' : ''}`}>
+                  <i className={education.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
+                  <span>Education</span>
+                </div>
+                <div className={`purple-completion-item ${skills.length > 0 ? 'completed' : ''}`}>
+                  <i className={skills.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
+                  <span>Skills</span>
+                </div>
+                <div className={`purple-completion-item ${resumes.length > 0 ? 'completed' : ''}`}>
+                  <i className={resumes.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
+                  <span>Resume</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Resume Library */}
+          <div className="purple-card purple-resume-section">
+            <div className="purple-card-header">
+              <h3 className="purple-card-title">Resume Library</h3>
+              <button 
+                className="purple-btn purple-btn-primary purple-btn-sm"
+                onClick={() => dispatch(setActiveTab('resumes'))}
+              >
+                <i className="fas fa-upload"></i>
+                Upload
+              </button>
+            </div>
+            <div className="purple-resume-content">
+              {resumes.length > 0 ? (
+                <div className="purple-resume-list">
+                  {resumes.slice(0, 4).map((resume, index) => (
+                    <div key={index} className="purple-resume-item">
+                      <div className="purple-resume-icon">
+                        <i className="fas fa-file-pdf"></i>
+                      </div>
+                      <div className="purple-resume-details">
+                        <h5 className="purple-resume-title">{resume.title}</h5>
+                        <div className="purple-resume-meta">
+                          <span className="purple-resume-date">
+                            {new Date(resume.created_at).toLocaleDateString()}
+                          </span>
+                          {resume.is_primary && (
+                            <span className="purple-primary-badge">Primary</span>
+                          )}
+                        </div>
+                      </div>
+                      <button 
+                        className="purple-resume-view"
+                        onClick={() => window.open(resume.file_url, '_blank')}
+                      >
+                        <i className="fas fa-external-link-alt"></i>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="purple-empty-state">
+                  <i className="fas fa-file-alt purple-empty-icon"></i>
+                  <p>No resumes uploaded yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Work Experience */}
+          <div className="purple-card purple-experience-section">
+            <div className="purple-card-header">
+              <h3 className="purple-card-title">Work Experience</h3>
+              <button 
+                className="purple-btn purple-btn-primary purple-btn-sm"
+                onClick={() => dispatch(setActiveTab('experience'))}
+              >
+                <i className="fas fa-plus"></i>
+                Add
+              </button>
+            </div>
+            <div className="purple-experience-content">
+              {workExperience.length > 0 ? (
+                <div className="purple-experience-list">
+                  {workExperience.slice(0, 3).map((exp, index) => (
+                    <div key={index} className="purple-experience-item">
+                      <div className="purple-experience-icon">
+                        <i className="fas fa-building"></i>
+                      </div>
+                      <div className="purple-experience-details">
+                        <h4 className="purple-experience-title">{exp.job_title}</h4>
+                        <p className="purple-experience-company">{exp.company}</p>
+                        <div className="purple-experience-meta">
+                          <span className="purple-experience-date">
+                            {new Date(exp.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })} - 
+                            {exp.is_current ? ' Present' : ` ${new Date(exp.end_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}`}
+                          </span>
+                          {exp.is_current && (
+                            <span className="purple-current-badge">Current</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {workExperience.length > 3 && (
+                    <div className="purple-view-more">
+                      <button onClick={() => dispatch(setActiveTab('experience'))}>
+                        View all {workExperience.length} positions
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="purple-empty-state">
+                  <i className="fas fa-briefcase purple-empty-icon"></i>
+                  <p>No work experience added yet.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -287,131 +546,13 @@ const DashboardOverview = ({ stats }) => {
                       className={`purple-calendar-date ${isToday ? 'today' : ''} ${!isCurrentMonth ? 'other-month' : ''}`}
                     >
                       {isCurrentMonth ? day : ''}
-                      {day === 3 && <div className="purple-event-dot"></div>}
+                      {/* {day === 3 && <div className="purple-event-dot"></div>} */}
+                      {/* {day === 15 && <div className="purple-event-dot"></div>}
+                      {day === 28 && <div className="purple-event-dot"></div>} */}
                     </div>
                   );
                 })}
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Profile Sections */}
-        <div className="purple-content-right">
-          {/* Profile Completion */}
-          <div className="purple-card purple-completion">
-            <div className="purple-card-header">
-              <h3 className="purple-card-title">Profile Completion</h3>
-            </div>
-            <div className="purple-completion-content">
-              <div className="purple-completion-circle">
-                <div className="purple-circle-progress" style={{ '--progress': calculateProfileCompletion() }}>
-                  <span className="purple-percentage">{calculateProfileCompletion()}%</span>
-                </div>
-              </div>
-              <div className="purple-completion-items">
-                <div className={`purple-completion-item ${profile.name ? 'completed' : ''}`}>
-                  <i className={profile.name ? 'fas fa-check-circle' : 'far fa-circle'}></i>
-                  <span>Basic Information</span>
-                </div>
-                <div className={`purple-completion-item ${workExperience.length > 0 ? 'completed' : ''}`}>
-                  <i className={workExperience.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
-                  <span>Work Experience</span>
-                </div>
-                <div className={`purple-completion-item ${education.length > 0 ? 'completed' : ''}`}>
-                  <i className={education.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
-                  <span>Education</span>
-                </div>
-                <div className={`purple-completion-item ${skills.length > 0 ? 'completed' : ''}`}>
-                  <i className={skills.length > 0 ? 'fas fa-check-circle' : 'far fa-circle'}></i>
-                  <span>Skills</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="purple-card purple-quick-stats">
-            <div className="purple-card-header">
-              <h3 className="purple-card-title">Quick Stats</h3>
-            </div>
-            <div className="purple-stats-grid">
-              <div className="purple-stat-item">
-                <div className="purple-stat-icon" style={{ backgroundColor: '#ff9a9e' }}>
-                  <i className="fas fa-briefcase"></i>
-                </div>
-                <div className="purple-stat-info">
-                  <div className="purple-stat-value">{workExperience.length}</div>
-                  <div className="purple-stat-label">Experience</div>
-                </div>
-              </div>
-              <div className="purple-stat-item">
-                <div className="purple-stat-icon" style={{ backgroundColor: '#a8edea' }}>
-                  <i className="fas fa-graduation-cap"></i>
-                </div>
-                <div className="purple-stat-info">
-                  <div className="purple-stat-value">{education.length}</div>
-                  <div className="purple-stat-label">Education</div>
-                </div>
-              </div>
-              <div className="purple-stat-item">
-                <div className="purple-stat-icon" style={{ backgroundColor: '#d299c2' }}>
-                  <i className="fas fa-file-alt"></i>
-                </div>
-                <div className="purple-stat-info">
-                  <div className="purple-stat-value">{resumes.length}</div>
-                  <div className="purple-stat-label">Resumes</div>
-                </div>
-              </div>
-              <div className="purple-stat-item">
-                <div className="purple-stat-icon" style={{ backgroundColor: '#ffd93d' }}>
-                  <i className="fas fa-brain"></i>
-                </div>
-                <div className="purple-stat-info">
-                  <div className="purple-stat-value">{skills.length}</div>
-                  <div className="purple-stat-label">Skills</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Recent Updates */}
-          <div className="purple-card purple-recent-updates">
-            <div className="purple-card-header">
-              <h3 className="purple-card-title">Recent Updates</h3>
-              <span className="purple-update-date">
-                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-              </span>
-            </div>
-            <div className="purple-updates-grid">
-              {skills.length > 0 && (
-                <div className="purple-update-item" onClick={() => dispatch(setActiveTab('skills'))}>
-                  <div className="purple-update-image skills-bg">
-                    <i className="fas fa-brain"></i>
-                  </div>
-                </div>
-              )}
-              {workExperience.length > 0 && (
-                <div className="purple-update-item" onClick={() => dispatch(setActiveTab('experience'))}>
-                  <div className="purple-update-image experience-bg">
-                    <i className="fas fa-briefcase"></i>
-                  </div>
-                </div>
-              )}
-              {education.length > 0 && (
-                <div className="purple-update-item" onClick={() => dispatch(setActiveTab('education'))}>
-                  <div className="purple-update-image education-bg">
-                    <i className="fas fa-graduation-cap"></i>
-                  </div>
-                </div>
-              )}
-              {resumes.length > 0 && (
-                <div className="purple-update-item" onClick={() => dispatch(setActiveTab('resumes'))}>
-                  <div className="purple-update-image resumes-bg">
-                    <i className="fas fa-file-alt"></i>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
