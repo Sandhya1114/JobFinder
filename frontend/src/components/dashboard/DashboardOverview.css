@@ -75,8 +75,10 @@
 
 .purple-btn-primary {
   background: linear-gradient(135deg, #90caf9 0%, #90caf9 100%);
-  color: white;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  /* background-color: #fff; */
+  /* border: 1px solid black; */
+  color: rgb(0, 0, 0);
+  box-shadow: 0 4px 12px rgba(113, 130, 182, 0.3);
 }
 
 .purple-btn-primary:hover {
@@ -87,7 +89,7 @@
 /* Enhanced Metrics Cards Row */
 .purple-metrics-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
 }
@@ -200,7 +202,7 @@
 
 .purple-activity-count {
   background: linear-gradient(135deg, #90caf9 0%, #90caf9 100%);
-  color: white;
+  color: rgb(77, 76, 76);
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -208,8 +210,9 @@
 }
 
 .purple-completion-percentage {
-  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-  color: white;
+  background: linear-gradient(135deg, #90caf9 0%, #90caf9 100%);
+    color: rgb(77, 76, 76);
+  /* color: white; */
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -854,7 +857,7 @@ background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
   }
   
   .purple-metrics-row {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
 }
 
