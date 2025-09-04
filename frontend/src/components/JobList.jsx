@@ -1,4 +1,6 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+
+
+import React,{ memo,useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
 import {
@@ -20,8 +22,8 @@ import './Joblist.css';
 import { saveJob } from '../redux/savedJobsSlice';
 import { useLocation } from 'react-router-dom';
 
-// Job Details Modal Component
-const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
+// Memoized Job Details Modal Component
+const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
   const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
@@ -40,21 +42,22 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = '';
     };
-    
   }, [isOpen, onClose]);
 
-  if (!isOpen || !job) return null;
-
-  const formatSalary = (salary) => {
-    if (!salary?.min || !salary?.max) return 'Salary not specified';
+  // Memoize salary formatting to avoid recalculation
+  const formattedSalary = useMemo(() => {
+    if (!job?.salary?.min || !job?.salary?.max) return 'Salary not specified';
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: salary.currency || 'USD',
+      currency: job.salary.currency || 'USD',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
-    return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
-  };
+    return `${formatter.format(job.salary.min)} - ${formatter.format(job.salary.max)}`;
+  }, [job?.salary]);
+
+  // Early return optimization
+  if (!isOpen || !job) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -117,7 +120,7 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
                 {job.salary && (
                   <div className="modal-info-item">
                     <span className="modal-info-label">Salary:</span>
-                    <span className="modal-salary">{formatSalary(job.salary)}</span>
+                    <span className="modal-salary">{formattedSalary}</span>
                   </div>
                 )}
                 <div className="modal-info-item">
@@ -212,7 +215,6 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
             </button>
             {job.applyUrl || job.apply_url || job.applicationUrl || job.application_url || job.url || job.link ? (
               <button onClick={onApply} className="modal-apply-btn">
-                {/* <i className="fa fa-external-link"></i> */}
                 Apply Now
               </button>
             ) : (
@@ -225,10 +227,10 @@ const JobDetailsModal = ({ job, isOpen, onClose, onSave, onApply }) => {
       </div>
     </div>
   );
-};
+});
 
-// Pagination Component - Only shown on desktop
-const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
+// Memoized Pagination Component - Only shown on desktop
+const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }) => {
   const { 
     currentPage, 
     totalPages, 
@@ -251,9 +253,8 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (isMobile) return null;
-
-  const getPageNumbers = () => {
+  // Memoize page numbers calculation
+  const pageNumbers = useMemo(() => {
     const pages = [];
     const maxVisiblePages = 5;
     
@@ -272,7 +273,9 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
     }
     
     return pages;
-  };
+  }, [currentPage, totalPages]);
+
+  if (isMobile) return null;
 
   return (
     <div className="pagination-container">
@@ -290,7 +293,7 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
         </button>
 
         <div className="pagination-numbers">
-          {getPageNumbers().map((page, index) => (
+          {pageNumbers.map((page, index) => (
             <button
               key={index}
               className={`pagination-number ${page === currentPage ? 'active' : ''} ${page === '...' ? 'dots' : ''}`}
@@ -328,10 +331,10 @@ const Pagination = ({ pagination, onPageChange, onJobsPerPageChange }) => {
       </div>
     </div>
   );
-};
+});
 
-// Mobile Infinite Scroll Component
-const MobileInfiniteScroll = ({ jobs, hasMore, loadMore, loading }) => {
+// Memoized Mobile Infinite Scroll Component
+const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) => {
   const loaderRef = useRef(null);
 
   useEffect(() => {
@@ -381,7 +384,136 @@ const MobileInfiniteScroll = ({ jobs, hasMore, loadMore, loading }) => {
       )}
     </div>
   );
-};
+});
+
+// Memoized Job Card Component
+const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
+  // Memoize truncated description
+  const truncatedDescription = useMemo(() => {
+    if (!job.description) return 'No description available';
+    return job.description.length > 150 
+      ? job.description.substring(0, 150) + '...' 
+      : job.description;
+  }, [job.description]);
+
+  // Memoize formatted date
+  const formattedDate = useMemo(() => {
+    return job.postedDate || job.created_at 
+      ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
+      : 'Date not available';
+  }, [job.postedDate, job.created_at]);
+
+  const handleSaveJob = useCallback(async () => {
+    try {
+      await onSave(job.id);
+    } catch (error) {
+      console.error('Error saving job:', error);
+    }
+  }, [job.id, onSave]);
+
+  return (
+    <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
+      <div className="job-header">
+        <h2 className="job-title">{job.title || 'No Title'}</h2>
+        <div className="job-meta">
+          <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+          <span className="job-location">{job.location || 'Location not specified'}</span>
+        </div>
+      </div>
+
+      <div className="job-details job-details-minimal">
+        <div className="job-category">
+          <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
+        </div>
+
+        <div className="job-info job-info-minimal">
+          <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
+          <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
+        </div>
+
+        <div className="job-description job-description-minimal">
+          <p>{truncatedDescription}</p>
+        </div>
+
+        <div className="job-footer">
+          <span className="posted-date">Posted: {formattedDate}</span>
+          <div className="job-actions">
+            <button
+              onClick={() => onViewDetails(job)}
+              className="view-details-btn"
+            >
+              <i className="fa fa-eye"></i>
+              View Details
+            </button>
+            <button onClick={handleSaveJob} className="save-btn">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Memoized Filter Option Component
+const FilterOption = React.memo(({ option, isChecked, onChange, filterType }) => (
+  <label className="filter-option">
+    <input
+      type="checkbox"
+      checked={isChecked}
+      onChange={(e) => onChange(filterType, option, e.target.checked)}
+    />
+    <span className="checkmark-mini"></span>
+    {filterType === 'selectedSalary' ? `$${option.replace('-', ' - ')}` : option}
+  </label>
+));
+
+// Memoized Filter Dropdown Component
+const FilterDropdown = React.memo(({ 
+  id, 
+  icon, 
+  title, 
+  options, 
+  selectedValues, 
+  onFilterChange, 
+  onApply, 
+  onClear,
+  isActive,
+  onMouseEnter,
+  onMouseLeave 
+}) => (
+  <div 
+    className="filter-dropdown"
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+  >
+    <button className="filter-dropdown-btn">
+      <i className={`fa fa-${icon}`}></i>
+      {title}
+      <i className={`fa ${isActive ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+    </button>
+    <div className="filter-dropdown-content">
+      <div className="filter-dropdown-header">
+        <h4>{title}</h4>
+      </div>
+      <div className="filter-options">
+        {options.map((option) => (
+          <FilterOption
+            key={option.id || option}
+            option={option.name || option}
+            isChecked={selectedValues?.includes(option.id || option)}
+            onChange={onFilterChange}
+            filterType={id}
+          />
+        ))}
+      </div>
+      <div className="filter-dropdown-actions">
+        <button onClick={onApply} className="apply-btn-mini">Apply</button>
+        <button onClick={onClear} className="clear-btn-mini">Clear</button>
+      </div>
+    </div>
+  </div>
+));
 
 const JobList = () => {
   const dispatch = useDispatch();
@@ -411,7 +543,7 @@ const JobList = () => {
     locationSearchInput: ''
   });
 
-  // NEW: State for pending filters (not applied yet)
+  // State for pending filters (not applied yet)
   const [pendingFilters, setPendingFilters] = useState({
     selectedCategory: [],
     selectedCompany: [],
@@ -421,10 +553,10 @@ const JobList = () => {
     selectedSalary: []
   });
 
-  // NEW: Track if filters have changed but not applied
+  // Track if filters have changed but not applied
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
 
-  // NEW: State for managing dropdown visibility
+  // State for managing dropdown visibility
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   // Track initial load and prevent infinite loops
@@ -435,6 +567,17 @@ const JobList = () => {
   const lastFiltersRef = useRef(null);
   const isLoadingMoreRef = useRef(false);
   const initializationRef = useRef(false);
+
+  // Memoize static filter options
+  const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
+  const locationOptions = useMemo(() => ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'], []);
+  const typeOptions = useMemo(() => ['Full-time', 'Part-time', 'Contract'], []);
+  const salaryRangeOptions = useMemo(() => ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'], []);
+
+  // Memoize display jobs
+  const displayJobs = useMemo(() => {
+    return isMobile ? infiniteScroll.allJobs : jobs;
+  }, [isMobile, infiniteScroll.allJobs, jobs]);
 
   // Check if device is mobile
   useEffect(() => {
@@ -458,7 +601,7 @@ const JobList = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, isMobile, isSidebarOpen]);
 
-  // NEW: Initialize pending filters from current filters
+  // Initialize pending filters from current filters
   useEffect(() => {
     setPendingFilters({
       selectedCategory: filters.selectedCategory || [],
@@ -470,7 +613,7 @@ const JobList = () => {
     });
   }, [filters]);
 
-  // NEW: Check if pending filters differ from applied filters
+  // Check if pending filters differ from applied filters
   useEffect(() => {
     const currentFiltersStr = JSON.stringify({
       selectedCategory: filters.selectedCategory || [],
@@ -486,13 +629,13 @@ const JobList = () => {
     setHasUnappliedFilters(currentFiltersStr !== pendingFiltersStr);
   }, [filters, pendingFilters]);
 
-  // Debounce search input while preserving all existing filters
+  // Debounce search input with increased delay for better performance
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (localFilters.searchInput !== filters.searchQuery) {
         dispatch(setSearchQuery(localFilters.searchInput));
       }
-    }, 500);
+    }, 800); // Increased from 500ms
 
     return () => clearTimeout(debounceTimer);
   }, [localFilters.searchInput, filters.searchQuery, dispatch]);
@@ -534,7 +677,7 @@ const JobList = () => {
     };
   }, [isSidebarOpen]);
 
-  // FIXED: Load initial data only once with proper initialization
+  // Load initial data only once with proper initialization
   useEffect(() => {
     if (!initialLoadComplete && !initializationRef.current) {
       initializationRef.current = true;
@@ -550,7 +693,7 @@ const JobList = () => {
     }
   }, [loadAllData, initialLoadComplete]);
 
-  // FIXED: Reload jobs when filters change (but only after initial load and avoid duplicates)
+  // Reload jobs when filters change (but only after initial load and avoid duplicates)
   useEffect(() => {
     if (!initialLoadComplete || !initializationRef.current) return;
 
@@ -573,7 +716,7 @@ const JobList = () => {
     }
   }, [filters, loadJobs, initialLoadComplete, dispatch]);
 
-  // FIXED: Initialize mobile infinite scroll data when jobs are loaded
+  // Initialize mobile infinite scroll data when jobs are loaded
   useEffect(() => {
     if (
       isMobile && 
@@ -593,14 +736,14 @@ const JobList = () => {
     }
   }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
 
-  // FIXED: Scroll to top when page changes (desktop only)
+  // Scroll to top when page changes (desktop only)
   useEffect(() => {
     if (!isMobile && pagination.currentPage > 1) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pagination.currentPage, isMobile]);
 
-  // FIXED: Handle page change - ensure it triggers data reload
+  // Memoized handlers
   const handlePageChange = useCallback((newPage) => {
     if (!isMobile && newPage !== pagination.currentPage) {
       console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
@@ -613,7 +756,6 @@ const JobList = () => {
     }
   }, [dispatch, isMobile, pagination.currentPage, loadJobs]);
 
-  // FIXED: Handle jobs per page change - ensure it reloads data
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
     if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
       console.log('Jobs per page change requested:', newJobsPerPage);
@@ -626,7 +768,6 @@ const JobList = () => {
     }
   }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
 
-  // FIXED: Mobile infinite scroll load more function with proper error handling
   const handleLoadMore = useCallback(async () => {
     // Prevent multiple simultaneous calls
     if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current) {
@@ -672,7 +813,6 @@ const JobList = () => {
     }
   }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
 
-  // NEW: Apply filters function
   const handleApplyFilters = useCallback(() => {
     dispatch(setSelectedCategory(pendingFilters.selectedCategory));
     dispatch(setSelectedCompany(pendingFilters.selectedCompany));
@@ -690,7 +830,6 @@ const JobList = () => {
     setIsSidebarOpen(false);
   }, [dispatch, pendingFilters, showToast]);
 
-  // NEW: Clear all filters function
   const handleClearFilters = useCallback(() => {
     setPendingFilters({
       selectedCategory: [],
@@ -719,12 +858,11 @@ const JobList = () => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  // NEW: Handle dropdown toggle
   const toggleDropdown = useCallback((dropdownId) => {
     setActiveDropdown(prev => prev === dropdownId ? null : dropdownId);
   }, []);
 
-  // NEW: Close dropdown when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest('.filter-dropdown')) {
@@ -762,7 +900,7 @@ const JobList = () => {
     }
   }, [dispatch]);
 
-  // NEW: Handle pending filter changes
+  // Handle pending filter changes
   const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
     setPendingFilters(prev => {
       const current = prev[filterType] || [];
@@ -823,6 +961,36 @@ const JobList = () => {
     }
   }, [selectedJob]);
 
+  // Optimized save job handler for cards
+  const handleSaveJob = useCallback(async (jobId) => {
+    try {
+      const result = await dispatch(saveJob({ 
+        jobId: jobId,
+        notes: '',
+        priority: 0
+      }));
+
+      if (result.meta.requestStatus === 'fulfilled') {
+        showToast("Job saved successfully!");
+      } else if (result.meta.requestStatus === 'rejected') {
+        const errorMessage = result.payload || "Failed to save job";
+        if (errorMessage.includes('already saved')) {
+          showToast("Job is already saved");
+        } else {
+          showToast(errorMessage);
+        }
+      }
+
+      if (isMobile && isSidebarOpen) {
+        setIsSidebarOpen(false);
+      }
+    } catch (error) {
+      console.error('Error saving job:', error);
+      showToast("Failed to save job");
+    }
+  }, [dispatch, showToast, isMobile, isSidebarOpen]);
+
+  // Early returns for loading states
   if (!initialLoadComplete) {
     return <div className="loading">Loading jobs...</div>;
   }
@@ -832,15 +1000,6 @@ const JobList = () => {
   }
   
   if (error) return <div className="error">Error: {error}</div>;
-
-  // Static filter options
-  const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
-  const locationOptions = ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'];
-  const typeOptions = ['Full-time', 'Part-time', 'Contract'];
-  const salaryRangeOptions = ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'];
-
-  // Use infinite scroll jobs for mobile view, regular jobs for desktop
-  const displayJobs = isMobile ? infiniteScroll.allJobs : jobs;
 
   return (
     <div className="job-list-container">
@@ -852,221 +1011,96 @@ const JobList = () => {
           {hasUnappliedFilters && !isSidebarOpen && <span className="filter-badge">!</span>}
         </button>
       )}
-{!isMobile && (
-  <div className="horizontal-filters">
-    <div className="filter-dropdown-group">
-      {/* Schedule Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('schedule')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-calendar"></i>
-          Schedule
-          <i className={`fa ${activeDropdown === 'schedule' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Schedule</h4>
-          </div>
-          <div className="filter-options">
-            {typeOptions.map((type) => (
-              <label key={type} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedType?.includes(type)}
-                  onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                {type}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-          </div>
-        </div>
-      </div>
 
-      {/* Industries/Categories Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('industries')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-industry"></i>
-          Industries
-          <i className={`fa ${activeDropdown === 'industries' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Industries</h4>
-          </div>
-          <div className="filter-options">
-            {categories.map((category) => (
-              <label key={category.id} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedCategory?.includes(category.id)}
-                  onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                {category.name}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-          </div>
-        </div>
-      </div>
+      {!isMobile && (
+        <div className="horizontal-filters">
+          <div className="filter-dropdown-group">
+            <FilterDropdown
+              id="selectedType"
+              icon="calendar"
+              title="Schedule"
+              options={typeOptions}
+              selectedValues={pendingFilters.selectedType}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'schedule'}
+              onMouseEnter={() => setActiveDropdown('schedule')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
 
-      {/* Experience Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('experience')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-user"></i>
-          Experience
-          <i className={`fa ${activeDropdown === 'experience' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Experience Level</h4>
-          </div>
-          <div className="filter-options">
-            {experienceOptions.map((experience) => (
-              <label key={experience} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedExperience?.includes(experience)}
-                  onChange={(e) => handlePendingFilterChange('selectedExperience', experience, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                {experience}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-          </div>
-        </div>
-      </div>
+            <FilterDropdown
+              id="selectedCategory"
+              icon="industry"
+              title="Industries"
+              options={categories}
+              selectedValues={pendingFilters.selectedCategory}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'industries'}
+              onMouseEnter={() => setActiveDropdown('industries')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
 
-      {/* Distance/Location Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('distance')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-map-marker"></i>
-          Distance
-          <i className={`fa ${activeDropdown === 'distance' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Location</h4>
-          </div>
-          <div className="filter-options">
-            {locationOptions.map((location) => (
-              <label key={location} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedLocation?.includes(location)}
-                  onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                {location}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-          </div>
-        </div>
-      </div>
+            <FilterDropdown
+              id="selectedExperience"
+              icon="user"
+              title="Experience"
+              options={experienceOptions}
+              selectedValues={pendingFilters.selectedExperience}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'experience'}
+              onMouseEnter={() => setActiveDropdown('experience')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
 
-      {/* Company Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('company')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-building"></i>
-          Company
-          <i className={`fa ${activeDropdown === 'company' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Companies</h4>
-          </div>
-          <div className="filter-options">
-            {companies.map((company) => (
-              <label key={company.id} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedCompany?.includes(company.id)}
-                  onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                {company.name}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
-          </div>
-        </div>
-      </div>
+            <FilterDropdown
+              id="selectedLocation"
+              icon="map-marker"
+              title="Distance"
+              options={locationOptions}
+              selectedValues={pendingFilters.selectedLocation}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'distance'}
+              onMouseEnter={() => setActiveDropdown('distance')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
 
-      {/* Salary Filter */}
-      <div 
-        className="filter-dropdown"
-        onMouseEnter={() => setActiveDropdown('salary')}
-        onMouseLeave={() => setActiveDropdown(null)}
-      >
-        <button className="filter-dropdown-btn">
-          <i className="fa fa-dollar"></i>
-          Salary
-          <i className={`fa ${activeDropdown === 'salary' ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-        </button>
-        <div className="filter-dropdown-content">
-          <div className="filter-dropdown-header">
-            <h4>Salary Range</h4>
-          </div>
-          <div className="filter-options">
-            {salaryRangeOptions.map((range) => (
-              <label key={range} className="filter-option">
-                <input
-                  type="checkbox"
-                  checked={pendingFilters.selectedSalary?.includes(range)}
-                  onChange={(e) => handlePendingFilterChange('selectedSalary', range, e.target.checked)}
-                />
-                <span className="checkmark-mini"></span>
-                ${range.replace('-', ' - ' )}
-              </label>
-            ))}
-          </div>
-          <div className="filter-dropdown-actions">
-            <button onClick={handleApplyFilters} className="apply-btn-mini">Apply</button>
-            <button onClick={handleClearFilters} className="clear-btn-mini">Clear</button>
+            <FilterDropdown
+              id="selectedCompany"
+              icon="building"
+              title="Company"
+              options={companies}
+              selectedValues={pendingFilters.selectedCompany}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'company'}
+              onMouseEnter={() => setActiveDropdown('company')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
+
+            <FilterDropdown
+              id="selectedSalary"
+              icon="dollar"
+              title="Salary"
+              options={salaryRangeOptions}
+              selectedValues={pendingFilters.selectedSalary}
+              onFilterChange={handlePendingFilterChange}
+              onApply={handleApplyFilters}
+              onClear={handleClearFilters}
+              isActive={activeDropdown === 'salary'}
+              onMouseEnter={() => setActiveDropdown('salary')}
+              onMouseLeave={() => setActiveDropdown(null)}
+            />
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
       {/* Sidebar overlay */}
       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
@@ -1175,8 +1209,7 @@ const JobList = () => {
               </div>
             </div>
           </div>
-       )}
-           
+        )}
 
         <div className="jobs-content">
           {/* Mobile job count info */}
@@ -1196,81 +1229,14 @@ const JobList = () => {
               </div>
             ) : (
               displayJobs.map((job, index) => (
-                <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
-                  <div className="job-header">
-                    <h2 className="job-title">{job.title || 'No Title'}</h2>
-                    <div className="job-meta">
-                      <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-                      <span className="job-location">{job.location || 'Location not specified'}</span>
-                    </div>
-                  </div>
-
-                  <div className="job-details job-details-minimal">
-                    <div className="job-category">
-                      <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
-                    </div>
-
-                    <div className="job-info job-info-minimal">
-                      <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
-                      <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-                    </div>
-
-                    <div className="job-description job-description-minimal">
-                      <p>{job.description ? 
-                        (job.description.length > 150 ? 
-                          job.description.substring(0, 150) + '...' : 
-                          job.description) : 
-                        'No description available'}</p>
-                    </div>
-
-                    <div className="job-footer">
-                      <span className="posted-date">
-                        Posted: {job.postedDate || job.created_at ? new Date(job.postedDate || job.created_at).toLocaleDateString() : 'Date not available'}
-                      </span>
-                      <div className="job-actions">
-                        <button
-                          onClick={() => handleViewDetails(job)}
-                          className="view-details-btn"
-                        >
-                          <i className="fa fa-eye"></i>
-                          View Details
-                        </button>
-                        <button
-                          onClick={async () => {
-                            try {
-                              const result = await dispatch(saveJob({ 
-                                jobId: job.id,
-                                notes: '',
-                                priority: 0
-                              }));
-
-                              if (result.meta.requestStatus === 'fulfilled') {
-                                showToast("Job saved successfully!");
-                              } else if (result.meta.requestStatus === 'rejected') {
-                                const errorMessage = result.payload || "Failed to save job";
-                                if (errorMessage.includes('already saved')) {
-                                  showToast("Job is already saved");
-                                } else {
-                                  showToast(errorMessage);
-                                }
-                              }
-
-                              if (isMobile && isSidebarOpen) {
-                                setIsSidebarOpen(false);
-                              }
-                            } catch (error) {
-                              console.error('Error saving job:', error);
-                              showToast("Failed to save job");
-                            }
-                          }}
-                          className="save-btn"
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <JobCard
+                  key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`}
+                  job={job}
+                  index={index}
+                  isMobile={isMobile}
+                  onViewDetails={handleViewDetails}
+                  onSave={handleSaveJob}
+                />
               ))
             )}
           </div>
