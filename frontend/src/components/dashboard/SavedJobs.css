@@ -1,6 +1,5 @@
 /* HirePath Theme - Enhanced CSS for SavedJobsSection.jsx */
 
-/* Root Variables for HirePath Theme */
 :root {
   --primary-purple: #000000;
   --primary-purple-dark: #000000;
@@ -477,7 +476,7 @@
 }
 
 /* View Details Button */
-.view-details-btn {
+.saved-jobs-section .job-actions .view-details-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -492,7 +491,7 @@
   transition: all 0.3s ease;
 }
 
-.view-details-btn:hover {
+.saved-jobs-section .job-actions .view-details-btn:hover {
   background: var(--primary-purple);
   color: white;
   transform: translateY(-1px);
