@@ -50,7 +50,7 @@ const Dashboard = ({ user, onSignOut }) => {
   }, [user, dispatch, navigate]);
 
   const tabs = [
-    { id: 'overview', label: 'Dashboard', icon: 'fas fa-chart-pie' },
+    { id: 'overview', label: 'Overview', icon: 'fas fa-chart-pie' },
     { id: 'profile', label: 'Profile', icon: 'fas fa-user' },
     { id: 'saved-jobs', label: 'Saved Jobs', icon: 'fas fa-bookmark' },
     { id: 'education', label: 'Education', icon: 'fas fa-graduation-cap' },
@@ -88,7 +88,7 @@ const Dashboard = ({ user, onSignOut }) => {
 
   const getUserInitials = () => {
     if (user?.user_metadata?.full_name) {
-      return user.user_metadata.full_name.split(' ').map(name => name[0]).join('').toUpperCase().slice(0, 2);
+      return user.user_metadata.full_name.split(' ').map(name => name[0]).join('').toUpperCase().slice(0, 1);
     }
     if (user?.user_metadata?.name) {
       return user.user_metadata.name.split(' ').map(name => name[0]).join('').toUpperCase().slice(0, 2);

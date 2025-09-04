@@ -193,7 +193,7 @@ const DashboardOverview = ({ stats }) => {
   return (
     <div className="purple-dashboard">
       {/* Header */}
-      <div className="purple-header">
+      {/* <div className="purple-header">
         <div className="purple-header-left">
           <div className="purple-user-avatar">
             {getUserInitials()}
@@ -211,7 +211,7 @@ const DashboardOverview = ({ stats }) => {
             Edit Profile
           </button>
         </div>
-      </div>
+      </div> */}
 
       {/* Enhanced Metrics Cards Row */}
       <div className="purple-metrics-row">

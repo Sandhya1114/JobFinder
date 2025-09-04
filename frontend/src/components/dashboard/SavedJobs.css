@@ -2,10 +2,10 @@
 
 /* Root Variables for HirePath Theme */
 :root {
-  --primary-purple: #6366f1;
-  --primary-purple-dark: #5048e5;
+  --primary-purple: #000000;
+  --primary-purple-dark: #000000;
   --secondary-purple: #e0e7ff;
-  --accent-blue: #60a5fa;
+  --accent-blue: #000000;
   --accent-green: #34d399;
   --accent-orange: #fb923c;
   --accent-pink: #f472b6;
@@ -29,7 +29,8 @@
 
 /* Main Container */
 .saved-jobs-section {
-  padding: 24px;
+  
+  padding: 5%;
   background: var(--bg-secondary);
   min-height: 100vh;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -419,7 +420,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+  background-color: #000000;
   color: white;
   border: none;
   border-radius: var(--radius-lg);
@@ -795,7 +796,7 @@
 }
 
 .save-btn.primary {
-  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+  background:#000;
   color: white;
   box-shadow: var(--shadow-md);
 }
