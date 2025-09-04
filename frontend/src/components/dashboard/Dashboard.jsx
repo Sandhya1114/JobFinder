@@ -158,7 +158,7 @@ const Dashboard = ({ user, onSignOut }) => {
           </div>
 
           {/* Center Section */}
-          <div className="header-center">
+          {/* <div className="header-center">
             <div className="search-container">
               <i className="fas fa-search search-icon"></i>
               <input 
@@ -167,7 +167,7 @@ const Dashboard = ({ user, onSignOut }) => {
                 className="search-input"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Right Section */}
           <div className="header-right">
@@ -188,7 +188,7 @@ const Dashboard = ({ user, onSignOut }) => {
             <div className="user-profile" onClick={toggleDropdown}>
               <div className="user-info">
                 <span className="user-name">{getDisplayName().split(' ')[0]}</span>
-                <span className="user-role">Project Manager</span>
+                {/* <span className="user-role">Frontend Developer</span> */}
               </div>
               <div className="user-avatar">
                 {getUserInitials()}
