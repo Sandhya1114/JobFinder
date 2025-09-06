@@ -989,22 +989,7 @@ header.shrink .header-options a.active {
   box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
 }
 
-/* Alternative color scheme option - you can choose this instead */
-/* 
-.header-options a.active {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white !important;
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-}
 
-.mobile-nav-links a.active {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white !important;
-  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
-}
-*/
-
-/* Pulse animation for active items (optional) */
 @keyframes activeGlow {
   0%, 100% {
     box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
