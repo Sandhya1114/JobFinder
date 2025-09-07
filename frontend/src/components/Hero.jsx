@@ -7,7 +7,7 @@ import "../styles/Hero.css";
 function Hero() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+     
   // Local state for form inputs
   const [searchInput, setSearchInput] = useState("");
   const [experienceInput, setExperienceInput] = useState("");
@@ -16,16 +16,16 @@ function Hero() {
   const handleSearch = () => {
     // Clear any existing filters first to ensure fresh search
     dispatch(clearFilters());
-    
+        
     // Then apply the new search parameters
     if (searchInput.trim()) {
       dispatch(setSearchQuery(searchInput.trim()));
     }
-    
+        
     if (experienceInput) {
       dispatch(setSelectedExperience([experienceInput]));
     }
-    
+        
     if (locationInput.trim()) {
       dispatch(setSelectedLocation([locationInput.trim()]));
     }
@@ -42,21 +42,29 @@ function Hero() {
 
   return (
     <section className="hero-section">
+      {/* Simple floating elements for minimal decoration */}
+      <div className="floating-element floating-1"></div>
+      <div className="floating-element floating-2"></div>
+      <div className="floating-element floating-3"></div>
+
+      {/* Original blob center element */}
       <div className='center'>
         <div className='blob'></div>
         <div className='particle particle1'></div>
         <div className='particle particle2'></div>
         <div className='particle particle3'></div>
-    </div>
+      </div>
+
       <div className="hero-heading">
         <h1>Find your dream job now</h1>
         <p>5 lakh+ jobs for you to explore</p>
       </div>
+
       <div className="search-bar">
         <div className="search-field">
           <span className="icon"></span>
           <input 
-            type="text" 
+            type="text"
             placeholder="Enter skills / designations / companies"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -83,8 +91,8 @@ function Hero() {
         </select>
         <div className="divider" />
         <input 
-          type="text" 
-          className="location-input" 
+          type="text"
+          className="location-input"
           placeholder="Enter location"
           value={locationInput}
           onChange={(e) => setLocationInput(e.target.value)}
