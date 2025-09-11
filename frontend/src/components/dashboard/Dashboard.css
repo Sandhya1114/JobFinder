@@ -3207,37 +3207,6 @@ a:focus-visible {
   }
 }
 
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-  .modern-dashboard {
-    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-  }
-  
-  .modern-sidebar,
-  .modern-header,
-  .user-dropdown {
-    background: rgba(26, 32, 44, 0.95);
-  }
-  
-  .brand-text,
-  .nav-item,
-  .breadcrumb-current,
-  .user-name {
-    color: #f7fafc;
-  }
-  
-  .search-input {
-    background: rgba(45, 55, 72, 0.8);
-    border-color: rgba(74, 85, 104, 0.6);
-    color: #f7fafc;
-  }
-  
-  .action-btn {
-    background: rgba(45, 55, 72, 0.8);
-    border-color: rgba(74, 85, 104, 0.6);
-    color: #cbd5e0;
-  }
-}
 
 /* ============ SCROLLBAR STYLING ============ */
 ::-webkit-scrollbar {
