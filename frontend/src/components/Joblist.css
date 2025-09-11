@@ -1462,39 +1462,7 @@ h1 {
   }
 }
 
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
-  .pagination-container {
-    /* background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); */
-    /* border-color: #4a5568; */
-  }
 
-  .pagination-info {
-    color: #e2e8f0;
-  }
-
-  .pagination-controls {
-    background: rgb(0, 0, 0);
-    border-color: rgba(150, 132, 192, 0.3);
-  }
-
-  .pagination-number {
-    background: #4a5568;
-    border-color: #718096;
-    color: #e2e8f0;
-  }
-
-  .jobs-per-page {
-    background: rgba(0, 0, 0, 0.9);
-    color: #e2e8f0;
-  }
-
-  .jobs-per-page-select {
-    background: transparent;
-    border-color: #718096;
-    color: #e2e8f0;
-  }
-}
 /* Mobile Infinite Scroll Styles */
 .mobile-infinite-loader {
   padding: 20px;
