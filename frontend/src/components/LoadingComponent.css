@@ -56,15 +56,3 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .loading-container {
-    background: rgba(45, 55, 72, 0.9);
-    border-color: rgba(150, 132, 192, 0.3);
-  }
-  
-  .loading-message,
-  .loading-inline {
-    color: #e2e8f0;
-  }
-}
