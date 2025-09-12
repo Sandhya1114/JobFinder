@@ -1,8 +1,7 @@
-
-
 import React,{ memo,useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   setSelectedCategory,
   setSelectedCompany,
@@ -20,7 +19,6 @@ import {
 } from '../redux/store';
 import './Joblist.css';
 import { saveJob } from '../redux/savedJobsSlice';
-import { useLocation } from 'react-router-dom';
 
 // Memoized Job Details Modal Component
 const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
@@ -517,6 +515,10 @@ const FilterDropdown = React.memo(({
 
 const JobList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const { 
     jobs, 
     categories, 
@@ -534,7 +536,6 @@ const JobList = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [selectedJob, setSelectedJob] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const location = useLocation();
   const isJobPage = location.pathname === '/jobs';
 
   // Separate state for input fields to avoid losing user input
@@ -567,6 +568,7 @@ const JobList = () => {
   const lastFiltersRef = useRef(null);
   const isLoadingMoreRef = useRef(false);
   const initializationRef = useRef(false);
+  const urlSyncRef = useRef(false);
 
   // Memoize static filter options
   const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
@@ -579,6 +581,118 @@ const JobList = () => {
     return isMobile ? infiniteScroll.allJobs : jobs;
   }, [isMobile, infiniteScroll.allJobs, jobs]);
 
+  // URL Parameter Management Functions
+  const updateURL = useCallback(() => {
+    if (urlSyncRef.current) return;
+    
+    const params = new URLSearchParams();
+    
+    if (filters.searchQuery && filters.searchQuery.trim()) {
+      params.set('search', filters.searchQuery.trim());
+    }
+    if (filters.selectedCategory && filters.selectedCategory.length > 0) {
+      params.set('categories', filters.selectedCategory.join(','));
+    }
+    if (filters.selectedCompany && filters.selectedCompany.length > 0) {
+      params.set('companies', filters.selectedCompany.join(','));
+    }
+    if (filters.selectedExperience && filters.selectedExperience.length > 0) {
+      params.set('experience', filters.selectedExperience.join(','));
+    }
+    if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+      params.set('location', filters.selectedLocation.join(','));
+    }
+    if (filters.selectedType && filters.selectedType.length > 0) {
+      params.set('type', filters.selectedType.join(','));
+    }
+    if (filters.selectedSalary && filters.selectedSalary.length > 0) {
+      params.set('salary', filters.selectedSalary.join(','));
+    }
+    if (pagination.currentPage > 1) {
+      params.set('page', pagination.currentPage.toString());
+    }
+    if (pagination.jobsPerPage !== 20) {
+      params.set('limit', pagination.jobsPerPage.toString());
+    }
+
+    const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
+    navigate(newURL, { replace: true });
+  }, [filters, pagination, location.pathname, navigate]);
+
+  const parseURLAndSetFilters = useCallback(() => {
+    urlSyncRef.current = true;
+    
+    const search = searchParams.get('search') || '';
+    const categories = searchParams.get('categories')?.split(',').filter(Boolean) || [];
+    const companies = searchParams.get('companies')?.split(',').filter(Boolean) || [];
+    const experience = searchParams.get('experience')?.split(',').filter(Boolean) || [];
+    const locationParam = searchParams.get('location')?.split(',').filter(Boolean) || [];
+    const type = searchParams.get('type')?.split(',').filter(Boolean) || [];
+    const salary = searchParams.get('salary')?.split(',').filter(Boolean) || [];
+    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || 20;
+
+    if (search !== filters.searchQuery) {
+      dispatch(setSearchQuery(search));
+    }
+    if (JSON.stringify(categories) !== JSON.stringify(filters.selectedCategory)) {
+      dispatch(setSelectedCategory(categories));
+    }
+    if (JSON.stringify(companies) !== JSON.stringify(filters.selectedCompany)) {
+      dispatch(setSelectedCompany(companies));
+    }
+    if (JSON.stringify(experience) !== JSON.stringify(filters.selectedExperience)) {
+      dispatch(setSelectedExperience(experience));
+    }
+    if (JSON.stringify(locationParam) !== JSON.stringify(filters.selectedLocation)) {
+      dispatch(setSelectedLocation(locationParam));
+    }
+    if (JSON.stringify(type) !== JSON.stringify(filters.selectedType)) {
+      dispatch(setSelectedType(type));
+    }
+    if (JSON.stringify(salary) !== JSON.stringify(filters.selectedSalary)) {
+      dispatch(setSelectedSalary(salary));
+    }
+    if (page !== pagination.currentPage) {
+      dispatch(setCurrentPage(page));
+    }
+    if (limit !== pagination.jobsPerPage) {
+      dispatch(setJobsPerPage(limit));
+    }
+
+    setLocalFilters({
+      searchInput: search,
+      locationSearchInput: locationParam.length > 0 ? locationParam[0] : ''
+    });
+
+    setPendingFilters({
+      selectedCategory: categories,
+      selectedCompany: companies,
+      selectedExperience: experience,
+      selectedLocation: locationParam,
+      selectedType: type,
+      selectedSalary: salary
+    });
+
+    setTimeout(() => {
+      urlSyncRef.current = false;
+    }, 100);
+  }, [searchParams, dispatch, filters, pagination]);
+
+  // Parse URL on component mount and when search params change
+  useEffect(() => {
+    if (isJobPage && !initializationRef.current) {
+      parseURLAndSetFilters();
+    }
+  }, [parseURLAndSetFilters, isJobPage]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    if (initialLoadComplete && !urlSyncRef.current) {
+      updateURL();
+    }
+  }, [filters, pagination.currentPage, pagination.jobsPerPage, updateURL, initialLoadComplete]);
+
   // Check if device is mobile
   useEffect(() => {
     const handleResize = () => {
@@ -586,11 +700,9 @@ const JobList = () => {
       const wasMobile = isMobile;
       setIsMobile(mobile);
       
-      // Reset infinite scroll when switching between mobile/desktop
       if (wasMobile !== mobile) {
         dispatch(resetInfiniteScroll());
         setInfiniteScrollInitialized(false);
-        // Close sidebar when switching from mobile to desktop
         if (!mobile && isSidebarOpen) {
           setIsSidebarOpen(false);
         }
@@ -629,26 +741,28 @@ const JobList = () => {
     setHasUnappliedFilters(currentFiltersStr !== pendingFiltersStr);
   }, [filters, pendingFilters]);
 
-  // Debounce search input with increased delay for better performance
+  // Debounce search input
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (localFilters.searchInput !== filters.searchQuery) {
         dispatch(setSearchQuery(localFilters.searchInput));
       }
-    }, 800); // Increased from 500ms
+    }, 800);
 
     return () => clearTimeout(debounceTimer);
   }, [localFilters.searchInput, filters.searchQuery, dispatch]);
 
-  // Update local state when Redux filters change (but preserve user input)
+  // Update local state when Redux filters change
   useEffect(() => {
-    setLocalFilters(prev => ({
-      ...prev,
-      searchInput: prev.searchInput === '' ? (filters.searchQuery || '') : prev.searchInput,
-      locationSearchInput: prev.locationSearchInput === '' ? 
-        (filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '') : 
-        prev.locationSearchInput
-    }));
+    if (!urlSyncRef.current) {
+      setLocalFilters(prev => ({
+        ...prev,
+        searchInput: prev.searchInput === '' ? (filters.searchQuery || '') : prev.searchInput,
+        locationSearchInput: prev.locationSearchInput === '' ? 
+          (filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '') : 
+          prev.locationSearchInput
+      }));
+    }
   }, [filters.selectedLocation, filters.searchQuery]);
 
   const showToast = useCallback((message) => {
@@ -677,7 +791,7 @@ const JobList = () => {
     };
   }, [isSidebarOpen]);
 
-  // Load initial data only once with proper initialization
+  // Load initial data only once
   useEffect(() => {
     if (!initialLoadComplete && !initializationRef.current) {
       initializationRef.current = true;
@@ -693,19 +807,17 @@ const JobList = () => {
     }
   }, [loadAllData, initialLoadComplete]);
 
-  // Reload jobs when filters change (but only after initial load and avoid duplicates)
+  // Reload jobs when filters change
   useEffect(() => {
     if (!initialLoadComplete || !initializationRef.current) return;
 
     const currentFilters = JSON.stringify(filters);
     const lastFilters = lastFiltersRef.current;
 
-    // Only reload if filters actually changed
     if (currentFilters !== lastFilters) {
       console.log('Filters changed, reloading jobs');
       lastFiltersRef.current = currentFilters;
       
-      // Reset infinite scroll state when filters change
       setInfiniteScrollInitialized(false);
       isLoadingMoreRef.current = false;
       dispatch(resetInfiniteScroll());
@@ -723,7 +835,7 @@ const JobList = () => {
       jobs.length > 0 && 
       initialLoadComplete && 
       !infiniteScrollInitialized &&
-      infiniteScroll.allJobs.length === 0 // Only initialize if no jobs in infinite scroll
+      infiniteScroll.allJobs.length === 0
     ) {
       console.log('Initializing infinite scroll with jobs:', jobs.length);
       dispatch(appendJobs({ 
@@ -732,7 +844,7 @@ const JobList = () => {
         resetList: true 
       }));
       setInfiniteScrollInitialized(true);
-      isLoadingMoreRef.current = false; // Reset loading ref
+      isLoadingMoreRef.current = false;
     }
   }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
 
@@ -749,7 +861,6 @@ const JobList = () => {
       console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
       dispatch(setCurrentPage(newPage));
       
-      // Force reload jobs for the new page
       loadJobs({ page: newPage }).catch(error => {
         console.error('Failed to load jobs for page:', newPage, error);
       });
@@ -761,7 +872,6 @@ const JobList = () => {
       console.log('Jobs per page change requested:', newJobsPerPage);
       dispatch(setJobsPerPage(newJobsPerPage));
       
-      // Force reload jobs with new page size
       loadJobs({ limit: newJobsPerPage, page: 1 }).catch(error => {
         console.error('Failed to load jobs with new page size:', newJobsPerPage, error);
       });
@@ -769,7 +879,6 @@ const JobList = () => {
   }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
 
   const handleLoadMore = useCallback(async () => {
-    // Prevent multiple simultaneous calls
     if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current) {
       console.log('Cannot load more:', { 
         hasMore: infiniteScroll.hasMore, 
@@ -807,7 +916,6 @@ const JobList = () => {
       console.error('Error loading more jobs:', error);
       showToast('Error loading more jobs');
     } finally {
-      // Always reset loading state
       dispatch(setInfiniteScrollLoading(false));
       isLoadingMoreRef.current = false;
     }
@@ -825,8 +933,6 @@ const JobList = () => {
     isLoadingMoreRef.current = false;
     
     showToast('Filters applied successfully!');
-    
-    // Close sidebar after applying
     setIsSidebarOpen(false);
   }, [dispatch, pendingFilters, showToast]);
 
@@ -849,10 +955,11 @@ const JobList = () => {
     isLoadingMoreRef.current = false;
     
     showToast('All filters cleared!');
-    
-    // Close sidebar after clearing
     setIsSidebarOpen(false);
-  }, [dispatch, showToast]);
+    
+    // Clear URL parameters
+    navigate('/jobs', { replace: true });
+  }, [dispatch, showToast, navigate]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev);

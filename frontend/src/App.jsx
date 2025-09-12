@@ -160,7 +160,7 @@ function App() {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [loadAllData]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -175,10 +175,41 @@ function App() {
   return (
     <Router>
       <div className="root">
-       
         <Routes>
-          <Route path="/" element={<> <Header user={user} /><Hero /><Main /><Footer /></>} />
-          <Route path="/jobs" element={<><Header user={user}/><JobList /></>} />
+          <Route 
+            path="/" 
+            element={
+              <>
+                <Header user={user} />
+                <Hero />
+                <Main />
+                <Footer />
+              </>
+            } 
+          />
+          
+          {/* Updated jobs route - now supports search parameters */}
+          <Route 
+            path="/jobs" 
+            element={
+              <>
+                <Header user={user} />
+                <JobList />
+              </>
+            } 
+          />
+          
+          {/* Optional: Legacy route support for URL-based search */}
+          <Route 
+            path="/jobs/:searchTerm" 
+            element={
+              <>
+                <Header user={user} />
+                <JobList />
+              </>
+            } 
+          />
+          
           <Route
             path="/auth"
             element={
@@ -190,12 +221,34 @@ function App() {
               />
             }
           />
-          <Route path="/about" element={<> <Header user={user} /><AboutUs /><Footer /></>} />
-          <Route path="/contact" element={<> <Header user={user} /><ContactUs /><Footer /></>} />
+          
+          <Route 
+            path="/about" 
+            element={
+              <>
+                <Header user={user} />
+                <AboutUs />
+                <Footer />
+              </>
+            } 
+          />
+          
+          <Route 
+            path="/contact" 
+            element={
+              <>
+                <Header user={user} />
+                <ContactUs />
+                <Footer />
+              </>
+            } 
+          />
+          
           <Route
             path="/dashboard"
             element={<Dashboard user={user} onSignOut={handleSignOut} />}
           />
+          
           <Route path="/footer" element={<Footer />} />
         </Routes>
       </div>
@@ -204,4 +257,3 @@ function App() {
 }
 
 export default App;
-
