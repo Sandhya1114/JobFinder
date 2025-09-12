@@ -466,7 +466,7 @@ const FilterOption = React.memo(({ option, isChecked, onChange, filterType }) =>
   </label>
 ));
 
-// Memoized Filter Dropdown Component
+// Fixed Filter Dropdown Component with proper event handling
 const FilterDropdown = React.memo(({ 
   id, 
   icon, 
@@ -477,41 +477,92 @@ const FilterDropdown = React.memo(({
   onApply, 
   onClear,
   isActive,
-  onMouseEnter,
-  onMouseLeave 
-}) => (
-  <div 
-    className="filter-dropdown"
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-  >
-    <button className="filter-dropdown-btn">
-      <i className={`fa fa-${icon}`}></i>
-      {title}
-      <i className={`fa ${isActive ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-    </button>
-    <div className="filter-dropdown-content">
-      <div className="filter-dropdown-header">
-        <h4>{title}</h4>
-      </div>
-      <div className="filter-options">
-        {options.map((option) => (
-          <FilterOption
-            key={option.id || option}
-            option={option.name || option}
-            isChecked={selectedValues?.includes(option.id || option)}
-            onChange={onFilterChange}
-            filterType={id}
-          />
-        ))}
-      </div>
-      <div className="filter-dropdown-actions">
-        <button onClick={onApply} className="apply-btn-mini">Apply</button>
-        <button onClick={onClear} className="clear-btn-mini">Clear</button>
-      </div>
+  onClick
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleButtonClick = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsOpen(prev => !prev);
+  }, []);
+
+  const handleOptionChange = useCallback((filterType, option, isChecked) => {
+    onFilterChange(filterType, option, isChecked);
+  }, [onFilterChange]);
+
+  const handleApply = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onApply();
+    setIsOpen(false);
+  }, [onApply]);
+
+  const handleClear = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClear();
+  }, [onClear]);
+
+  const hasActiveFilters = selectedValues && selectedValues.length > 0;
+
+  return (
+    <div ref={dropdownRef} className={`filter-dropdown ${isOpen ? 'active' : ''}`}>
+      <button 
+        className={`filter-dropdown-btn ${hasActiveFilters ? 'has-active-filters' : ''}`}
+        onClick={handleButtonClick}
+        type="button"
+      >
+        <i className={`fa fa-${icon}`}></i>
+        {title}
+        <i className={`fa ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+      </button>
+      
+      {isOpen && (
+        <div className="filter-dropdown-content">
+          <div className="filter-dropdown-header">
+            <h4>{title}</h4>
+          </div>
+          <div className="filter-options">
+            {options.map((option) => {
+              const optionValue = option.id || option.name || option;
+              const optionLabel = option.name || option;
+              
+              return (
+                <FilterOption
+                  key={optionValue}
+                  option={optionValue}
+                  isChecked={selectedValues?.includes(optionValue)}
+                  onChange={handleOptionChange}
+                  filterType={id}
+                />
+              );
+            })}
+          </div>
+          <div className="filter-dropdown-actions">
+            <button onClick={handleApply} className="apply-btn-mini" type="button">Apply</button>
+            <button onClick={handleClear} className="clear-btn-mini" type="button">Clear</button>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-));
+  );
+});
 
 const JobList = () => {
   const dispatch = useDispatch();
@@ -556,9 +607,6 @@ const JobList = () => {
 
   // Track if filters have changed but not applied
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
-
-  // State for managing dropdown visibility
-  const [activeDropdown, setActiveDropdown] = useState(null);
 
   // Track initial load and prevent infinite loops
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
@@ -624,6 +672,7 @@ const JobList = () => {
     
     const search = searchParams.get('search') || '';
     const categories = searchParams.get('categories')?.split(',').filter(Boolean) || [];
+    
     const companies = searchParams.get('companies')?.split(',').filter(Boolean) || [];
     const experience = searchParams.get('experience')?.split(',').filter(Boolean) || [];
     const locationParam = searchParams.get('location')?.split(',').filter(Boolean) || [];
@@ -921,13 +970,20 @@ const JobList = () => {
     }
   }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
 
+  // Fixed filter handlers
   const handleApplyFilters = useCallback(() => {
+    console.log('Applying filters:', pendingFilters);
+    
+    // Apply all pending filters at once
     dispatch(setSelectedCategory(pendingFilters.selectedCategory));
     dispatch(setSelectedCompany(pendingFilters.selectedCompany));
     dispatch(setSelectedExperience(pendingFilters.selectedExperience));
     dispatch(setSelectedLocation(pendingFilters.selectedLocation));
     dispatch(setSelectedType(pendingFilters.selectedType));
     dispatch(setSelectedSalary(pendingFilters.selectedSalary));
+    
+    // Reset pagination to first page
+    dispatch(setCurrentPage(1));
     
     setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
@@ -937,6 +993,8 @@ const JobList = () => {
   }, [dispatch, pendingFilters, showToast]);
 
   const handleClearFilters = useCallback(() => {
+    console.log('Clearing all filters');
+    
     setPendingFilters({
       selectedCategory: [],
       selectedCompany: [],
@@ -965,27 +1023,6 @@ const JobList = () => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  const toggleDropdown = useCallback((dropdownId) => {
-    setActiveDropdown(prev => prev === dropdownId ? null : dropdownId);
-  }, []);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest('.filter-dropdown')) {
-        setActiveDropdown(null);
-      }
-    };
-
-    if (activeDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [activeDropdown]);
-
   // Handle search input changes
   const handleSearchInputChange = useCallback((value) => {
     setLocalFilters(prev => ({
@@ -1007,13 +1044,23 @@ const JobList = () => {
     }
   }, [dispatch]);
 
-  // Handle pending filter changes
+  // Fixed pending filter change handler
   const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+    console.log('Filter change:', filterType, value, isChecked);
+    
     setPendingFilters(prev => {
       const current = prev[filterType] || [];
-      const updated = isChecked
-        ? [...current, value]
-        : current.filter(item => item !== value);
+      let updated;
+      
+      if (isChecked) {
+        // Add the value if it's not already present
+        updated = current.includes(value) ? current : [...current, value];
+      } else {
+        // Remove the value
+        updated = current.filter(item => item !== value);
+      }
+      
+      console.log('Updated pending filters for', filterType, ':', updated);
       
       return {
         ...prev,
@@ -1021,6 +1068,71 @@ const JobList = () => {
       };
     });
   }, []);
+
+  // Handle individual filter dropdown actions
+  const handleDropdownApply = useCallback((filterType) => {
+    console.log('Applying single filter:', filterType, pendingFilters[filterType]);
+    
+    switch (filterType) {
+      case 'selectedCategory':
+        dispatch(setSelectedCategory(pendingFilters.selectedCategory));
+        break;
+      case 'selectedCompany':
+        dispatch(setSelectedCompany(pendingFilters.selectedCompany));
+        break;
+      case 'selectedExperience':
+        dispatch(setSelectedExperience(pendingFilters.selectedExperience));
+        break;
+      case 'selectedLocation':
+        dispatch(setSelectedLocation(pendingFilters.selectedLocation));
+        break;
+      case 'selectedType':
+        dispatch(setSelectedType(pendingFilters.selectedType));
+        break;
+      case 'selectedSalary':
+        dispatch(setSelectedSalary(pendingFilters.selectedSalary));
+        break;
+      default:
+        console.warn('Unknown filter type:', filterType);
+    }
+    
+    dispatch(setCurrentPage(1));
+    showToast(`${filterType.replace('selected', '')} filter applied!`);
+  }, [dispatch, pendingFilters, showToast]);
+
+  const handleDropdownClear = useCallback((filterType) => {
+    console.log('Clearing single filter:', filterType);
+    
+    setPendingFilters(prev => ({
+      ...prev,
+      [filterType]: []
+    }));
+    
+    switch (filterType) {
+      case 'selectedCategory':
+        dispatch(setSelectedCategory([]));
+        break;
+      case 'selectedCompany':
+        dispatch(setSelectedCompany([]));
+        break;
+      case 'selectedExperience':
+        dispatch(setSelectedExperience([]));
+        break;
+      case 'selectedLocation':
+        dispatch(setSelectedLocation([]));
+        break;
+      case 'selectedType':
+        dispatch(setSelectedType([]));
+        break;
+      case 'selectedSalary':
+        dispatch(setSelectedSalary([]));
+        break;
+      default:
+        console.warn('Unknown filter type:', filterType);
+    }
+    
+    showToast(`${filterType.replace('selected', '')} filter cleared!`);
+  }, [dispatch, showToast]);
 
   // Modal handlers
   const handleViewDetails = useCallback((job) => {
@@ -1129,11 +1241,8 @@ const JobList = () => {
               options={typeOptions}
               selectedValues={pendingFilters.selectedType}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'schedule'}
-              onMouseEnter={() => setActiveDropdown('schedule')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedType')}
+              onClear={() => handleDropdownClear('selectedType')}
             />
 
             <FilterDropdown
@@ -1143,11 +1252,8 @@ const JobList = () => {
               options={categories}
               selectedValues={pendingFilters.selectedCategory}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'industries'}
-              onMouseEnter={() => setActiveDropdown('industries')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedCategory')}
+              onClear={() => handleDropdownClear('selectedCategory')}
             />
 
             <FilterDropdown
@@ -1157,11 +1263,8 @@ const JobList = () => {
               options={experienceOptions}
               selectedValues={pendingFilters.selectedExperience}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'experience'}
-              onMouseEnter={() => setActiveDropdown('experience')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedExperience')}
+              onClear={() => handleDropdownClear('selectedExperience')}
             />
 
             <FilterDropdown
@@ -1171,11 +1274,8 @@ const JobList = () => {
               options={locationOptions}
               selectedValues={pendingFilters.selectedLocation}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'distance'}
-              onMouseEnter={() => setActiveDropdown('distance')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedLocation')}
+              onClear={() => handleDropdownClear('selectedLocation')}
             />
 
             <FilterDropdown
@@ -1185,11 +1285,8 @@ const JobList = () => {
               options={companies}
               selectedValues={pendingFilters.selectedCompany}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'company'}
-              onMouseEnter={() => setActiveDropdown('company')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedCompany')}
+              onClear={() => handleDropdownClear('selectedCompany')}
             />
 
             <FilterDropdown
@@ -1199,11 +1296,8 @@ const JobList = () => {
               options={salaryRangeOptions}
               selectedValues={pendingFilters.selectedSalary}
               onFilterChange={handlePendingFilterChange}
-              onApply={handleApplyFilters}
-              onClear={handleClearFilters}
-              isActive={activeDropdown === 'salary'}
-              onMouseEnter={() => setActiveDropdown('salary')}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onApply={() => handleDropdownApply('selectedSalary')}
+              onClear={() => handleDropdownClear('selectedSalary')}
             />
           </div>
         </div>
