@@ -1,168 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import "../styles/Header.css";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { supabase } from "../supabaseClient";
-import { 
-  setSearchQuery, 
-  setSelectedExperience, 
-  setSelectedLocation 
-} from '../redux/store';
-
-// HeaderSearchBar component
-const HeaderSearchBar = ({ onSearch }) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { filters } = useSelector((state) => state.jobs);
-  
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [localFilters, setLocalFilters] = useState({
-    searchInput: '',
-    experienceInput: '',
-    locationInput: ''
-  });
-
-  const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
-
-  // Sync local filters with Redux filters
-  useEffect(() => {
-    setLocalFilters({
-      searchInput: filters.searchQuery || '',
-      experienceInput: filters.selectedExperience?.[0] || '',
-      locationInput: filters.selectedLocation?.[0] || ''
-    });
-  }, [filters]);
-
-  useEffect(() => {
-    // Close on Escape key
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        setIsExpanded(false);
-      }
-    };
-
-    if (isExpanded) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
-    };
-  }, [isExpanded]);
-
-  const handleSearch = () => {
-    // Navigate to jobs page if not already there
-    if (location.pathname !== '/jobs') {
-      navigate('/jobs');
-    }
-
-    // Dispatch the same actions as JobList
-    if (localFilters.searchInput.trim()) {
-      dispatch(setSearchQuery(localFilters.searchInput.trim()));
-    }
-
-    if (localFilters.experienceInput) {
-      dispatch(setSelectedExperience([localFilters.experienceInput]));
-    }
-
-    if (localFilters.locationInput.trim()) {
-      dispatch(setSelectedLocation([localFilters.locationInput.trim()]));
-    }
-
-    // Call parent callback if provided
-    if (onSearch) {
-      onSearch({
-        query: localFilters.searchInput,
-        experience: localFilters.experienceInput,
-        location: localFilters.locationInput
-      });
-    }
-
-    setIsExpanded(false);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  // Get display text for compact search bar
-  const getDisplayText = () => {
-    if (localFilters.searchInput) {
-      return localFilters.searchInput;
-    }
-    return 'Search jobs, skills, companies...';
-  };
-
-  return (
-    <>
-      {/* Compact search bar in header */}
-      <div className="header-search-compact" onClick={() => setIsExpanded(true)}>
-        <i className="fa fa-search search-icon"></i>
-        <span className="search-placeholder">
-          {getDisplayText()}
-        </span>
-      </div>
-
-      {/* Expanded search overlay */}
-      <div className={`search-overlay ${isExpanded ? 'active' : ''}`} onClick={() => setIsExpanded(false)}>
-        <div className="search-overlay-content" onClick={(e) => e.stopPropagation()}>
-          <div className="search-bar">
-            <div className="search-field">
-              <span className="icon"><i className="fa fa-search"></i></span>
-              <input
-                type="text"
-                placeholder="Enter skills / designations / companies"
-                value={localFilters.searchInput}
-                onChange={(e) => setLocalFilters(prev => ({ 
-                  ...prev, 
-                  searchInput: e.target.value 
-                }))}
-                onKeyPress={handleKeyPress}
-                autoFocus
-              />
-            </div>
-            <div className="divider" />
-            <select
-              className="experience-dropdown"
-              value={localFilters.experienceInput}
-              onChange={(e) => setLocalFilters(prev => ({ 
-                ...prev, 
-                experienceInput: e.target.value 
-              }))}
-            >
-              <option value="">Select experience</option>
-              {experienceOptions.map((exp) => (
-                <option key={exp} value={exp}>{exp}</option>
-              ))}
-            </select>
-            <div className="divider" />
-            <input
-              type="text"
-              className="location-input"
-              placeholder="Enter location"
-              value={localFilters.locationInput}
-              onChange={(e) => setLocalFilters(prev => ({ 
-                ...prev, 
-                locationInput: e.target.value 
-              }))}
-              onKeyPress={handleKeyPress}
-            />
-            <button className="search-btn" onClick={handleSearch}>
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
+import SmartSearchBar from './SmartJobSearchBar'; // Import the SmartSearchBar
 
 export default function Header({ user }) {
   const [showMenu, setShowMenu] = useState(false);
@@ -183,9 +24,10 @@ export default function Header({ user }) {
     return false;
   };
 
-  // Handle search from header
-  const handleHeaderSearch = ({ query, experience, location }) => {
-    console.log('Header search completed:', { query, experience, location });
+  // Handle search from SmartSearchBar
+  const handleSmartSearch = ({ query, type }) => {
+    console.log('Smart search completed:', { query, type });
+    // The SmartSearchBar already handles navigation and Redux updates
   };
 
   // Shrink header on scroll
@@ -274,7 +116,7 @@ export default function Header({ user }) {
 
         {/* Desktop Navigation */}
         <div className="header-options desktop-nav">
-          <div>
+          <div className="nav-links">
             <Link 
               to="/" 
               className={isActiveLink("/") ? "active" : ""}
@@ -301,9 +143,11 @@ export default function Header({ user }) {
             </Link>
           </div>
           
-          {/* Header Search Bar - only show on jobs page */}
+          {/* Smart Search Bar - only show on jobs page */}
           {isJobsPage && (
-            <HeaderSearchBar onSearch={handleHeaderSearch} />
+            <div className="header-smart-search">
+              <SmartSearchBar onSearch={handleSmartSearch} />
+            </div>
           )}
         </div>
 
@@ -357,6 +201,13 @@ export default function Header({ user }) {
               <i className="fas fa-times"></i>
             </div>
           </div>
+
+          {/* Mobile Smart Search - show on jobs page */}
+          {isJobsPage && (
+            <div className="mobile-smart-search">
+              <SmartSearchBar onSearch={handleSmartSearch} />
+            </div>
+          )}
 
           <div className="mobile-nav-links">
             <Link 
