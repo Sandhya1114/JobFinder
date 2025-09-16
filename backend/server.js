@@ -237,6 +237,9 @@ app.get('/api/companies', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Add these routes to your existing Express.js backend
+
 // ============ DASHBOARD API ROUTES ============
 
 // Middleware to get user from auth header (you'll need to implement this)
