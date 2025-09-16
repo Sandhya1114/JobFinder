@@ -1,691 +1,687 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Search, MapPin, Briefcase, Building, Hash, Clock, X } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { setSearchQuery, setSelectedExperience, setSelectedLocation, setSelectedCompany, setSelectedCategory } from '../redux/store';
+import { api } from '../services/api';
 
-const SmartJobSearchBar = ({ onSearch, className = "" }) => {
+const SmartSearchBar = ({ onSearch }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const { jobs, categories, companies } = useSelector((state) => state.jobs);
+  
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [recentSearches, setRecentSearches] = useState([]);
-  const [error, setError] = useState(null);
-  
-  const searchRef = useRef(null);
-  const debounceRef = useRef(null);
-// Import your Supabase client
-
-// const API_BASE_URL = 'http://localhost:5000/api';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
-
-  // Load recent searches from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('jobSearchRecentSearches');
-    if (saved) {
-      try {
-        setRecentSearches(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error loading recent searches:', e);
-      }
-    }
-  }, []);
-
-  // Debounced search function
-  const debouncedSearch = useCallback((searchQuery) => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-    
-    debounceRef.current = setTimeout(() => {
-      if (searchQuery.trim().length > 1) {
-        performSearch(searchQuery);
-      } else {
-        setSuggestions([]);
-        setIsLoading(false);
-      }
-    }, 300);
-  }, []);
-
-  // Main search function using your existing APIs
-  const performSearch = async (searchQuery) => {
-    if (!searchQuery.trim()) return;
-    
-    setIsLoading(true);
-    setError(null);
-    const suggestions = [];
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchHistory, setSearchHistory] = useState(() => {
     try {
-      // Use your existing /api/jobs endpoint for comprehensive search
-      const jobsResponse = await fetch(`${API_BASE_URL}/jobs?search=${encodeURIComponent(searchQuery)}&limit=10`);
-      
-      if (!jobsResponse.ok) {
-        throw new Error(`Jobs API error: ${jobsResponse.status}`);
-      }
-      
-      const jobsData = await jobsResponse.json();
-      const jobs = jobsData.jobs || [];
-
-      // Extract unique suggestions from jobs data
-      const jobTitles = new Set();
-      const companies = new Set();
-      const locations = new Set();
-      const categories = new Set();
-
-      jobs.forEach(job => {
-        // Job titles
-        if (job.title && job.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-          jobTitles.add(job.title);
-        }
-        
-        // Companies
-        if (job.companies?.name && job.companies.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-          companies.add(job.companies.name);
-        }
-        
-        // Locations
-        if (job.location && job.location.toLowerCase().includes(searchQuery.toLowerCase())) {
-          locations.add(job.location);
-        }
-        
-        // Categories
-        if (job.categories?.name && job.categories.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-          categories.add(job.categories.name);
-        }
-      });
-
-      // Convert to suggestion format with confidence scoring
-      Array.from(jobTitles).slice(0, 3).forEach(title => {
-        const matchingJobs = jobs.filter(job => job.title === title);
-        suggestions.push({
-          id: `job-title-${title}`,
-          label: title,
-          sublabel: `${matchingJobs.length} job${matchingJobs.length !== 1 ? 's' : ''} available`,
-          type: 'job-title',
-          icon: Briefcase,
-          confidence: calculateTextConfidence(title, searchQuery),
-          data: { title, count: matchingJobs.length }
-        });
-      });
-
-      Array.from(companies).slice(0, 3).forEach(company => {
-        const matchingJobs = jobs.filter(job => job.companies?.name === company);
-        suggestions.push({
-          id: `company-${company}`,
-          label: company,
-          sublabel: `${matchingJobs.length} open position${matchingJobs.length !== 1 ? 's' : ''}`,
-          type: 'company',
-          icon: Building,
-          confidence: calculateTextConfidence(company, searchQuery),
-          data: { company, count: matchingJobs.length }
-        });
-      });
-
-      Array.from(locations).slice(0, 3).forEach(location => {
-        const matchingJobs = jobs.filter(job => job.location === location);
-        suggestions.push({
-          id: `location-${location}`,
-          label: location,
-          sublabel: `${matchingJobs.length} job${matchingJobs.length !== 1 ? 's' : ''} in this location`,
-          type: 'location',
-          icon: MapPin,
-          confidence: calculateTextConfidence(location, searchQuery),
-          data: { location, count: matchingJobs.length }
-        });
-      });
-
-      Array.from(categories).slice(0, 2).forEach(category => {
-        suggestions.push({
-          id: `category-${category}`,
-          label: category,
-          sublabel: 'Job Category',
-          type: 'category',
-          icon: Hash,
-          confidence: calculateTextConfidence(category, searchQuery),
-          data: { category }
-        });
-      });
-
-      // If we found specific jobs, add top matches
-      const topJobs = jobs.slice(0, 2);
-      topJobs.forEach(job => {
-        suggestions.push({
-          id: `job-${job.id}`,
-          label: job.title,
-          sublabel: `at ${job.companies?.name || 'Company'} • ${job.location || 'Location TBD'}`,
-          type: 'job',
-          icon: Briefcase,
-          confidence: calculateJobConfidence(job, searchQuery),
-          data: job
-        });
-      });
-
-      // Sort by confidence and limit results
-      const sortedSuggestions = suggestions
-        .sort((a, b) => b.confidence - a.confidence)
-        .slice(0, 8);
-
-      setSuggestions(sortedSuggestions);
-
-    } catch (error) {
-      console.error('Search error:', error);
-      setError('Search temporarily unavailable');
-      setSuggestions([]);
-      
-      // Fallback: create basic suggestions from query
-      if (searchQuery.length > 2) {
-        setSuggestions([
-          {
-            id: `fallback-${searchQuery}`,
-            label: searchQuery,
-            sublabel: 'Search for this term',
-            type: 'search',
-            icon: Search,
-            confidence: 0.5,
-            data: { query: searchQuery }
-          }
-        ]);
-      }
-    } finally {
-      setIsLoading(false);
+      return JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    } catch {
+      return [];
     }
-  };
+  });
+  
+  const searchInputRef = useRef(null);
+  const suggestionRefs = useRef([]);
+  const debounceRef = useRef(null);
+  const containerRef = useRef(null);
 
-  // Calculate confidence score for text matching
-  const calculateTextConfidence = (text, query) => {
-    if (!text || !query) return 0;
+  // Experience levels from your JobList component
+  const experienceOptions = ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'];
+
+  // Extract unique data from jobs
+  const jobData = useMemo(() => {
+    const locations = new Set();
+    const jobTitles = new Set();
+    const skills = new Set();
+    const companyNames = new Set();
+    const categoryNames = new Set();
+
+    // Extract from jobs array
+    jobs.forEach(job => {
+      // Locations
+      if (job.location) {
+        const locationParts = job.location.split(',').map(l => l.trim());
+        locationParts.forEach(part => {
+          if (part && part.length > 2) {
+            locations.add(part);
+          }
+        });
+      }
+
+      // Job titles
+      if (job.title) {
+        jobTitles.add(job.title);
+        
+        // Extract common job keywords
+        const titleWords = job.title.toLowerCase().split(/[\s\-_]+/);
+        titleWords.forEach(word => {
+          if (word.length > 3 && !['the', 'and', 'for', 'with'].includes(word)) {
+            skills.add(word.charAt(0).toUpperCase() + word.slice(1));
+          }
+        });
+      }
+
+      // Extract skills from description
+      if (job.description) {
+        const commonSkills = [
+          'React', 'JavaScript', 'Python', 'Node.js', 'TypeScript', 'AWS', 'Docker',
+          'Kubernetes', 'MongoDB', 'PostgreSQL', 'Java', 'C++', 'Angular', 'Vue',
+          'React Native', 'Flutter', 'Swift', 'Kotlin', 'Go', 'Rust', 'PHP',
+          'Ruby', 'Django', 'Flask', 'Express', 'Spring', 'Laravel', 'Git',
+          'Jenkins', 'Terraform', 'GraphQL', 'REST API', 'MySQL', 'Redis',
+          'Elasticsearch', 'Kafka', 'RabbitMQ', 'Microservices', 'Machine Learning',
+          'AI', 'Data Science', 'Analytics', 'Tableau', 'Power BI', 'Figma',
+          'Sketch', 'Adobe', 'Photoshop', 'Illustrator'
+        ];
+        
+        const descLower = job.description.toLowerCase();
+        commonSkills.forEach(skill => {
+          if (descLower.includes(skill.toLowerCase())) {
+            skills.add(skill);
+          }
+        });
+      }
+    });
+
+    // Add companies and categories from Redux state
+    companies.forEach(company => {
+      if (company.name) {
+        companyNames.add(company.name);
+      }
+    });
+
+    categories.forEach(category => {
+      if (category.name) {
+        categoryNames.add(category.name);
+      }
+    });
+
+    return {
+      locations: Array.from(locations).map(loc => ({ 
+        label: loc, 
+        type: 'location', 
+        category: 'Location',
+        icon: '📍'
+      })),
+      jobTitles: Array.from(jobTitles).map(title => ({ 
+        label: title, 
+        type: 'job', 
+        category: 'Job Title',
+        icon: '💼'
+      })),
+      skills: Array.from(skills).map(skill => ({ 
+        label: skill, 
+        type: 'skill', 
+        category: 'Skill',
+        icon: '🔧'
+      })),
+      companies: Array.from(companyNames).map(company => ({ 
+        label: company, 
+        type: 'company', 
+        category: 'Company',
+        icon: '🏢'
+      })),
+      categories: Array.from(categoryNames).map(category => ({ 
+        label: category, 
+        type: 'category', 
+        category: 'Industry',
+        icon: '🏭'
+      })),
+      experience: experienceOptions.map(exp => ({
+        label: exp,
+        type: 'experience',
+        category: 'Experience',
+        icon: '📈'
+      }))
+    };
+  }, [jobs, companies, categories]);
+
+  // Fuzzy matching function with typo tolerance
+  const fuzzyMatch = useCallback((text, query) => {
+    if (!query || !text) return 0;
     
     const textLower = text.toLowerCase();
     const queryLower = query.toLowerCase();
     
+    // Exact match
     if (textLower === queryLower) return 1.0;
+    
+    // Starts with match
     if (textLower.startsWith(queryLower)) return 0.9;
-    if (textLower.includes(queryLower)) return 0.7;
-    if (fuzzyMatch(textLower, queryLower)) return 0.5;
     
-    return 0.1;
-  };
-
-  // Calculate confidence for job matches
-  const calculateJobConfidence = (job, query) => {
-    const titleMatch = calculateTextConfidence(job.title, query);
-    const companyMatch = job.companies?.name ? calculateTextConfidence(job.companies.name, query) : 0;
-    const locationMatch = job.location ? calculateTextConfidence(job.location, query) : 0;
+    // Contains match
+    if (textLower.includes(queryLower)) return 0.8;
     
-    return Math.max(titleMatch, companyMatch * 0.8, locationMatch * 0.6);
-  };
-
-  // Simple fuzzy matching
-  const fuzzyMatch = (text, query) => {
-    if (query.length < 2) return false;
+    // Word boundary match
+    const words = textLower.split(/\s+/);
+    const queryWords = queryLower.split(/\s+/);
     
-    let textIndex = 0;
+    let wordMatchScore = 0;
+    queryWords.forEach(qWord => {
+      words.forEach(tWord => {
+        if (tWord.startsWith(qWord) && qWord.length >= 2) {
+          wordMatchScore += 0.7;
+        }
+      });
+    });
+    
+    if (wordMatchScore > 0) return Math.min(wordMatchScore / queryWords.length, 0.85);
+    
+    // Character similarity (Levenshtein-like)
+    let matches = 0;
     let queryIndex = 0;
     
-    while (textIndex < text.length && queryIndex < query.length) {
-      if (text[textIndex] === query[queryIndex]) {
+    for (let i = 0; i < textLower.length && queryIndex < queryLower.length; i++) {
+      if (textLower[i] === queryLower[queryIndex]) {
+        matches++;
         queryIndex++;
       }
-      textIndex++;
     }
     
-    return queryIndex === query.length;
-  };
+    const similarity = queryIndex === queryLower.length ? matches / Math.max(textLower.length, queryLower.length) : 0;
+    return similarity > 0.4 ? similarity * 0.6 : 0;
+  }, []);
 
-  // Handle input changes
-  const handleInputChange = (e) => {
+  // Generate suggestions
+  const generateSuggestions = useCallback(async (searchQuery) => {
+    if (!searchQuery || searchQuery.length < 1) {
+      // Show recent searches and popular suggestions
+      const recentSuggestions = searchHistory.slice(-3).map(item => ({
+        ...item,
+        isRecent: true,
+        score: 1.0
+      }));
+      
+      const popularSuggestions = [
+        ...jobData.jobTitles.slice(0, 3).map(item => ({ ...item, isPopular: true, score: 0.9 })),
+        ...jobData.companies.slice(0, 3).map(item => ({ ...item, isPopular: true, score: 0.9 })),
+        ...jobData.locations.slice(0, 2).map(item => ({ ...item, isPopular: true, score: 0.9 }))
+      ];
+      
+      return [...recentSuggestions, ...popularSuggestions].slice(0, 8);
+    }
+
+    const allSuggestions = [];
+    const query = searchQuery.trim();
+    
+    // Search in all categories
+    Object.values(jobData).flat().forEach(item => {
+      const score = fuzzyMatch(item.label, query);
+      if (score > 0.3) {
+        allSuggestions.push({
+          ...item,
+          score
+        });
+      }
+    });
+    
+    // If we have few results, try to search through job descriptions
+    if (allSuggestions.length < 5 && query.length >= 3) {
+      jobs.slice(0, 50).forEach(job => {
+        if (job.description) {
+          const descScore = fuzzyMatch(job.description, query);
+          if (descScore > 0.4) {
+            allSuggestions.push({
+              label: job.title,
+              type: 'job',
+              category: 'Related Job',
+              icon: '🔍',
+              score: descScore * 0.7,
+              description: job.description.substring(0, 100) + '...'
+            });
+          }
+        }
+      });
+    }
+    
+    // Sort by score and limit results
+    return allSuggestions
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+      .filter(item => item.score > 0.3);
+  }, [jobData, fuzzyMatch, searchHistory, jobs]);
+
+  // Debounced suggestion fetching
+  const debouncedFetchSuggestions = useCallback((query) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    
+    debounceRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const newSuggestions = await generateSuggestions(query);
+        setSuggestions(newSuggestions);
+      } catch (error) {
+        console.error('Error generating suggestions:', error);
+        setSuggestions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 200);
+  }, [generateSuggestions]);
+
+  // Handle input change
+  const handleInputChange = useCallback((e) => {
     const value = e.target.value;
     setQuery(value);
     setSelectedIndex(-1);
-    setError(null);
     
-    if (value.trim()) {
-      setIsLoading(true);
-      debouncedSearch(value);
+    if (value.length >= 0) {
+      debouncedFetchSuggestions(value);
+      setIsOpen(true);
     } else {
+      setIsOpen(false);
       setSuggestions([]);
-      setIsLoading(false);
     }
-  };
+  }, [debouncedFetchSuggestions]);
 
   // Handle suggestion selection
-  const handleSuggestionClick = (suggestion) => {
-    console.log('Suggestion clicked:', suggestion);
+  const handleSuggestionSelect = useCallback((suggestion) => {
+    const searchItem = {
+      label: suggestion.label,
+      type: suggestion.type,
+      category: suggestion.category,
+      icon: suggestion.icon,
+      timestamp: Date.now()
+    };
+
+    // Add to search history
+    const newHistory = [
+      searchItem,
+      ...searchHistory.filter(item => item.label !== suggestion.label)
+    ].slice(0, 10);
+    
+    setSearchHistory(newHistory);
+    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+
+    // Navigate to jobs page if not already there
+    if (location.pathname !== '/jobs') {
+      navigate('/jobs');
+    }
+
+    // Apply the appropriate filter based on suggestion type
+    switch (suggestion.type) {
+      case 'location':
+        dispatch(setSelectedLocation([suggestion.label]));
+        break;
+      case 'company':
+        const company = companies.find(c => c.name === suggestion.label);
+        if (company) {
+          dispatch(setSelectedCompany([company.id]));
+        }
+        break;
+      case 'category':
+        const category = categories.find(c => c.name === suggestion.label);
+        if (category) {
+          dispatch(setSelectedCategory([category.id]));
+        }
+        break;
+      case 'experience':
+        dispatch(setSelectedExperience([suggestion.label]));
+        break;
+      case 'job':
+      case 'skill':
+      default:
+        dispatch(setSearchQuery(suggestion.label));
+        break;
+    }
+
     setQuery(suggestion.label);
-    setIsExpanded(false);
+    setIsOpen(false);
     
-    // Save to recent searches
-    const newRecentSearches = [
-      suggestion,
-      ...recentSearches.filter(s => s.id !== suggestion.id)
-    ].slice(0, 5);
-    
-    setRecentSearches(newRecentSearches);
-    localStorage.setItem('jobSearchRecentSearches', JSON.stringify(newRecentSearches));
-    
-    // Call onSearch callback
     if (onSearch) {
-      onSearch({
-        query: suggestion.label,
-        type: suggestion.type,
-        data: suggestion.data
-      });
+      onSearch({ query: suggestion.label, type: suggestion.type });
     }
-  };
+  }, [searchHistory, location.pathname, navigate, dispatch, companies, categories, onSearch]);
 
-  // Handle search execution
-  const handleSearch = () => {
-    if (query.trim()) {
-      setIsExpanded(false);
-      
-      if (onSearch) {
-        onSearch({
-          query: query.trim(),
-          type: 'search',
-          data: { query: query.trim() }
-        });
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e) => {
+    if (!isOpen || suggestions.length === 0) {
+      if (e.key === 'Enter' && query.trim()) {
+        // Direct search
+        dispatch(setSearchQuery(query.trim()));
+        if (location.pathname !== '/jobs') {
+          navigate('/jobs');
+        }
+        setIsOpen(false);
+        if (onSearch) {
+          onSearch({ query: query.trim(), type: 'search' });
+        }
       }
+      return;
     }
-  };
 
-  // Handle keyboard navigation
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      if (selectedIndex >= 0 && suggestions[selectedIndex]) {
-        handleSuggestionClick(suggestions[selectedIndex]);
-      } else {
-        handleSearch();
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setSelectedIndex(prev => 
-        prev < suggestions.length - 1 ? prev + 1 : prev
-      );
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
-    } else if (e.key === 'Escape') {
-      setIsExpanded(false);
-      setSelectedIndex(-1);
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev > 0 ? prev - 1 : suggestions.length - 1
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+          handleSuggestionSelect(suggestions[selectedIndex]);
+        } else if (query.trim()) {
+          dispatch(setSearchQuery(query.trim()));
+          if (location.pathname !== '/jobs') {
+            navigate('/jobs');
+          }
+          setIsOpen(false);
+        }
+        break;
+      case 'Escape':
+        setIsOpen(false);
+        setSelectedIndex(-1);
+        searchInputRef.current?.blur();
+        break;
     }
-  };
+  }, [isOpen, suggestions, selectedIndex, query, handleSuggestionSelect, dispatch, location.pathname, navigate, onSearch]);
 
-  // Handle click to expand search
-  const handleSearchBarClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Search bar clicked!');
-    setIsExpanded(true);
-  };
-
-  // Click outside handler
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsExpanded(false);
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
         setSelectedIndex(-1);
       }
     };
 
-    if (isExpanded) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isExpanded]);
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Scroll selected suggestion into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && suggestionRefs.current[selectedIndex]) {
+      suggestionRefs.current[selectedIndex].scrollIntoView({
+        block: 'nearest',
+        behavior: 'smooth'
+      });
+    }
+  }, [selectedIndex]);
+
+  // Initialize suggestions when component mounts
+  useEffect(() => {
+    if (searchInputRef.current === document.activeElement) {
+      debouncedFetchSuggestions('');
+    }
+  }, [debouncedFetchSuggestions]);
+
+  const formatSuggestionText = (suggestion) => {
+    if (suggestion.isRecent) {
+      return (
+        <div className="suggestion-content recent">
+          <span className="suggestion-icon">🕒</span>
+          <div className="suggestion-text">
+            <div className="suggestion-label">{suggestion.label}</div>
+            <div className="suggestion-meta">Recent search</div>
+          </div>
+        </div>
+      );
+    }
+
+    if (suggestion.isPopular) {
+      return (
+        <div className="suggestion-content popular">
+          <span className="suggestion-icon">{suggestion.icon}</span>
+          <div className="suggestion-text">
+            <div className="suggestion-label">{suggestion.label}</div>
+            <div className="suggestion-meta">Popular {suggestion.category.toLowerCase()}</div>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="suggestion-content">
+        <span className="suggestion-icon">{suggestion.icon}</span>
+        <div className="suggestion-text">
+          <div className="suggestion-label">{suggestion.label}</div>
+          <div className="suggestion-meta">{suggestion.category}</div>
+          {suggestion.description && (
+            <div className="suggestion-description">{suggestion.description}</div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div ref={searchRef} className={`smart-search-container ${className}`}>
-      {/* Compact header search - FIXED CLICK HANDLING */}
-      <div 
-        className="header-search-compact"
-        onClick={handleSearchBarClick}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: 'rgba(255, 255, 255, 0.13)',
-          borderRadius: '25px',
-          padding: '8px 16px',
-          margin: '0 20px',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          backdropFilter: 'blur(10px)',
-          minWidth: '200px',
-          flex: 1,
-          maxWidth: '400px',
-          zIndex: 1000,
-          position: 'relative'
-        }}
-      >
-        <Search size={16} color="#666" style={{ marginRight: '8px', pointerEvents: 'none' }} />
-        <span style={{ 
-          color: '#666', 
-          fontSize: '14px', 
-          fontWeight: '500',
-          pointerEvents: 'none',
-          userSelect: 'none'
-        }}>
-          {query || 'Search jobs, companies, skills...'}
-        </span>
-        {isLoading && (
-          <div style={{
-            marginLeft: 'auto',
-            width: '16px',
-            height: '16px',
-            border: '2px solid #f3f3f3',
-            borderTop: '2px solid #666',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            pointerEvents: 'none'
-          }} />
-        )}
+    <div ref={containerRef} className="smart-search-container">
+      <div className="search-input-wrapper">
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={query}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            debouncedFetchSuggestions(query);
+            setIsOpen(true);
+          }}
+          placeholder="Search jobs, companies, skills, locations..."
+          className="search-input"
+        />
+        <div className="search-icon">
+          {isLoading ? (
+            <div className="search-spinner"></div>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+          )}
+        </div>
       </div>
 
-      {/* Expanded search overlay */}
-      {isExpanded && (
-        <div 
-          className="search-overlay"
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'rgba(0, 0, 0, 0.5)',
-            backdropFilter: 'blur(5px)',
-            zIndex: 10000,
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            paddingTop: '100px'
-          }}
-          onClick={() => setIsExpanded(false)}
-        >
-          <div 
-            className="search-content"
-            style={{
-              background: 'white',
-              borderRadius: '16px',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-              width: '90%',
-              maxWidth: '600px',
-              maxHeight: '70vh',
-              overflow: 'hidden',
-              position: 'relative'
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close button */}
-            <button
-              onClick={() => setIsExpanded(false)}
-              style={{
-                position: 'absolute',
-                top: '16px',
-                right: '16px',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: '8px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 10001,
-                color: '#6c757d',
-                fontSize: '20px'
-              }}
+      {isOpen && (
+        <div className="suggestions-dropdown">
+          {suggestions.length === 0 && !isLoading && query.length > 0 && (
+            <div className="no-suggestions">
+              <span className="no-suggestions-icon">🔍</span>
+              <div className="no-suggestions-text">
+                <div>No suggestions found</div>
+                <div className="no-suggestions-tip">Try searching for job titles, skills, or companies</div>
+              </div>
+            </div>
+          )}
+          
+          {suggestions.map((suggestion, index) => (
+            <div
+              key={`${suggestion.type}-${suggestion.label}-${index}`}
+              ref={el => suggestionRefs.current[index] = el}
+              className={`suggestion-item ${index === selectedIndex ? 'selected' : ''}`}
+              onClick={() => handleSuggestionSelect(suggestion)}
+              onMouseEnter={() => setSelectedIndex(index)}
             >
-              ×
-            </button>
-
-            {/* Search input */}
-            <div style={{ padding: '24px 24px 16px' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                background: '#f8f9fa',
-                borderRadius: '12px',
-                padding: '12px 16px',
-                border: '2px solid #e9ecef'
-              }}>
-                <Search size={20} color="#6c757d" style={{ marginRight: '12px' }} />
-                <input
-                  type="text"
-                  placeholder="Search jobs, companies, skills, locations..."
-                  value={query}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyPress}
-                  autoFocus
-                  style={{
-                    border: 'none',
-                    outline: 'none',
-                    background: 'transparent',
-                    fontSize: '16px',
-                    width: '100%',
-                    color: '#212529'
-                  }}
-                />
-                {isLoading && (
-                  <div style={{
-                    width: '20px',
-                    height: '20px',
-                    border: '2px solid #e9ecef',
-                    borderTop: '2px solid #007bff',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                  }} />
-                )}
-              </div>
+              {formatSuggestionText(suggestion)}
             </div>
-
-            {/* Error message */}
-            {error && (
-              <div style={{
-                padding: '0 24px',
-                color: '#dc3545',
-                fontSize: '14px',
-                textAlign: 'center',
-                marginBottom: '16px',
-                background: 'rgba(220, 53, 69, 0.1)',
-                margin: '0 24px 16px',
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid rgba(220, 53, 69, 0.2)'
-              }}>
-                {error}
-              </div>
-            )}
-
-            {/* Suggestions */}
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              {/* Recent searches */}
-              {!query.trim() && recentSearches.length > 0 && (
-                <div style={{ padding: '0 24px' }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '16px 0 8px',
-                    borderBottom: '1px solid #e9ecef'
-                  }}>
-                    <h4 style={{ 
-                      margin: 0, 
-                      fontSize: '14px', 
-                      fontWeight: '600', 
-                      color: '#6c757d',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      Recent Searches
-                    </h4>
-                    <button
-                      onClick={() => {
-                        setRecentSearches([]);
-                        localStorage.removeItem('jobSearchRecentSearches');
-                      }}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#dc3545',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        textTransform: 'uppercase',
-                        fontWeight: '600',
-                        padding: '4px 8px',
-                        borderRadius: '4px'
-                      }}
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  {recentSearches.map((item, index) => (
-                    <div
-                      key={item.id}
-                      onClick={() => handleSuggestionClick(item)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '12px 0',
-                        cursor: 'pointer',
-                        borderRadius: '8px',
-                        transition: 'all 0.2s ease'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8f9fa'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <Clock size={16} color="#6c757d" style={{ marginRight: '12px' }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: '500', color: '#212529' }}>{item.label}</div>
-                        {item.sublabel && (
-                          <div style={{ fontSize: '12px', color: '#6c757d' }}>{item.sublabel}</div>
-                        )}
-                      </div>
-                      <span style={{
-                        fontSize: '11px',
-                        color: '#6c757d',
-                        background: '#e9ecef',
-                        padding: '2px 6px',
-                        borderRadius: '4px'
-                      }}>
-                        {item.type}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Dynamic suggestions */}
-              {query.trim() && suggestions.length > 0 && (
-                <div style={{ padding: '0 24px' }}>
-                  <div style={{
-                    padding: '16px 0 8px',
-                    borderBottom: '1px solid #e9ecef'
-                  }}>
-                    <h4 style={{ 
-                      margin: 0, 
-                      fontSize: '14px', 
-                      fontWeight: '600', 
-                      color: '#6c757d',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.5px'
-                    }}>
-                      Suggestions
-                    </h4>
-                  </div>
-                  {suggestions.map((suggestion, index) => {
-                    const IconComponent = suggestion.icon;
-                    return (
-                      <div
-                        key={suggestion.id}
-                        onClick={() => handleSuggestionClick(suggestion)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          padding: '12px 0',
-                          cursor: 'pointer',
-                          borderRadius: '8px',
-                          background: index === selectedIndex ? '#e7f3ff' : 'transparent',
-                          transition: 'all 0.2s ease'
-                        }}
-                        onMouseEnter={(e) => {
-                          if (index !== selectedIndex) {
-                            e.currentTarget.style.backgroundColor = '#f8f9fa';
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (index !== selectedIndex) {
-                            e.currentTarget.style.backgroundColor = 'transparent';
-                          }
-                        }}
-                      >
-                        <IconComponent size={16} color="#007bff" style={{ marginRight: '12px' }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontWeight: '500', color: '#212529' }}>{suggestion.label}</div>
-                          {suggestion.sublabel && (
-                            <div style={{ fontSize: '12px', color: '#6c757d' }}>{suggestion.sublabel}</div>
-                          )}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{
-                            fontSize: '11px',
-                            color: '#6c757d',
-                            background: '#e9ecef',
-                            padding: '2px 6px',
-                            borderRadius: '4px'
-                          }}>
-                            {suggestion.type}
-                          </span>
-                          <span style={{
-                            fontSize: '10px',
-                            color: '#28a745',
-                            fontWeight: '500',
-                            background: 'rgba(40, 167, 69, 0.1)',
-                            padding: '2px 6px',
-                            borderRadius: '10px'
-                          }}>
-                            {Math.round(suggestion.confidence * 100)}%
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* No results */}
-              {query.trim() && suggestions.length === 0 && !isLoading && !error && (
-                <div style={{
-                  padding: '40px 24px',
-                  textAlign: 'center',
-                  color: '#6c757d'
-                }}>
-                  <Search size={48} color="#dee2e6" style={{ marginBottom: '16px' }} />
-                  <div style={{ fontWeight: '500', marginBottom: '8px', fontSize: '16px' }}>No suggestions found</div>
-                  <div style={{ fontSize: '14px', opacity: 0.8 }}>
-                    Try searching for job titles, companies, or locations
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          ))}
         </div>
       )}
 
-      <style>{`
+      <style jsx>{`
+        .smart-search-container {
+          position: relative;
+          width: 100%;
+          max-width: 500px;
+        }
+
+        .search-input-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 12px 16px 12px 45px;
+          border: 2px solid #e1e5e9;
+          border-radius: 25px;
+          font-size: 16px;
+          background: white;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6b7280;
+        }
+
+        .search-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid #f3f4f6;
+          border-top: 2px solid #4f46e5;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
+        }
+
+        .suggestions-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #e1e5e9;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          max-height: 400px;
+          overflow-y: auto;
+          z-index: 1000;
+          margin-top: 4px;
+        }
+
+        .suggestion-item {
+          padding: 12px 16px;
+          cursor: pointer;
+          border-bottom: 1px solid #f3f4f6;
+          transition: background-color 0.15s ease;
+        }
+
+        .suggestion-item:last-child {
+          border-bottom: none;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.selected {
+          background-color: #f8fafc;
+        }
+
+        .suggestion-content {
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+        }
+
+        .suggestion-content.recent {
+          opacity: 0.8;
+        }
+
+        .suggestion-content.popular .suggestion-label {
+          color: #059669;
+          font-weight: 500;
+        }
+
+        .suggestion-icon {
+          font-size: 18px;
+          line-height: 1;
+          margin-top: 2px;
+          min-width: 18px;
+        }
+
+        .suggestion-text {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .suggestion-label {
+          font-weight: 500;
+          color: #1f2937;
+          margin-bottom: 2px;
+          line-height: 1.3;
+        }
+
+        .suggestion-meta {
+          font-size: 12px;
+          color: #6b7280;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .suggestion-description {
+          font-size: 13px;
+          color: #6b7280;
+          margin-top: 4px;
+          line-height: 1.4;
+        }
+
+        .no-suggestions {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 20px 16px;
+          color: #6b7280;
+        }
+
+        .no-suggestions-icon {
+          font-size: 24px;
+          opacity: 0.5;
+        }
+
+        .no-suggestions-text div:first-child {
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 2px;
+        }
+
+        .no-suggestions-tip {
+          font-size: 13px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+          .search-input {
+            font-size: 16px; /* Prevent zoom on iOS */
+            padding: 10px 14px 10px 40px;
+          }
+          
+          .suggestions-dropdown {
+            max-height: 300px;
+          }
+          
+          .suggestion-item {
+            padding: 10px 14px;
+          }
         }
       `}</style>
     </div>
   );
 };
 
-export default SmartJobSearchBar;
+export default SmartSearchBar;
