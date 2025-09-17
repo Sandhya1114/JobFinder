@@ -1,3 +1,4 @@
+// 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -12,13 +13,10 @@ const SmartSearchBar = ({ onSearch }) => {
   const { jobs, categories, companies } = useSelector((state) => state.jobs);
   
   const [query, setQuery] = useState('');
-  const [experienceValue, setExperienceValue] = useState('');
-  const [locationValue, setLocationValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeSuggestionField, setActiveSuggestionField] = useState('');
   const [searchHistory, setSearchHistory] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('searchHistory') || '[]');
@@ -28,7 +26,6 @@ const SmartSearchBar = ({ onSearch }) => {
   });
   
   const searchInputRef = useRef(null);
-  const locationInputRef = useRef(null);
   const suggestionRefs = useRef([]);
   const debounceRef = useRef(null);
   const containerRef = useRef(null);
@@ -191,45 +188,29 @@ const SmartSearchBar = ({ onSearch }) => {
   }, []);
 
   // Generate suggestions
-  const generateSuggestions = useCallback(async (searchQuery, fieldType) => {
+  const generateSuggestions = useCallback(async (searchQuery) => {
     if (!searchQuery || searchQuery.length < 1) {
-      // Show recent searches and popular suggestions for main search
-      if (fieldType === 'search') {
-        const recentSuggestions = searchHistory.slice(-3).map(item => ({
-          ...item,
-          isRecent: true,
-          score: 1.0
-        }));
-        
-        const popularSuggestions = [
-          ...jobData.jobTitles.slice(0, 3).map(item => ({ ...item, isPopular: true, score: 0.9 })),
-          ...jobData.companies.slice(0, 2).map(item => ({ ...item, isPopular: true, score: 0.9 })),
-          ...jobData.skills.slice(0, 2).map(item => ({ ...item, isPopular: true, score: 0.9 }))
-        ];
-        
-        return [...recentSuggestions, ...popularSuggestions].slice(0, 8);
-      }
-      return [];
+      // Show recent searches and popular suggestions
+      const recentSuggestions = searchHistory.slice(-3).map(item => ({
+        ...item,
+        isRecent: true,
+        score: 1.0
+      }));
+      
+      const popularSuggestions = [
+        ...jobData.jobTitles.slice(0, 3).map(item => ({ ...item, isPopular: true, score: 0.9 })),
+        ...jobData.companies.slice(0, 3).map(item => ({ ...item, isPopular: true, score: 0.9 })),
+        ...jobData.locations.slice(0, 2).map(item => ({ ...item, isPopular: true, score: 0.9 }))
+      ];
+      
+      return [...recentSuggestions, ...popularSuggestions].slice(0, 8);
     }
 
     const allSuggestions = [];
     const query = searchQuery.trim();
     
-    // Filter suggestions based on field type
-    let relevantData = [];
-    if (fieldType === 'location') {
-      relevantData = jobData.locations;
-    } else if (fieldType === 'search') {
-      relevantData = [
-        ...jobData.jobTitles,
-        ...jobData.skills,
-        ...jobData.companies,
-        ...jobData.categories
-      ];
-    }
-    
-    // Search in relevant categories
-    relevantData.forEach(item => {
+    // Search in all categories
+    Object.values(jobData).flat().forEach(item => {
       const score = fuzzyMatch(item.label, query);
       if (score > 0.3) {
         allSuggestions.push({
@@ -239,8 +220,8 @@ const SmartSearchBar = ({ onSearch }) => {
       }
     });
     
-    // If we have few results, try to search through job descriptions for main search
-    if (allSuggestions.length < 5 && query.length >= 3 && fieldType === 'search') {
+    // If we have few results, try to search through job descriptions
+    if (allSuggestions.length < 5 && query.length >= 3) {
       jobs.slice(0, 50).forEach(job => {
         if (job.description) {
           const descScore = fuzzyMatch(job.description, query);
@@ -266,7 +247,7 @@ const SmartSearchBar = ({ onSearch }) => {
   }, [jobData, fuzzyMatch, searchHistory, jobs]);
 
   // Debounced suggestion fetching
-  const debouncedFetchSuggestions = useCallback((query, fieldType) => {
+  const debouncedFetchSuggestions = useCallback((query) => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
@@ -274,7 +255,7 @@ const SmartSearchBar = ({ onSearch }) => {
     debounceRef.current = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const newSuggestions = await generateSuggestions(query, fieldType);
+        const newSuggestions = await generateSuggestions(query);
         setSuggestions(newSuggestions);
       } catch (error) {
         console.error('Error generating suggestions:', error);
@@ -285,30 +266,14 @@ const SmartSearchBar = ({ onSearch }) => {
     }, 200);
   }, [generateSuggestions]);
 
-  // Handle input changes
-  const handleSearchInputChange = useCallback((e) => {
+  // Handle input change
+  const handleInputChange = useCallback((e) => {
     const value = e.target.value;
     setQuery(value);
     setSelectedIndex(-1);
-    setActiveSuggestionField('search');
     
     if (value.length >= 0) {
-      debouncedFetchSuggestions(value, 'search');
-      setIsOpen(true);
-    } else {
-      setIsOpen(false);
-      setSuggestions([]);
-    }
-  }, [debouncedFetchSuggestions]);
-
-  const handleLocationInputChange = useCallback((e) => {
-    const value = e.target.value;
-    setLocationValue(value);
-    setSelectedIndex(-1);
-    setActiveSuggestionField('location');
-    
-    if (value.length >= 1) {
-      debouncedFetchSuggestions(value, 'location');
+      debouncedFetchSuggestions(value);
       setIsOpen(true);
     } else {
       setIsOpen(false);
@@ -318,12 +283,6 @@ const SmartSearchBar = ({ onSearch }) => {
 
   // Handle suggestion selection
   const handleSuggestionSelect = useCallback((suggestion) => {
-    if (activeSuggestionField === 'location') {
-      setLocationValue(suggestion.label);
-    } else {
-      setQuery(suggestion.label);
-    }
-
     const searchItem = {
       label: suggestion.label,
       type: suggestion.type,
@@ -341,48 +300,59 @@ const SmartSearchBar = ({ onSearch }) => {
     setSearchHistory(newHistory);
     localStorage.setItem('searchHistory', JSON.stringify(newHistory));
 
-    setIsOpen(false);
-    setSuggestions([]);
-    setSelectedIndex(-1);
-  }, [searchHistory, activeSuggestionField]);
-
-  // Handle search execution
-  const handleSearch = useCallback(() => {
     // Navigate to jobs page if not already there
     if (location.pathname !== '/jobs') {
       navigate('/jobs');
     }
 
-    // Apply the appropriate filters
-    if (query.trim()) {
-      dispatch(setSearchQuery(query.trim()));
+    // Apply the appropriate filter based on suggestion type
+    switch (suggestion.type) {
+      case 'location':
+        dispatch(setSelectedLocation([suggestion.label]));
+        break;
+      case 'company':
+        const company = companies.find(c => c.name === suggestion.label);
+        if (company) {
+          dispatch(setSelectedCompany([company.id]));
+        }
+        break;
+      case 'category':
+        const category = categories.find(c => c.name === suggestion.label);
+        if (category) {
+          dispatch(setSelectedCategory([category.id]));
+        }
+        break;
+      case 'experience':
+        dispatch(setSelectedExperience([suggestion.label]));
+        break;
+      case 'job':
+      case 'skill':
+      default:
+        dispatch(setSearchQuery(suggestion.label));
+        break;
     }
 
-    if (experienceValue) {
-      dispatch(setSelectedExperience([experienceValue]));
-    }
-
-    if (locationValue.trim()) {
-      dispatch(setSelectedLocation([locationValue.trim()]));
-    }
-
+    setQuery(suggestion.label);
     setIsOpen(false);
-    setSuggestions([]);
     
     if (onSearch) {
-      onSearch({ 
-        query: query.trim(), 
-        experience: experienceValue,
-        location: locationValue.trim()
-      });
+      onSearch({ query: suggestion.label, type: suggestion.type });
     }
-  }, [query, experienceValue, locationValue, location.pathname, navigate, dispatch, onSearch]);
+  }, [searchHistory, location.pathname, navigate, dispatch, companies, categories, onSearch]);
 
   // Keyboard navigation
   const handleKeyDown = useCallback((e) => {
     if (!isOpen || suggestions.length === 0) {
-      if (e.key === 'Enter' && (query.trim() || locationValue.trim())) {
-        handleSearch();
+      if (e.key === 'Enter' && query.trim()) {
+        // Direct search
+        dispatch(setSearchQuery(query.trim()));
+        if (location.pathname !== '/jobs') {
+          navigate('/jobs');
+        }
+        setIsOpen(false);
+        if (onSearch) {
+          onSearch({ query: query.trim(), type: 'search' });
+        }
       }
       return;
     }
@@ -404,16 +374,21 @@ const SmartSearchBar = ({ onSearch }) => {
         e.preventDefault();
         if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
           handleSuggestionSelect(suggestions[selectedIndex]);
-        } else {
-          handleSearch();
+        } else if (query.trim()) {
+          dispatch(setSearchQuery(query.trim()));
+          if (location.pathname !== '/jobs') {
+            navigate('/jobs');
+          }
+          setIsOpen(false);
         }
         break;
       case 'Escape':
         setIsOpen(false);
         setSelectedIndex(-1);
+        searchInputRef.current?.blur();
         break;
     }
-  }, [isOpen, suggestions, selectedIndex, query, locationValue, handleSuggestionSelect, handleSearch]);
+  }, [isOpen, suggestions, selectedIndex, query, handleSuggestionSelect, dispatch, location.pathname, navigate, onSearch]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -437,6 +412,13 @@ const SmartSearchBar = ({ onSearch }) => {
       });
     }
   }, [selectedIndex]);
+
+  // Initialize suggestions when component mounts
+  useEffect(() => {
+    if (searchInputRef.current === document.activeElement) {
+      debouncedFetchSuggestions('');
+    }
+  }, [debouncedFetchSuggestions]);
 
   const formatSuggestionText = (suggestion) => {
     if (suggestion.isRecent) {
@@ -480,7 +462,19 @@ const SmartSearchBar = ({ onSearch }) => {
   return (
     <div ref={containerRef} className="smart-search-container">
       <div className="search-input-wrapper">
-        {/* Search Icon */}
+        <input
+          ref={searchInputRef}
+          type="text"
+          value={query}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => {
+            debouncedFetchSuggestions(query);
+            setIsOpen(true);
+          }}
+          placeholder="Search jobs, companies, skills, locations..."
+          className="search-input"
+        />
         <div className="search-icon">
           {isLoading ? (
             <div className="search-spinner"></div>
@@ -491,71 +485,11 @@ const SmartSearchBar = ({ onSearch }) => {
             </svg>
           )}
         </div>
-        
-        {/* Skills/Jobs Input */}
-        <input
-          ref={searchInputRef}
-          type="text"
-          value={query}
-          onChange={handleSearchInputChange}
-          onKeyDown={handleKeyDown}
-          onFocus={() => {
-            setActiveSuggestionField('search');
-            debouncedFetchSuggestions(query, 'search');
-            setIsOpen(true);
-          }}
-          placeholder="Enter skills / designations / companies"
-          className="search-input"
-        />
-
-        {/* Experience Dropdown */}
-        <div className="experience-section">
-          <select 
-            className="experience-dropdown"
-            value={experienceValue}
-            onChange={(e) => setExperienceValue(e.target.value)}
-          >
-            <option value="">Select experience</option>
-            {experienceOptions.map((exp) => (
-              <option key={exp} value={exp}>{exp}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Location Input */}
-        <div className="location-section">
-          <input
-            ref={locationInputRef}
-            type="text"
-            value={locationValue}
-            onChange={handleLocationInputChange}
-            onKeyDown={handleKeyDown}
-            onFocus={() => {
-              setActiveSuggestionField('location');
-              if (locationValue) {
-                debouncedFetchSuggestions(locationValue, 'location');
-                setIsOpen(true);
-              }
-            }}
-            className="location-input"
-            placeholder="Enter location"
-          />
-        </div>
-
-        {/* Search Button */}
-        <button 
-          className="search-button" 
-          type="button"
-          onClick={handleSearch}
-        >
-          Search
-        </button>
       </div>
 
-      {/* Suggestions Dropdown */}
       {isOpen && (
         <div className="suggestions-dropdown">
-          {suggestions.length === 0 && !isLoading && (query.length > 0 || locationValue.length > 0) && (
+          {suggestions.length === 0 && !isLoading && query.length > 0 && (
             <div className="no-suggestions">
               <span className="no-suggestions-icon">🔍</span>
               <div className="no-suggestions-text">
@@ -583,125 +517,43 @@ const SmartSearchBar = ({ onSearch }) => {
         .smart-search-container {
           position: relative;
           width: 100%;
-          max-width: 800px;
-          margin: 0 auto;
+          max-width: 500px;
         }
 
         .search-input-wrapper {
-          display: flex;
-          align-items: center;
-          background: white;
-          border: 2px solid #e1e5e9;
-          border-radius: 25px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          transition: all 0.3s ease;
           position: relative;
+          width: 100%;
         }
 
-        .search-input-wrapper:focus-within {
-          border-color: #4285F4;
-          box-shadow: 0 6px 25px rgba(66, 133, 244, 0.2);
+        .search-input {
+          width: 100%;
+          padding: 12px 16px 12px 45px;
+          border: 2px solid #e1e5e9;
+          border-radius: 25px;
+          font-size: 16px;
+          background: white;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
 
         .search-icon {
           position: absolute;
-          left: 18px;
+          left: 15px;
           top: 50%;
           transform: translateY(-50%);
-          color: #4285F4;
-          z-index: 2;
-          transition: all 0.3s ease;
-        }
-
-        .search-input {
-          flex: 2;
-          border: none;
-          outline: none;
-          font-size: 16px;
-          padding: 18px 20px 18px 50px;
-          background: transparent;
-          color: #333;
-          font-weight: 400;
-        }
-
-        .search-input::placeholder {
-          color: #999;
-          font-weight: 400;
-        }
-
-        .experience-section {
-          position: relative;
-          border-left: 1px solid #e1e5e9;
-          min-width: 180px;
-        }
-
-        .experience-dropdown {
-          border: none;
-          outline: none;
-          font-size: 15px;
-          padding: 18px 40px 18px 20px;
-          background: transparent;
-          color: #666;
-          cursor: pointer;
-          width: 100%;
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-          background-position: right 15px center;
-          background-repeat: no-repeat;
-          background-size: 16px;
-        }
-
-        .experience-dropdown:focus {
-          color: #333;
-        }
-
-        .location-section {
-          position: relative;
-          border-left: 1px solid #e1e5e9;
-          min-width: 180px;
-        }
-
-        .location-input {
-          border: none;
-          outline: none;
-          font-size: 15px;
-          padding: 18px 20px;
-          background: transparent;
-          color: #333;
-          width: 100%;
-        }
-
-        .location-input::placeholder {
-          color: #999;
-        }
-
-        .search-button {
-          background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
-          color: white;
-          border: none;
-          padding: 18px 32px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          border-radius: 0 23px 23px 0;
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-
-        .search-button:hover {
-          background: linear-gradient(135deg, #3367D6 0%, #2E7D32 100%);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+          color: #6b7280;
         }
 
         .search-spinner {
           width: 20px;
           height: 20px;
-          border: 2px solid rgba(66, 133, 244, 0.2);
-          border-top: 2px solid #4285F4;
+          border: 2px solid #f3f4f6;
+          border-top: 2px solid #4f46e5;
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
@@ -713,27 +565,24 @@ const SmartSearchBar = ({ onSearch }) => {
 
         .suggestions-dropdown {
           position: absolute;
-          top: calc(100% + 8px);
+          top: 100%;
           left: 0;
           right: 0;
-          background: rgba(255, 255, 255, 0.98);
-          backdrop-filter: blur(25px);
+          background: white;
           border: 1px solid #e1e5e9;
-          border-radius: 15px;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
           max-height: 400px;
           overflow-y: auto;
           z-index: 1000;
+          margin-top: 4px;
         }
 
         .suggestion-item {
-          display: flex;
-          align-items: center;
-          padding: 15px 20px;
+          padding: 12px 16px;
           cursor: pointer;
-          border-bottom: 1px solid #f5f5f5;
-          transition: all 0.2s ease;
-          position: relative;
+          border-bottom: 1px solid #f3f4f6;
+          transition: background-color 0.15s ease;
         }
 
         .suggestion-item:last-child {
@@ -742,30 +591,29 @@ const SmartSearchBar = ({ onSearch }) => {
 
         .suggestion-item:hover,
         .suggestion-item.selected {
-          background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
-          border-left: 3px solid #4285F4;
+          background-color: #f8fafc;
         }
 
         .suggestion-content {
           display: flex;
           align-items: flex-start;
-          gap: 15px;
-          width: 100%;
+          gap: 12px;
+        }
+
+        .suggestion-content.recent {
+          opacity: 0.8;
         }
 
         .suggestion-content.popular .suggestion-label {
           color: #059669;
-          font-weight: 600;
+          font-weight: 500;
         }
 
         .suggestion-icon {
           font-size: 18px;
           line-height: 1;
           margin-top: 2px;
-          min-width: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          min-width: 18px;
         }
 
         .suggestion-text {
@@ -776,22 +624,20 @@ const SmartSearchBar = ({ onSearch }) => {
         .suggestion-label {
           font-weight: 500;
           color: #1f2937;
-          margin-bottom: 4px;
+          margin-bottom: 2px;
           line-height: 1.3;
-          font-size: 15px;
         }
 
         .suggestion-meta {
           font-size: 12px;
-          color: #666;
+          color: #6b7280;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          font-weight: 500;
         }
 
         .suggestion-description {
           font-size: 13px;
-          color: #666;
+          color: #6b7280;
           margin-top: 4px;
           line-height: 1.4;
         }
@@ -799,65 +645,39 @@ const SmartSearchBar = ({ onSearch }) => {
         .no-suggestions {
           display: flex;
           align-items: center;
-          gap: 15px;
-          padding: 30px 20px;
-          color: #666;
-          text-align: center;
-          justify-content: center;
+          gap: 12px;
+          padding: 20px 16px;
+          color: #6b7280;
         }
 
         .no-suggestions-icon {
-          font-size: 32px;
+          font-size: 24px;
           opacity: 0.5;
         }
 
         .no-suggestions-text div:first-child {
-          font-weight: 600;
+          font-weight: 500;
           color: #374151;
-          margin-bottom: 4px;
-          font-size: 16px;
+          margin-bottom: 2px;
         }
 
         .no-suggestions-tip {
-          font-size: 14px;
-          color: #666;
+          font-size: 13px;
         }
 
-        /* Mobile Responsive */
+        /* Mobile responsive */
         @media (max-width: 768px) {
-          .search-input-wrapper {
-            flex-direction: column;
-            border-radius: 15px;
-          }
-          
           .search-input {
-            padding: 16px 20px 16px 50px;
-            font-size: 16px;
-            border-bottom: 1px solid #e1e5e9;
+            font-size: 16px; /* Prevent zoom on iOS */
+            padding: 10px 14px 10px 40px;
           }
           
-          .experience-section,
-          .location-section {
-            border-left: none;
-            border-top: 1px solid #e1e5e9;
-            width: 100%;
-            min-width: unset;
+          .suggestions-dropdown {
+            max-height: 300px;
           }
           
-          .experience-dropdown,
-          .location-input {
-            padding: 16px 40px 16px 20px;
-            font-size: 16px;
-          }
-          
-          .search-button {
-            border-radius: 0 0 13px 13px;
-            width: 100%;
-            padding: 16px 32px;
-          }
-          
-          .search-icon {
-            left: 20px;
+          .suggestion-item {
+            padding: 10px 14px;
           }
         }
       `}</style>
