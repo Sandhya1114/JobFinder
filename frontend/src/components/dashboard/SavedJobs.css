@@ -216,15 +216,15 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--accent-blue) 100%);
+  /* background: linear-gradient(135deg, var(--primary-purple) 0%, var(--accent-blue) 100%); */
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .job-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-purple);
+  /* box-shadow: var(--shadow-xl); */
+  /* border-color: var(--primary-purple); */
 }
 
 .job-card:hover::before {
