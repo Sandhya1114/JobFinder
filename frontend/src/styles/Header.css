@@ -797,6 +797,806 @@ header.shrink .header-options a.active {
   flex: 0 0 auto;
   margin-left: 0;
 }
+
+/* Base header styles */
+header {
+  padding: 10px 0;
+  top: 0;
+  z-index: 100;
+  height: 12vh;
+  transition: all 0.3s ease-in-out;
+  backdrop-filter: blur(30px);
+}
+
+/* Sticky behavior enabled */
+header.sticky {
+  position: sticky;
+}
+
+/* Sticky disabled */
+header.non-sticky {
+  position: relative;
+}
+
+/* Shrinking on scroll */
+header.shrink {
+  padding: 5px 0;
+  height: 5.5vh;
+}
+
+/* Header container */
+.header-container {
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: auto;
+  background-color: rgba(255, 255, 255, 0.42);
+  border: 1px solid white;
+  border-radius: 35px;
+  padding: 0px 10px;
+  margin-top: 10px;
+  transition: all 0.5s ease-in-out;
+  position: relative;
+  gap: 20px; /* Add gap for better spacing */
+}
+
+/* Shrinked header container */
+header.shrink .header-container {
+  width: 55%;
+  height: 65px;
+}
+
+/* Desktop Navigation container */
+.header-options {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Navigation links container */
+.nav-links {
+  display: flex;
+  gap: 30px;
+}
+
+/* Navigation links */
+.header-options a {
+  margin: 0;
+  text-decoration: none;
+  color: black;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: monospace;
+  padding: 8px 16px;
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Active state for desktop navigation */
+.header-options a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Hover effect for non-active links */
+.header-options a:not(.active):hover {
+  background: rgba(103, 100, 82, 0.1);
+  color: #676452;
+  transform: translateY(-1px);
+}
+
+/* Shrinked nav links */
+header.shrink .header-options a {
+  font-size: 18px;
+  font-weight: 900;
+  padding: 6px 12px;
+}
+
+header.shrink .header-options a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+}
+
+/* Smart Search Bar Container in Header */
+.header-smart-search {
+  flex: 0 0 auto;
+  max-width: 400px;
+  min-width: 250px;
+  margin: 0 20px;
+}
+
+/* Ensure SmartSearchBar fits well in header */
+.header-smart-search .smart-search-container {
+  width: 100%;
+}
+
+.header-smart-search .search-input {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  font-size: 14px;
+  padding: 10px 14px 10px 40px;
+}
+
+.header-smart-search .search-input:focus {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2);
+}
+
+.header-smart-search .suggestions-dropdown {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Logo styles */
+.logo {
+  margin-left: 33px;
+  font-family: monospace;
+  font-size: 20px;
+  flex: 0 0 auto;
+}
+
+.logo span {
+  color: #5a5a58;
+}
+
+/* Desktop Account Section */
+.accounts-btn {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.accounts-btn button {
+  background: black;
+  color: white;
+  font-size: 17px;
+  border: none;
+  padding: 10px 35px;
+  margin: 0px 5px;
+  border-radius: 35px;
+  cursor: pointer;
+}
+
+/* User avatar + menu */
+.user-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  background-color: #020202;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 2rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-right: 10px;
+  box-shadow: rgba(7, 7, 7, 0.92) 2px 2px 5px;
+}
+
+/* User menu dropdown */
+.user-menu {
+  padding: 28px;
+  position: absolute;
+  top: 54px;
+  right: 12px;
+  background: rgba(247, 246, 246, 0.86);
+  color: black;
+  border: 1px solid #ffffff;
+  border-radius: 26px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-menu button {
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: black;
+}
+
+.user-menu button:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+/* Hamburger Menu Styles */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  width: 30px;
+  height: 24px;
+  justify-content: space-between;
+  margin-right: 20px;
+  flex: 0 0 auto;
+}
+
+.hamburger span {
+  width: 100%;
+  height: 3px;
+  background-color: black;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+/* Mobile Menu Overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.mobile-menu-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%);
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0;
+  overflow-y: auto;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-overlay.active .mobile-menu {
+  transform: translateX(0);
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 25px 20px;
+  border-bottom: 2px solid rgba(132, 36, 132, 0.1);
+  background: linear-gradient(135deg, rgba(132, 36, 132, 0.05) 0%, transparent 100%);
+}
+
+.mobile-logo h3 {
+  font-family: monospace;
+  font-size: 1.5rem;
+  margin: 0;
+  color: #000000;
+}
+
+.mobile-logo span {
+  color: #676452;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(132, 36, 132, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: rgb(132, 36, 132);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.close-btn:hover {
+  background: rgb(132, 36, 132);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.close-btn i {
+  transition: transform 0.3s ease;
+}
+
+/* Mobile Smart Search */
+.mobile-smart-search {
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(132, 36, 132, 0.1);
+}
+
+.mobile-smart-search .smart-search-container {
+  width: 100%;
+}
+
+.mobile-smart-search .search-input {
+  font-size: 16px; /* Prevent zoom on iOS */
+}
+
+.mobile-nav-links {
+  padding: 40px 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mobile-nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-decoration: none;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: monospace;
+  padding: 18px 20px;
+  border-radius: 16px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 2px solid transparent;
+}
+
+.mobile-nav-links a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(132, 36, 132, 0.1) 0%, rgba(132, 36, 132, 0.05) 100%);
+  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.mobile-nav-links a:hover::before {
+  left: 0;
+}
+
+.mobile-nav-links a:hover {
+  transform: translateX(10px);
+  border-color: rgba(132, 36, 132, 0.3);
+  color: rgb(132, 36, 132);
+}
+
+/* Active state for mobile navigation */
+.mobile-nav-links a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(103, 100, 82, 0.4);
+  transform: translateX(5px);
+}
+
+.mobile-nav-links a.active::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  left: 0;
+}
+
+.mobile-nav-links a.active .nav-icon {
+  color: white !important;
+  transform: scale(1.1);
+}
+
+/* Hover effect for non-active mobile links */
+.mobile-nav-links a:not(.active):hover::before {
+  left: 0;
+}
+
+.mobile-nav-links a:not(.active):hover {
+  transform: translateX(10px);
+  border-color: rgba(132, 36, 132, 0.3);
+  color: rgb(132, 36, 132);
+}
+
+.nav-icon {
+  font-size: 20px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+  position: relative;
+  color: rgb(132, 36, 132);
+  transition: all 0.3s ease;
+}
+
+.mobile-nav-links a:not(.active):hover .nav-icon {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.nav-text {
+  z-index: 1;
+  position: relative;
+}
+
+.mobile-account {
+  padding: 30px 25px;
+  border-top: 2px solid rgba(132, 36, 132, 0.1);
+  background: linear-gradient(135deg, rgba(132, 36, 132, 0.02) 0%, transparent 100%);
+  margin-top: auto;
+}
+
+.mobile-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.mobile-user-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgb(132, 36, 132) 0%, #8b2d8b 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 2rem;
+  text-transform: uppercase;
+  box-shadow: 
+    0 10px 30px rgba(132, 36, 132, 0.3),
+    0 4px 15px rgba(132, 36, 132, 0.2),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  border: 4px solid rgba(255, 255, 255, 0.9);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 
+      0 10px 30px rgba(132, 36, 132, 0.3),
+      0 4px 15px rgba(132, 36, 132, 0.2),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3),
+      0 0 0 0 rgba(132, 36, 132, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 10px 30px rgba(132, 36, 132, 0.3),
+      0 4px 15px rgba(132, 36, 132, 0.2),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3),
+      0 0 0 15px rgba(132, 36, 132, 0);
+  }
+}
+
+.user-email {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+  padding: 8px 16px;
+  background: rgba(132, 36, 132, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(132, 36, 132, 0.1);
+}
+
+.mobile-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.mobile-user-actions button,
+.auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.mobile-user-actions button::before,
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.mobile-user-actions button:hover,
+.auth-btn:hover {
+  background: linear-gradient(135deg, rgb(132, 36, 132) 0%, #8b2d8b 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(132, 36, 132, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.mobile-user-actions button:hover::before,
+.auth-btn:hover::before {
+  left: 100%;
+}
+
+.mobile-user-actions button:active,
+.auth-btn:active {
+  transform: translateY(-1px);
+}
+
+.mobile-user-actions button i,
+.auth-btn i {
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.mobile-user-actions button:hover i,
+.auth-btn:hover i {
+  transform: scale(1.1);
+}
+
+/* Tablet Styles */
+@media screen and (max-width: 1024px) {
+  .header-container {
+    width: 90%;
+    padding: 0px 15px;
+  }
+  
+  header.shrink .header-container {
+    width: 70%;
+  }
+  
+  .header-options {
+    gap: 20px;
+  }
+  
+  .nav-links {
+    gap: 20px;
+  }
+  
+  .header-options a {
+    font-size: 18px;
+  }
+  
+  header.shrink .header-options a {
+    font-size: 16px;
+  }
+  
+  .logo {
+    margin-left: 20px;
+    font-size: 18px;
+  }
+  
+  .accounts-btn button {
+    padding: 8px 25px;
+    font-size: 15px;
+  }
+  
+  .user-avatar {
+    width: 45px;
+    height: 45px;
+    font-size: 1.8rem;
+  }
+  
+  .header-smart-search {
+    max-width: 300px;
+    min-width: 200px;
+    margin: 0 15px;
+  }
+}
+
+/* Mobile Styles */
+@media screen and (max-width: 768px) {
+  header {
+    height: 10vh;
+    z-index: 10001;
+  }
+  
+  header.shrink {
+    height: 8vh;
+  }
+  
+  .header-container {
+    width: 90%;
+    height: 8vh;
+    padding: 0px 20px;
+    margin-top: 5px;
+  }
+  
+  header.shrink .header-container {
+    width: 85%;
+    height: 7vh;
+  }
+  
+  /* Hide desktop navigation and account */
+  .desktop-nav,
+  .desktop-account {
+    display: none;
+  }
+  
+  /* Show hamburger menu */
+  .hamburger {
+    display: flex;
+  }
+  
+  .logo {
+    margin-left: 10px;
+    font-size: 16px;
+  }
+  
+  .logo h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media screen and (max-width: 480px) {
+  .header-container {
+    width: 90%;
+    padding: 0px 15px;
+    border-radius: 25px;
+  }
+  
+  .logo {
+    margin-left: 5px;
+    font-size: 14px;
+  }
+  
+  .logo h3 {
+    font-size: 1rem;
+  }
+  
+  .hamburger {
+    width: 25px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  .hamburger span {
+    height: 2px;
+  }
+  
+  .mobile-menu {
+    width: 280px;
+  }
+  
+  .mobile-nav-links a {
+    font-size: 16px;
+    padding: 15px 18px;
+  }
+  
+  .mobile-user-actions button,
+  .mobile-account > button {
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+  
+  .mobile-smart-search {
+    padding: 15px 20px;
+  }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 360px) {
+  .header-container {
+    padding: 0px 10px;
+  }
+  
+  .logo h3 {
+    font-size: 0.9rem;
+  }
+  
+  .hamburger {
+    width: 22px;
+    height: 18px;
+    margin-right: 5px;
+  }
+  
+  .mobile-menu {
+    width: 260px;
+  }
+}
+
+/* Jobs page specific styles */
+.jobs-page .header-options.desktop-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  max-width: none;
+}
+
+.jobs-page .nav-links {
+  gap: 20px;
+}
+
+.jobs-page .header-options.desktop-nav a {
+  font-size: 18px;
+}
+
+.jobs-page .header-options.desktop-nav a.active {
+  background: linear-gradient(to right, #000000, rgb(144, 142, 146));
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+}
+
+/* Animation for active links */
+@keyframes activeGlow {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(103, 100, 82, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(103, 100, 82, 0.5);
+  }
+}
+
+.header-options a.active,
+.mobile-nav-links a.active {
+  animation: activeGlow 2s infinite;
+}
+
+/* Ensure proper spacing for jobs page header */
+.jobs-page .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+
+.jobs-page .logo {
+  flex: 0 0 auto;
+}
+
+.jobs-page .accounts-btn.desktop-account {
+  flex: 0 0 auto;
+  margin-left: 0;
+}
 /* Add these styles to your existing Header.css file */
 
 /* Header layout adjustments for smart search */
@@ -979,7 +1779,7 @@ header.shrink .header-options a.active {
 
 .smart-search-container .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: #4f46e5;
+  border-color: #000000;
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
 }
 
@@ -1019,7 +1819,7 @@ header.shrink .header-options a.active {
 /* Suggestion categories styling */
 .smart-search-container .suggestion-meta {
   background: rgba(79, 70, 229, 0.1);
-  color: #4f46e5;
+  color: #000000;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 10px;
@@ -1030,10 +1830,20 @@ header.shrink .header-options a.active {
 
 .smart-search-container .suggestion-content.recent .suggestion-meta {
   background: rgba(132, 36, 132, 0.1);
-  color: rgb(132, 36, 132);
+  color: rgb(0, 0, 0);
 }
 
 .smart-search-container .suggestion-content.popular .suggestion-meta {
   background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  color: #000000;
+}
+.search-input-wrapper .search-input:focus-visible{
+  border: none;
+}
+.search-input-wrapper .search-input:active{
+  border: none;
+}
+.search-input-wrapper input:focus-visible{
+  border: none;
+  outline:none
 }
