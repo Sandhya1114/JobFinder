@@ -1374,6 +1374,833 @@
 // };
 
 // export default SmartSearchBar;
+// import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { useNavigate, useLocation } from 'react-router-dom';
+// import { setSearchQuery, setSelectedExperience, setSelectedLocation, setSelectedCompany, setSelectedCategory } from '../redux/store';
+
+// const SmartSearchBar = ({ onSearch }) => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+  
+//   const { jobs, categories, companies } = useSelector((state) => state.jobs);
+  
+//   const [isExpanded, setIsExpanded] = useState(false);
+//   const [activeDropdown, setActiveDropdown] = useState(null);
+//   const [searchValues, setSearchValues] = useState({
+//     jobSearch: '',
+//     experience: '',
+//     location: ''
+//   });
+//   const [suggestions, setSuggestions] = useState({
+//     jobSearch: [], // Changed from 'jobs' to 'jobSearch'
+//     experience: [],
+//     location: []
+//   });
+//   const [isLoading, setIsLoading] = useState(false);
+  
+//   const searchRefs = {
+//     jobSearch: useRef(null),
+//     experience: useRef(null),
+//     location: useRef(null),
+//     overlay: useRef(null)
+//   };
+  
+//   const debounceRef = useRef(null);
+
+//   // Experience options
+//   const experienceOptions = [
+//     { label: 'Fresher (less than 1 year)', value: 'Fresher' },
+//     { label: '1 year', value: '1 yr' },
+//     { label: '2 years', value: '2 yrs' },
+//     { label: '3 years', value: '3 yrs' },
+//     { label: '4 years', value: '4 yrs' },
+//     { label: '5 years', value: '5 yrs' },
+//     { label: 'Mid-level', value: 'Mid-level' },
+//     { label: 'Senior', value: 'Senior' }
+//   ];
+
+//   // Extract search data from jobs
+//   const searchData = useMemo(() => {
+//     const jobTitles = new Set();
+//     const locations = new Set();
+//     const companyNames = new Set();
+//     const skills = new Set();
+
+//     // Add some default popular job roles and skills
+//     const defaultJobRoles = [
+//       'Frontend Developer', 'Backend Developer', 'Full Stack Developer',
+//       'Software Engineer', 'Web Developer', 'Mobile Developer',
+//       'Data Scientist', 'Machine Learning Engineer', 'DevOps Engineer',
+//       'Product Manager', 'UI/UX Designer', 'Business Analyst',
+//       'Quality Assurance Engineer', 'Database Administrator',
+//       'Cloud Architect', 'Cybersecurity Specialist'
+//     ];
+
+//     const defaultSkills = [
+//       'React', 'JavaScript', 'Python', 'Node.js', 'TypeScript', 'AWS', 'Docker',
+//       'Java', 'Angular', 'Vue', 'PHP', 'Ruby', 'Go', 'MongoDB', 'PostgreSQL',
+//       'MySQL', 'Git', 'Jenkins', 'Kubernetes', 'Machine Learning', 'AI',
+//       'Data Science', 'Frontend', 'Backend', 'Full Stack', 'Mobile', 'iOS', 'Android',
+//       'HTML', 'CSS', 'SQL', 'REST API', 'GraphQL', 'Firebase', 'Redis'
+//     ];
+
+//     // Add default job roles
+//     defaultJobRoles.forEach(role => jobTitles.add(role));
+//     defaultSkills.forEach(skill => skills.add(skill));
+
+//     jobs.forEach(job => {
+//       // Extract job titles
+//       if (job.title) {
+//         jobTitles.add(job.title);
+//         // Also add variations of the job title
+//         const titleWords = job.title.split(' ');
+//         titleWords.forEach(word => {
+//           if (word.length > 2) {
+//             jobTitles.add(word);
+//           }
+//         });
+//       }
+
+//       // Extract locations
+//       if (job.location) {
+//         const locationParts = job.location.split(',').map(l => l.trim());
+//         locationParts.forEach(part => {
+//           if (part && part.length > 2) {
+//             locations.add(part);
+//           }
+//         });
+        
+//         // Add "Remote" if mentioned
+//         if (job.location.toLowerCase().includes('remote')) {
+//           locations.add('Remote');
+//         }
+//       }
+
+//       // Extract company names
+//       if (job.company) {
+//         companyNames.add(job.company);
+//       }
+
+//       // Extract skills from description
+//       if (job.description) {
+//         const descLower = job.description.toLowerCase();
+//         defaultSkills.forEach(skill => {
+//           if (descLower.includes(skill.toLowerCase())) {
+//             skills.add(skill);
+//           }
+//         });
+        
+//         // Extract common tech terms from description
+//         const techTerms = job.description.match(/\b[A-Z][a-z]*(?:\.[a-z]+|\+\+|#|\s+[A-Z][a-z]*)*\b/g) || [];
+//         techTerms.forEach(term => {
+//           if (term.length > 2 && term.length < 20) {
+//             skills.add(term);
+//           }
+//         });
+//       }
+//     });
+
+//     // Add companies from companies array
+//     companies.forEach(company => {
+//       if (company.name) {
+//         companyNames.add(company.name);
+//       }
+//     });
+
+//     // Add some default popular locations
+//     const defaultLocations = [
+//       'Remote', 'New York', 'San Francisco', 'Los Angeles', 'Chicago',
+//       'Boston', 'Seattle', 'Austin', 'Denver', 'Atlanta',
+//       'London', 'Berlin', 'Amsterdam', 'Toronto', 'Mumbai',
+//       'Bangalore', 'Delhi', 'Hyderabad', 'Pune', 'Chennai'
+//     ];
+//     defaultLocations.forEach(loc => locations.add(loc));
+
+//     return {
+//       jobTitles: Array.from(jobTitles).sort(),
+//       locations: Array.from(locations).sort(),
+//       companies: Array.from(companyNames).sort(),
+//       skills: Array.from(skills).sort()
+//     };
+//   }, [jobs, companies]);
+
+//   // Improved fuzzy search function
+//   const fuzzySearch = useCallback((items, query, limit = 8) => {
+//     if (!query || query.length < 1) return items.slice(0, limit);
+    
+//     const queryLower = query.toLowerCase().trim();
+    
+//     return items
+//       .map(item => {
+//         const itemLower = item.toLowerCase();
+//         let score = 0;
+        
+//         // Exact match
+//         if (itemLower === queryLower) score = 100;
+//         // Starts with query
+//         else if (itemLower.startsWith(queryLower)) score = 90;
+//         // Contains query at word boundary
+//         else if (new RegExp(`\\b${queryLower}`, 'i').test(item)) score = 80;
+//         // Contains query anywhere
+//         else if (itemLower.includes(queryLower)) score = 70;
+//         // Fuzzy matching - check if all characters of query exist in order
+//         else {
+//           let queryIndex = 0;
+//           for (let i = 0; i < itemLower.length && queryIndex < queryLower.length; i++) {
+//             if (itemLower[i] === queryLower[queryIndex]) {
+//               queryIndex++;
+//             }
+//           }
+//           if (queryIndex === queryLower.length) score = 50;
+//         }
+        
+//         return score > 0 ? { item, score } : null;
+//       })
+//       .filter(Boolean)
+//       .sort((a, b) => b.score - a.score)
+//       .slice(0, limit)
+//       .map(({ item }) => item);
+//   }, []);
+
+//   // Generate suggestions with improved logic
+//   const generateSuggestions = useCallback((type, query) => {
+//     switch (type) {
+//       case 'jobSearch': {
+//         const jobSuggestions = [];
+//         const queryLower = query.toLowerCase().trim();
+        
+//         if (queryLower.length === 0) {
+//           // Show popular job roles when no query
+//           jobSuggestions.push(
+//             ...searchData.jobTitles.slice(0, 5),
+//             ...searchData.skills.slice(0, 3)
+//           );
+//         } else {
+//           // Search in job titles first (higher priority)
+//           const titleMatches = fuzzySearch(searchData.jobTitles, query, 4);
+//           const skillMatches = fuzzySearch(searchData.skills, query, 2);
+//           const companyMatches = fuzzySearch(searchData.companies, query, 2);
+          
+//           jobSuggestions.push(...titleMatches, ...skillMatches, ...companyMatches);
+//         }
+        
+//         // Remove duplicates and limit results
+//         return [...new Set(jobSuggestions)].slice(0, 8);
+//       }
+      
+//       case 'location': {
+//         if (!query || query.length === 0) {
+//           return searchData.locations.slice(0, 8);
+//         }
+//         return fuzzySearch(searchData.locations, query, 8);
+//       }
+      
+//       case 'experience': {
+//         if (!query || query.length === 0) {
+//           return experienceOptions;
+//         }
+//         return experienceOptions.filter(exp => 
+//           exp.label.toLowerCase().includes(query.toLowerCase())
+//         ).slice(0, 8);
+//       }
+      
+//       default:
+//         return [];
+//     }
+//   }, [searchData, fuzzySearch]);
+
+//   // Debounced suggestion update
+//   const updateSuggestions = useCallback((type, query) => {
+//     if (debounceRef.current) {
+//       clearTimeout(debounceRef.current);
+//     }
+    
+//     debounceRef.current = setTimeout(() => {
+//       const newSuggestions = generateSuggestions(type, query);
+//       setSuggestions(prev => ({
+//         ...prev,
+//         [type]: newSuggestions
+//       }));
+//     }, 150); // Reduced debounce time for better responsiveness
+//   }, [generateSuggestions]);
+
+//   // Handle input change
+//   const handleInputChange = useCallback((type, value) => {
+//     setSearchValues(prev => ({
+//       ...prev,
+//       [type]: value
+//     }));
+    
+//     // Always update suggestions for all types
+//     updateSuggestions(type, value);
+//   }, [updateSuggestions]);
+
+//   // Handle dropdown focus
+//   const handleDropdownFocus = useCallback((type) => {
+//     setActiveDropdown(type);
+//     // Generate initial suggestions when focused
+//     updateSuggestions(type, searchValues[type]);
+//   }, [searchValues, updateSuggestions]);
+
+//   // Handle suggestion click
+//   const handleSuggestionClick = useCallback((type, value) => {
+//     if (type === 'experience') {
+//       const exp = experienceOptions.find(e => e.label === value || e.value === value);
+//       setSearchValues(prev => ({
+//         ...prev,
+//         experience: exp ? exp.label : value
+//       }));
+//     } else {
+//       setSearchValues(prev => ({
+//         ...prev,
+//         [type]: value
+//       }));
+//     }
+//     setActiveDropdown(null);
+//   }, []);
+
+//   // Handle search
+//   const handleSearch = useCallback(() => {
+//     const { jobSearch, experience, location } = searchValues;
+    
+//     // Navigate to jobs page if not already there
+//     if (location.pathname !== '/jobs') {
+//       navigate('/jobs');
+//     }
+
+//     // Apply filters
+//     if (jobSearch.trim()) {
+//       dispatch(setSearchQuery(jobSearch.trim()));
+//     }
+    
+//     if (experience) {
+//       const exp = experienceOptions.find(e => e.label === experience);
+//       dispatch(setSelectedExperience([exp ? exp.value : experience]));
+//     }
+    
+//     if (location.trim()) {
+//       dispatch(setSelectedLocation([location.trim()]));
+//     }
+
+//     // Close overlay
+//     setIsExpanded(false);
+//     setActiveDropdown(null);
+    
+//     if (onSearch) {
+//       onSearch({ jobSearch, experience, location });
+//     }
+//   }, [searchValues, dispatch, navigate, location.pathname, onSearch]);
+
+//   // Handle escape key
+//   useEffect(() => {
+//     const handleEscape = (e) => {
+//       if (e.key === 'Escape') {
+//         setIsExpanded(false);
+//         setActiveDropdown(null);
+//       }
+//     };
+
+//     if (isExpanded) {
+//       document.addEventListener('keydown', handleEscape);
+//       document.body.style.overflow = 'hidden';
+//     } else {
+//       document.body.style.overflow = '';
+//     }
+
+//     return () => {
+//       document.removeEventListener('keydown', handleEscape);
+//       document.body.style.overflow = '';
+//     };
+//   }, [isExpanded]);
+
+//   // Handle click outside
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (searchRefs.overlay.current && !searchRefs.overlay.current.contains(event.target)) {
+//         setActiveDropdown(null);
+//       }
+//     };
+
+//     document.addEventListener('mousedown', handleClickOutside);
+//     return () => document.removeEventListener('mousedown', handleClickOutside);
+//   }, []);
+
+//   // Handle enter key in search
+//   const handleKeyDown = useCallback((e, type) => {
+//     if (e.key === 'Enter') {
+//       if (type === 'jobSearch' || (type === 'location' && !activeDropdown)) {
+//         handleSearch();
+//       }
+//     }
+//   }, [handleSearch, activeDropdown]);
+
+//   return (
+//     <>
+//       {/* Compact Search Button */}
+//       <div className="search-compact-btn" onClick={() => setIsExpanded(true)}>
+//         <i className="fas fa-search"></i>
+//       </div>
+
+//       {/* Search Overlay Modal */}
+//       {isExpanded && (
+//         <div className="search-overlay-modal">
+//           <div className="search-overlay-backdrop" onClick={() => setIsExpanded(false)} />
+          
+//           <div ref={searchRefs.overlay} className="search-overlay-content">
+//             <div className="search-modal-header">
+//               <h3>Find your dream job</h3>
+//               <button 
+//                 className="search-close-btn"
+//                 onClick={() => setIsExpanded(false)}
+//               >
+//                 <i className="fas fa-times"></i>
+//               </button>
+//             </div>
+
+//             <div className="search-form-container">
+//               {/* Job Search Input */}
+//               <div className="search-field-group">
+//                 <div className="search-input-wrapper">
+//                   <i className="fas fa-search search-input-icon"></i>
+//                   <input
+//                     ref={searchRefs.jobSearch}
+//                     type="text"
+//                     placeholder="Enter skills / designations / companies"
+//                     value={searchValues.jobSearch}
+//                     onChange={(e) => handleInputChange('jobSearch', e.target.value)}
+//                     onFocus={() => handleDropdownFocus('jobSearch')}
+//                     onKeyDown={(e) => handleKeyDown(e, 'jobSearch')}
+//                     className="search-input"
+//                   />
+//                 </div>
+                
+//                 {/* Job Search Suggestions */}
+//                 {activeDropdown === 'jobSearch' && suggestions.jobSearch && suggestions.jobSearch.length > 0 && (
+//                   <div className="suggestions-dropdown">
+//                     {suggestions.jobSearch.map((suggestion, index) => (
+//                       <div
+//                         key={index}
+//                         className="suggestion-item"
+//                         onClick={() => handleSuggestionClick('jobSearch', suggestion)}
+//                       >
+//                         <i className="fas fa-briefcase suggestion-icon"></i>
+//                         <span>{suggestion}</span>
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+
+//               <div className="search-separator"></div>
+
+//               {/* Experience Dropdown */}
+//               <div className="search-field-group">
+//                 <div className="search-input-wrapper">
+//                   <i className="fas fa-user-tie search-input-icon"></i>
+//                   <input
+//                     ref={searchRefs.experience}
+//                     type="text"
+//                     placeholder="Select experience"
+//                     value={searchValues.experience}
+//                     onChange={(e) => handleInputChange('experience', e.target.value)}
+//                     onFocus={() => handleDropdownFocus('experience')}
+//                     className="search-input"
+//                     readOnly
+//                   />
+//                   <i className="fas fa-chevron-down dropdown-arrow"></i>
+//                 </div>
+                
+//                 {/* Experience Suggestions */}
+//                 {activeDropdown === 'experience' && (
+//                   <div className="suggestions-dropdown">
+//                     {suggestions.experience.map((exp, index) => (
+//                       <div
+//                         key={index}
+//                         className="suggestion-item"
+//                         onClick={() => handleSuggestionClick('experience', exp.label || exp)}
+//                       >
+//                         <i className="fas fa-chart-line suggestion-icon"></i>
+//                         <span>{exp.label || exp}</span>
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+
+//               <div className="search-separator"></div>
+
+//               {/* Location Input */}
+//               <div className="search-field-group">
+//                 <div className="search-input-wrapper">
+//                   <i className="fas fa-map-marker-alt search-input-icon"></i>
+//                   <input
+//                     ref={searchRefs.location}
+//                     type="text"
+//                     placeholder="Enter location"
+//                     value={searchValues.location}
+//                     onChange={(e) => handleInputChange('location', e.target.value)}
+//                     onFocus={() => handleDropdownFocus('location')}
+//                     onKeyDown={(e) => handleKeyDown(e, 'location')}
+//                     className="search-input"
+//                   />
+//                 </div>
+                
+//                 {/* Location Suggestions */}
+//                 {activeDropdown === 'location' && suggestions.location.length > 0 && (
+//                   <div className="suggestions-dropdown">
+//                     {suggestions.location.map((suggestion, index) => (
+//                       <div
+//                         key={index}
+//                         className="suggestion-item"
+//                         onClick={() => handleSuggestionClick('location', suggestion)}
+//                       >
+//                         <i className="fas fa-map-marker-alt suggestion-icon"></i>
+//                         <span>{suggestion}</span>
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+
+//               {/* Search Button */}
+//               <button 
+//                 className="search-submit-btn"
+//                 onClick={handleSearch}
+//               >
+//                 <i className="fas fa-search"></i>
+//                 Search
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <style jsx>{`
+//         .search-compact-btn {
+//           width: 40px;
+//           height: 40px;
+//           background: rgba(255, 255, 255, 0.9);
+//           border: 2px solid rgba(255, 255, 255, 0.5);
+//           border-radius: 50%;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           cursor: pointer;
+//           transition: all 0.3s ease;
+//           color: #000000ff;
+//           font-size: 16px;
+//           backdrop-filter: blur(10px);
+//           box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+//         }
+
+//         .search-compact-btn:hover {
+//           background: #000000ff;
+//           color: white;
+//           transform: scale(1.1);
+//           box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
+//         }
+
+//         .search-overlay-modal {
+//           position: fixed;
+//           top: 0;
+//           left: 0;
+//           width: 100vw;
+//           height: 100vh;
+//           z-index: 10000;
+//           display: flex;
+//           align-items: flex-start;
+//           justify-content: center;
+//           padding-top: 60px;
+//         }
+
+//         .search-overlay-backdrop {
+//           position: absolute;
+//           top: 0;
+//           left: 0;
+//           width: 100%;
+//           height: 100%;
+//           background: rgba(0, 0, 0, 0.5);
+//           backdrop-filter: blur(5px);
+//         }
+
+//         .search-overlay-content {
+//           position: relative;
+//           width: 100%;
+//           max-width: 900px;
+//           margin: 0 20px;
+//           background: white;
+//           border-radius: 16px;
+//           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+//           animation: slideDown 0.3s ease-out;
+//         }
+
+//         @keyframes slideDown {
+//           from {
+//             opacity: 0;
+//             transform: translateY(-50px);
+//           }
+//           to {
+//             opacity: 1;
+//             transform: translateY(0);
+//           }
+//         }
+
+//         .search-modal-header {
+//           display: flex;
+//           justify-content: space-between;
+//           align-items: center;
+//           padding: 24px 32px;
+//           border-bottom: 1px solid #e5e7eb;
+//         }
+
+//         .search-modal-header h3 {
+//           margin: 0;
+//           font-size: 24px;
+//           font-weight: 600;
+//           color: #1f2937;
+//         }
+
+//         .search-close-btn {
+//           background: none;
+//           border: none;
+//           width: 32px;
+//           height: 32px;
+//           border-radius: 50%;
+//           display: flex;
+//           align-items: center;
+//           justify-content: center;
+//           cursor: pointer;
+//           color: #6b7280;
+//           transition: all 0.2s ease;
+//         }
+
+//         .search-close-btn:hover {
+//           background: #f3f4f6;
+//           color: #374151;
+//         }
+
+//         .search-form-container {
+//           display: flex;
+//           align-items: stretch;
+//           padding: 32px;
+//           gap: 0;
+//         }
+
+//         .search-field-group {
+//           position: relative;
+//           flex: 1;
+//           min-width: 0;
+//         }
+
+//         .search-field-group:first-child {
+//           flex: 2;
+//         }
+
+//         .search-input-wrapper {
+//           position: relative;
+//           display: flex;
+//           align-items: center;
+//           height: 56px;
+//         }
+
+//         .search-input {
+//           width: 100%;
+//           height: 100%;
+//           border: none;
+//           outline: none;
+//           font-size: 16px;
+//           padding: 0 48px 0 48px;
+//           color: #374151;
+//           background: transparent;
+//         }
+
+//         .search-input::placeholder {
+//           color: #9ca3af;
+//           font-weight: 400;
+//         }
+
+//         .search-input:focus::placeholder {
+//           opacity: 0.7;
+//         }
+
+//         .search-input-icon {
+//           position: absolute;
+//           left: 16px;
+//           color: #6b7280;
+//           font-size: 16px;
+//           z-index: 1;
+//         }
+
+//         .dropdown-arrow {
+//           position: absolute;
+//           right: 16px;
+//           color: #6b7280;
+//           font-size: 12px;
+//           pointer-events: none;
+//         }
+
+//         .search-separator {
+//           width: 1px;
+//           background: #e5e7eb;
+//           margin: 8px 0;
+//           flex-shrink: 0;
+//         }
+
+//         .search-submit-btn {
+//           background: #000000ff;
+//           color: white;
+//           border: none;
+//           border-radius: 8px;
+//           padding: 0 32px;
+//           font-size: 16px;
+//           font-weight: 600;
+//           cursor: pointer;
+//           transition: all 0.2s ease;
+//           display: flex;
+//           align-items: center;
+//           gap: 8px;
+//           margin-left: 16px;
+//           flex-shrink: 0;
+//           min-width: 120px;
+//           justify-content: center;
+//         }
+
+//         .search-submit-btn:hover {
+//           background: #131313ff;
+//           transform: translateY(-1px);
+//           box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+//         }
+
+//         .suggestions-dropdown {
+//           position: absolute;
+//           top: 100%;
+//           left: 0;
+//           right: 0;
+//           background: white;
+//           border: 1px solid #e5e7eb;
+//           border-radius: 8px;
+//           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+//           max-height: 320px;
+//           overflow-y: auto;
+//           z-index: 10001;
+//           margin-top: 4px;
+//         }
+
+//         .suggestion-item {
+//           display: flex;
+//           align-items: center;
+//           gap: 12px;
+//           padding: 12px 16px;
+//           cursor: pointer;
+//           transition: background-color 0.15s ease;
+//           border-bottom: 1px solid #f3f4f6;
+//         }
+
+//         .suggestion-item:last-child {
+//           border-bottom: none;
+//         }
+
+//         .suggestion-item:hover {
+//           background: #f8fafc;
+//         }
+
+//         .suggestion-icon {
+//           color: #6b7280;
+//           font-size: 14px;
+//           width: 16px;
+//           flex-shrink: 0;
+//         }
+
+//         .suggestion-item span {
+//           font-size: 14px;
+//           color: #374151;
+//         }
+
+//         /* Mobile Responsive */
+//         @media (max-width: 768px) {
+//           .search-overlay-content {
+//             margin: 0 10px;
+//             border-radius: 12px;
+//           }
+
+//           .search-modal-header {
+//             padding: 20px 24px;
+//           }
+
+//           .search-modal-header h3 {
+//             font-size: 20px;
+//           }
+
+//           .search-form-container {
+//             flex-direction: column;
+//             padding: 24px;
+//             gap: 16px;
+//           }
+
+//           .search-field-group {
+//             flex: none;
+//           }
+
+//           .search-field-group:first-child {
+//             flex: none;
+//           }
+
+//           .search-separator {
+//             height: 1px;
+//             width: 100%;
+//             margin: 0;
+//           }
+
+//           .search-input {
+//             font-size: 16px;
+//             height: 48px;
+//           }
+
+//           .search-submit-btn {
+//             margin-left: 0;
+//             min-width: 100%;
+//             height: 48px;
+//           }
+
+//           .suggestions-dropdown {
+//             max-height: 240px;
+//           }
+//         }
+
+//         /* Focus styles */
+//         .search-input-wrapper:focus-within {
+//           background: rgba(74, 144, 226, 0.05);
+//         }
+
+//         .search-input-wrapper:focus-within .search-input-icon {
+//           color: #000000ff;
+//         }
+
+//         /* Scrollbar styles */
+//         .suggestions-dropdown::-webkit-scrollbar {
+//           width: 6px;
+//         }
+
+//         .suggestions-dropdown::-webkit-scrollbar-track {
+//           background: #f1f5f9;
+//         }
+
+//         .suggestions-dropdown::-webkit-scrollbar-thumb {
+//           background: #cbd5e1;
+//           border-radius: 3px;
+//         }
+
+//         .suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+//           background: #94a3b8;
+//         }
+//       `}</style>
+//     </>
+//   );
+// };
+
+// export default SmartSearchBar;
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -1384,7 +2211,7 @@ const SmartSearchBar = ({ onSearch }) => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  const { jobs, categories, companies } = useSelector((state) => state.jobs);
+  const { jobs, categories, companies, filters } = useSelector((state) => state.jobs);
   
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -1394,7 +2221,7 @@ const SmartSearchBar = ({ onSearch }) => {
     location: ''
   });
   const [suggestions, setSuggestions] = useState({
-    jobSearch: [], // Changed from 'jobs' to 'jobSearch'
+    jobSearch: [],
     experience: [],
     location: []
   });
@@ -1420,6 +2247,17 @@ const SmartSearchBar = ({ onSearch }) => {
     { label: 'Mid-level', value: 'Mid-level' },
     { label: 'Senior', value: 'Senior' }
   ];
+
+  // FIXED: Sync local search values with Redux filters when they change
+  useEffect(() => {
+    setSearchValues(prev => ({
+      ...prev,
+      jobSearch: filters.searchQuery || '',
+      location: filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '',
+      experience: filters.selectedExperience?.length > 0 ? 
+        experienceOptions.find(exp => exp.value === filters.selectedExperience[0])?.label || filters.selectedExperience[0] : ''
+    }));
+  }, [filters.searchQuery, filters.selectedLocation, filters.selectedExperience]);
 
   // Extract search data from jobs
   const searchData = useMemo(() => {
@@ -1479,8 +2317,10 @@ const SmartSearchBar = ({ onSearch }) => {
       }
 
       // Extract company names
-      if (job.company) {
-        companyNames.add(job.company);
+      if (job.companies?.name) {
+        companyNames.add(job.companies.name);
+      } else if (job.company?.name) {
+        companyNames.add(job.company.name);
       }
 
       // Extract skills from description
@@ -1661,7 +2501,7 @@ const SmartSearchBar = ({ onSearch }) => {
     setActiveDropdown(null);
   }, []);
 
-  // Handle search
+  // FIXED: Handle search - preserve existing filters while applying search
   const handleSearch = useCallback(() => {
     const { jobSearch, experience, location } = searchValues;
     
@@ -1670,18 +2510,27 @@ const SmartSearchBar = ({ onSearch }) => {
       navigate('/jobs');
     }
 
-    // Apply filters
+    // FIXED: Apply search filters without overriding existing filters
     if (jobSearch.trim()) {
       dispatch(setSearchQuery(jobSearch.trim()));
     }
     
     if (experience) {
       const exp = experienceOptions.find(e => e.label === experience);
-      dispatch(setSelectedExperience([exp ? exp.value : experience]));
+      // Add to existing experience filters instead of replacing
+      const currentExperience = filters.selectedExperience || [];
+      const newExperience = exp ? exp.value : experience;
+      if (!currentExperience.includes(newExperience)) {
+        dispatch(setSelectedExperience([...currentExperience, newExperience]));
+      }
     }
     
     if (location.trim()) {
-      dispatch(setSelectedLocation([location.trim()]));
+      // Add to existing location filters instead of replacing
+      const currentLocations = filters.selectedLocation || [];
+      if (!currentLocations.includes(location.trim())) {
+        dispatch(setSelectedLocation([...currentLocations, location.trim()]));
+      }
     }
 
     // Close overlay
@@ -1691,7 +2540,7 @@ const SmartSearchBar = ({ onSearch }) => {
     if (onSearch) {
       onSearch({ jobSearch, experience, location });
     }
-  }, [searchValues, dispatch, navigate, location.pathname, onSearch]);
+  }, [searchValues, dispatch, navigate, location.pathname, onSearch, filters.selectedExperience, filters.selectedLocation]);
 
   // Handle escape key
   useEffect(() => {
@@ -1873,6 +2722,60 @@ const SmartSearchBar = ({ onSearch }) => {
                 Search
               </button>
             </div>
+
+            {/* ADDED: Current filters display */}
+            {(filters.searchQuery || (filters.selectedCategory && filters.selectedCategory.length > 0) || 
+              (filters.selectedExperience && filters.selectedExperience.length > 0) || 
+              (filters.selectedLocation && filters.selectedLocation.length > 0) ||
+              (filters.selectedCompany && filters.selectedCompany.length > 0)) && (
+              <div className="current-filters-display">
+                <div className="current-filters-header">
+                  <h4>Current Active Filters:</h4>
+                </div>
+                <div className="active-filters-list">
+                  {filters.searchQuery && (
+                    <span className="filter-tag search-tag">
+                      <i className="fas fa-search"></i>
+                      {filters.searchQuery}
+                    </span>
+                  )}
+                  {filters.selectedCategory?.map(catId => {
+                    const category = categories.find(c => c.id === catId);
+                    return category ? (
+                      <span key={catId} className="filter-tag category-tag">
+                        <i className="fas fa-industry"></i>
+                        {category.name}
+                      </span>
+                    ) : null;
+                  })}
+                  {filters.selectedExperience?.map(exp => (
+                    <span key={exp} className="filter-tag experience-tag">
+                      <i className="fas fa-user-tie"></i>
+                      {exp}
+                    </span>
+                  ))}
+                  {filters.selectedLocation?.map(loc => (
+                    <span key={loc} className="filter-tag location-tag">
+                      <i className="fas fa-map-marker-alt"></i>
+                      {loc}
+                    </span>
+                  ))}
+                  {filters.selectedCompany?.map(compId => {
+                    const company = companies.find(c => c.id === compId);
+                    return company ? (
+                      <span key={compId} className="filter-tag company-tag">
+                        <i className="fas fa-building"></i>
+                        {company.name}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+                <p className="filters-note">
+                  <i className="fas fa-info-circle"></i>
+                  New search terms will be added to your existing filters
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1934,6 +2837,8 @@ const SmartSearchBar = ({ onSearch }) => {
           border-radius: 16px;
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
           animation: slideDown 0.3s ease-out;
+          max-height: 90vh;
+          overflow-y: auto;
         }
 
         @keyframes slideDown {
@@ -2118,11 +3023,87 @@ const SmartSearchBar = ({ onSearch }) => {
           color: #374151;
         }
 
+        /* Current Filters Display */
+        .current-filters-display {
+          padding: 20px 32px 32px 32px;
+          border-top: 1px solid #e5e7eb;
+          background: #f8f9fa;
+        }
+
+        .current-filters-header h4 {
+          margin: 0 0 15px 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #374151;
+        }
+
+        .active-filters-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-bottom: 12px;
+        }
+
+        .filter-tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          background: #e5e7eb;
+          color: #374151;
+          border-radius: 16px;
+          font-size: 13px;
+          font-weight: 500;
+        }
+
+        .filter-tag i {
+          font-size: 11px;
+        }
+
+        .search-tag {
+          background: #dbeafe;
+          color: #1e40af;
+        }
+
+        .category-tag {
+          background: #fef3c7;
+          color: #92400e;
+        }
+
+        .experience-tag {
+          background: #d1fae5;
+          color: #065f46;
+        }
+
+        .location-tag {
+          background: #fecaca;
+          color: #991b1b;
+        }
+
+        .company-tag {
+          background: #e0e7ff;
+          color: #3730a3;
+        }
+
+        .filters-note {
+          margin: 0;
+          font-size: 12px;
+          color: #6b7280;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .filters-note i {
+          font-size: 11px;
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
           .search-overlay-content {
             margin: 0 10px;
             border-radius: 12px;
+            max-height: 95vh;
           }
 
           .search-modal-header {
@@ -2167,6 +3148,19 @@ const SmartSearchBar = ({ onSearch }) => {
           .suggestions-dropdown {
             max-height: 240px;
           }
+
+          .current-filters-display {
+            padding: 16px 24px 24px 24px;
+          }
+
+          .active-filters-list {
+            gap: 6px;
+          }
+
+          .filter-tag {
+            font-size: 12px;
+            padding: 4px 8px;
+          }
         }
 
         /* Focus styles */
@@ -2179,20 +3173,24 @@ const SmartSearchBar = ({ onSearch }) => {
         }
 
         /* Scrollbar styles */
-        .suggestions-dropdown::-webkit-scrollbar {
+        .suggestions-dropdown::-webkit-scrollbar,
+        .search-overlay-content::-webkit-scrollbar {
           width: 6px;
         }
 
-        .suggestions-dropdown::-webkit-scrollbar-track {
+        .suggestions-dropdown::-webkit-scrollbar-track,
+        .search-overlay-content::-webkit-scrollbar-track {
           background: #f1f5f9;
         }
 
-        .suggestions-dropdown::-webkit-scrollbar-thumb {
+        .suggestions-dropdown::-webkit-scrollbar-thumb,
+        .search-overlay-content::-webkit-scrollbar-thumb {
           background: #cbd5e1;
           border-radius: 3px;
         }
 
-        .suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+        .suggestions-dropdown::-webkit-scrollbar-thumb:hover,
+        .search-overlay-content::-webkit-scrollbar-thumb:hover {
           background: #94a3b8;
         }
       `}</style>
