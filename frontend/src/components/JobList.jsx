@@ -1932,44 +1932,17 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
 });
 
 // Memoized Filter Option Component
-// const FilterOption = React.memo(({ option, isChecked, onChange, filterType }) => (
-//   <label className="filter-option">
-//     <input
-//       type="checkbox"
-//       checked={isChecked}
-//       onChange={(e) => onChange(filterType, option, e.target.checked)}
-//     />
-//     <span className="checkmark-mini"></span>
-//     {filterType === 'selectedSalary' ? `$${option.replace('-', ' - ')}` : option}
-//   </label>
-// ));
-const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
-  // Only fix the display name for categories and companies, keep everything else the same
-  const getDisplayName = () => {
-    if (filterType === 'selectedCategory' && categories) {
-      const category = categories.find(cat => cat.id === option);
-      return category ? category.name : option;
-    } else if (filterType === 'selectedCompany' && companies) {
-      const company = companies.find(comp => comp.id === option);
-      return company ? company.name : option;
-    } else if (filterType === 'selectedSalary') {
-      return `$${option.replace('-', ' - ')}`;
-    }
-    return option;
-  };
-
-  return (
-    <label className="filter-option">
-      <input
-        type="checkbox"
-        checked={isChecked}
-        onChange={(e) => onChange(filterType, option, e.target.checked)}
-      />
-      <span className="checkmark-mini"></span>
-      {getDisplayName()}
-    </label>
-  );
-});
+const FilterOption = React.memo(({ option, isChecked, onChange, filterType }) => (
+  <label className="filter-option">
+    <input
+      type="checkbox"
+      checked={isChecked}
+      onChange={(e) => onChange(filterType, option, e.target.checked)}
+    />
+    <span className="checkmark-mini"></span>
+    {filterType === 'selectedSalary' ? `$${option.replace('-', ' - ')}` : option}
+  </label>
+));
 
 // Fixed Filter Dropdown Component with proper event handling
 const FilterDropdown = React.memo(({ 
@@ -1982,9 +1955,7 @@ const FilterDropdown = React.memo(({
   onApply, 
   onClear,
   isActive,
-  onClick,
-  categories,  // ADD THIS LINE
-  companies  
+  onClick
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -2045,7 +2016,7 @@ const FilterDropdown = React.memo(({
           <div className="filter-dropdown-header">
             <h4>{title}</h4>
           </div>
-          {/* <div className="filter-options">
+          <div className="filter-options">
             {options.map((option) => {
               // FIX: Check if option is an object with id/name properties (for categories/companies)
               const optionValue = option.id || option.name || option;
@@ -2061,24 +2032,7 @@ const FilterDropdown = React.memo(({
                 />
               );
             })}
-          </div> */}
-          <div className="filter-options">
-    {options.map((option) => {
-      const optionValue = option.id || option.name || option;
-      
-      return (
-        <FilterOption
-          key={optionValue}
-          option={optionValue}
-          isChecked={selectedValues?.includes(optionValue)}
-          onChange={handleOptionChange}
-          filterType={id}
-          categories={categories}  // ADD THIS
-          companies={companies}    // ADD THIS
-        />
-      );
-    })}
-  </div>
+          </div>
           <div className="filter-dropdown-actions">
             <button onClick={handleApply} className="apply-btn-mini" type="button">Apply</button>
             <button onClick={handleClear} className="clear-btn-mini" type="button">Clear</button>
@@ -2769,45 +2723,6 @@ const JobList = () => {
       showToast("Failed to save job");
     }
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
-   const handleSearchTermMapping = useCallback((searchTerm) => {
-  if (!searchTerm || !searchTerm.trim()) return;
-  
-  const term = searchTerm.toLowerCase().trim();
-  
-  // Map search terms to category filters
-  const matchingCategories = categories.filter(category => {
-    const categoryName = category.name.toLowerCase();
-    // Check for exact matches and partial matches
-    return categoryName.includes(term) || 
-           term.includes(categoryName.toLowerCase()) ||
-           categoryName.split(' ').some(word => term.includes(word) || word.includes(term));
-  }).map(cat => cat.id);
-  
-  // Apply matching category filters if found
-  if (matchingCategories.length > 0) {
-    const currentCategories = filters.selectedCategory || [];
-    const newCategories = [...new Set([...currentCategories, ...matchingCategories])];
-    
-    // Only update if there are actually new categories to add
-    if (newCategories.length > currentCategories.length) {
-      setPendingFilters(prev => ({
-        ...prev,
-        selectedCategory: newCategories
-      }));
-      dispatch(setSelectedCategory(newCategories));
-    }
-  }
-}, [categories, filters.selectedCategory, dispatch]);
-
-// 5. ADD this useEffect to monitor search changes:
-
-// Add this useEffect in your JobList component:
-useEffect(() => {
-  // Only trigger search mapping if we have a search query and initial load is complete
-  if (filters.searchQuery && initialLoadComplete && categories.length > 0) {
-    handleSearchTermMapping(filters.searchQuery);
-  }
-}, [filters.searchQuery, handleSearchTermMapping, initialLoadComplete, categories.length]);
 
   // Early returns for loading states
   if (!initialLoadComplete) {
@@ -2846,7 +2761,7 @@ useEffect(() => {
               onClear={() => handleDropdownClear('selectedType')}
             />
 
-            {/* <FilterDropdown
+            <FilterDropdown
               id="selectedCategory"
               icon="industry"
               title="Industries"
@@ -2855,22 +2770,7 @@ useEffect(() => {
               onFilterChange={handlePendingFilterChange}
               onApply={() => handleDropdownApply('selectedCategory')}
               onClear={() => handleDropdownClear('selectedCategory')}
-            /> */}
-            <FilterDropdown
-            id="selectedCategory"
-            icon="industry"
-            title="Industries"
-            options={categoryOptionsForDropdown}
-            selectedValues={pendingFilters.selectedCategory}
-            onFilterChange={handlePendingFilterChange}
-            onApply={() => handleDropdownApply('selectedCategory')}
-            onClear={() => handleDropdownClear('selectedCategory')}
-            categories={categories}  // ADD THIS
-            companies={companies}    // ADD THIS
-          />
-
-{/* // Also update the Company FilterDropdown: */}
-
+            />
 
             <FilterDropdown
               id="selectedExperience"
@@ -2894,16 +2794,6 @@ useEffect(() => {
               onClear={() => handleDropdownClear('selectedLocation')}
             />
 
-            {/* <FilterDropdown
-              id="selectedCompany"
-              icon="building"
-              title="Company"
-              options={companyOptionsForDropdown}
-              selectedValues={pendingFilters.selectedCompany}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedCompany')}
-              onClear={() => handleDropdownClear('selectedCompany')}
-            /> */}
             <FilterDropdown
               id="selectedCompany"
               icon="building"
@@ -2913,8 +2803,6 @@ useEffect(() => {
               onFilterChange={handlePendingFilterChange}
               onApply={() => handleDropdownApply('selectedCompany')}
               onClear={() => handleDropdownClear('selectedCompany')}
-              categories={categories}  // ADD THIS
-              companies={companies}    // ADD THIS
             />
 
             <FilterDropdown
