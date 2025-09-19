@@ -2838,7 +2838,7 @@ const SmartSearchBar = ({ onSearch }) => {
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
           animation: slideDown 0.3s ease-out;
           max-height: 90vh;
-          overflow-y: auto;
+          // overflow-y: auto;
         }
 
         @keyframes slideDown {
