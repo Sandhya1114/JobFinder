@@ -2502,45 +2502,98 @@ const SmartSearchBar = ({ onSearch }) => {
   }, []);
 
   // FIXED: Handle search - preserve existing filters while applying search
-  const handleSearch = useCallback(() => {
-    const { jobSearch, experience, location } = searchValues;
+  // const handleSearch = useCallback(() => {
+  //   const { jobSearch, experience, location } = searchValues;
     
-    // Navigate to jobs page if not already there
-    if (location.pathname !== '/jobs') {
-      navigate('/jobs');
-    }
+  //   // Navigate to jobs page if not already there
+  //   if (location.pathname !== '/jobs') {
+  //     navigate('/jobs');
+  //   }
 
-    // FIXED: Apply search filters without overriding existing filters
+  //   // FIXED: Apply search filters without overriding existing filters
+  //   if (jobSearch.trim()) {
+  //     dispatch(setSearchQuery(jobSearch.trim()));
+  //   }
+    
+  //   if (experience) {
+  //     const exp = experienceOptions.find(e => e.label === experience);
+  //     // Add to existing experience filters instead of replacing
+  //     const currentExperience = filters.selectedExperience || [];
+  //     const newExperience = exp ? exp.value : experience;
+  //     if (!currentExperience.includes(newExperience)) {
+  //       dispatch(setSelectedExperience([...currentExperience, newExperience]));
+  //     }
+  //   }
+    
+  //   if (location.trim()) {
+  //     // Add to existing location filters instead of replacing
+  //     const currentLocations = filters.selectedLocation || [];
+  //     if (!currentLocations.includes(location.trim())) {
+  //       dispatch(setSelectedLocation([...currentLocations, location.trim()]));
+  //     }
+  //   }
+
+  //   // Close overlay
+  //   setIsExpanded(false);
+  //   setActiveDropdown(null);
+    
+  //   if (onSearch) {
+  //     onSearch({ jobSearch, experience, location });
+  //   }
+  // }, [searchValues, dispatch, navigate, location.pathname, onSearch, filters.selectedExperience, filters.selectedLocation]);
+  const handleSearch = useCallback(() => {
+  const { jobSearch, experience, location } = searchValues;
+
+  // Navigate to jobs page if not already there
+  if (location.pathname !== '/jobs') {
+    navigate('/jobs');
+  }
+
+  // If all inputs are blank, clear all search filters
+  if (!jobSearch.trim() && !experience && !location.trim()) {
+    dispatch(setSearchQuery(''));
+    dispatch(setSelectedExperience([]));
+    dispatch(setSelectedLocation([]));
+    dispatch(setSelectedCompany([]));
+    dispatch(setSelectedCategory([]));
+  } else {
+    // Apply search filters without overriding existing filters
     if (jobSearch.trim()) {
       dispatch(setSearchQuery(jobSearch.trim()));
+    } else {
+      dispatch(setSearchQuery(''));
     }
-    
+
     if (experience) {
       const exp = experienceOptions.find(e => e.label === experience);
-      // Add to existing experience filters instead of replacing
       const currentExperience = filters.selectedExperience || [];
       const newExperience = exp ? exp.value : experience;
       if (!currentExperience.includes(newExperience)) {
         dispatch(setSelectedExperience([...currentExperience, newExperience]));
       }
+    } else {
+      dispatch(setSelectedExperience([]));
     }
-    
+
     if (location.trim()) {
-      // Add to existing location filters instead of replacing
       const currentLocations = filters.selectedLocation || [];
       if (!currentLocations.includes(location.trim())) {
         dispatch(setSelectedLocation([...currentLocations, location.trim()]));
       }
+    } else {
+      dispatch(setSelectedLocation([]));
     }
+  }
 
-    // Close overlay
-    setIsExpanded(false);
-    setActiveDropdown(null);
-    
-    if (onSearch) {
-      onSearch({ jobSearch, experience, location });
-    }
-  }, [searchValues, dispatch, navigate, location.pathname, onSearch, filters.selectedExperience, filters.selectedLocation]);
+  // Close overlay
+  setIsExpanded(false);
+  setActiveDropdown(null);
+
+  if (onSearch) {
+    onSearch({ jobSearch, experience, location });
+  }
+}, [searchValues, dispatch, navigate, location.pathname, onSearch, filters.selectedExperience, filters.selectedLocation]);
+
 
   // Handle escape key
   useEffect(() => {
