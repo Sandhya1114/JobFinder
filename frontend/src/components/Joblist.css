@@ -2875,3 +2875,144 @@ h1 {
     font-size: 15px;
   }
 }
+/* Active Filters Container */
+.desktop-active-filters {
+  width: 82vw;
+  margin: auto;
+  background: #ffffff32;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Section */
+.active-filters-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 8px;
+}
+
+.active-filters-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Clear All Button */
+.clear-all-desktop {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.clear-all-desktop:hover {
+  background: #e0e0e0;
+  border-color: #ccc;
+  color: #333;
+}
+
+.clear-all-desktop i {
+  font-size: 12px;
+}
+
+/* Filter Chips Container */
+.filter-chips-desktop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Individual Filter Chips */
+.filter-chip-desktop {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #495057;
+  max-width: 250px;
+}
+
+/* Search Chip Styling */
+.search-chip {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1976d2;
+}
+
+/* Category Chip Styling */
+.category-chip {
+  background: #f3e5f5;
+  border-color: #9c27b0;
+  color: #7b1fa2;
+}
+
+/* Icons in Chips */
+.filter-chip-desktop i {
+  display: flex;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Remove Buttons in Chips */
+.filter-chip-desktop button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 4px;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.filter-chip-desktop button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .desktop-active-filters {
+    padding: 12px;
+  }
+  
+  .active-filters-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .filter-chips-desktop {
+    gap: 6px;
+  }
+  
+  .filter-chip-desktop {
+    font-size: 13px;
+    padding: 5px 10px;
+    max-width: 100%;
+  }
+}
