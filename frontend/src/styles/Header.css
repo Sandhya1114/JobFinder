@@ -59,8 +59,8 @@ header.shrink {
   opacity: 0.4;
   z-index: -1;
   animation: float 6s ease-in-out infinite;
-} */
-/* 
+}
+
 .header-container::after {
   content: '';
   position: absolute;
