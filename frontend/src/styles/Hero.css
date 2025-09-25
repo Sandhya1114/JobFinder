@@ -1,108 +1,142 @@
+:root {
+  /* Color variables for easy customization */
+  --primary-bg: #ecfdf5;
+  --secondary-bg: #f0fdfa;
+  --tertiary-bg: #f0fdf4;
+  --circle-primary: rgba(5, 150, 105, 0.12);
+  --circle-secondary: rgba(16, 185, 129, 0.08);
+  --circle-tertiary: rgba(52, 211, 153, 0.06);
+  --circle-accent: rgba(110, 231, 183, 0.04);
+  --shadow-light: rgba(5, 150, 105, 0.08);
+  --shadow-medium: rgba(5, 150, 105, 0.12);
+}
+
 /* Modern Nature-Inspired Hero Section */
 .hero-section {
   position: relative;
-  min-height: 60vh;
+  min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f0fdf4 100%);
+  background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 30%, var(--tertiary-bg) 100%);
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+/* Hero Content Container */
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 4rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* Left Side Content */
+.hero-left {
+  flex: 1;
+  max-width: 600px;
+}
+
+/* Right Side Images */
+.hero-right {
+  flex: 1;
+  display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
-  padding: 118px 100px;
+  height: 600px;
+  position: relative;
 }
 
-/* Organic background shapes */
-.hero-section::before {
-  content: '';
+/* Large Circular Background Pattern */
+.hero-background {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 65%;
+  left: 0;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #059669 0%, #10b981 30%, #34d399 70%, #6ee7b7 100%);
-  clip-path: ellipse(85% 100% at 100% 50%);
-  opacity: 0.6;
   z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
 }
 
-.hero-section::after {
-  content: '';
+.circle-element {
   position: absolute;
-  top: 10%;
-  right: 5%;
-  width: 320px;
-  height: 320px;
-  background: linear-gradient(45deg, #d97706 0%, #f59e0b 50%, #fbbf24 100%);
-  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-  transform: rotate(-15deg);
-  opacity: 0.3;
-  z-index: 2;
-  animation: pulse 4s ease-in-out infinite;
+  border-radius: 50%;
+  opacity: 0.8;
 }
 
-/* Floating organic elements */
-.floating-element {
-  position: absolute;
-  z-index: 2;
-  animation: float 6s ease-in-out infinite;
+/* Large overlapping circles matching your design */
+.circle-1 {
+  width: 600px;
+  height: 600px;
+  top: -200px;
+  left: -100px;
+  background: rgba(134, 239, 172, 0.6);
+  animation: floatCircle 8s ease-in-out infinite;
 }
 
-.floating-1 {
-  top: 25%;
-  right: 33%;
-  width: 128px;
-  height: 128px;
-  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
-  border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
-  opacity: 0.4;
-  animation: bounce 4s ease-in-out infinite;
+.circle-2 {
+  width: 500px;
+  height: 500px;
+  top: -150px;
+  left: 200px;
+  background: rgba(167, 243, 208, 0.5);
+  animation: floatCircle 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.circle-3 {
+  width: 400px;
+  height: 400px;
+  bottom: -100px;
+  left: 50px;
+  background: rgba(52, 211, 153, 0.4);
+  animation: floatCircle 12s ease-in-out infinite;
   animation-delay: 2s;
 }
 
-.floating-2 {
-  bottom: 25%;
-  left: 5%;
-  width: 96px;
-  height: 96px;
-  background: linear-gradient(135deg, #166534 0%, #16a34a 100%);
-  border-radius: 50%;
-  opacity: 0.5;
-  animation: float 6s ease-in-out infinite;
+.circle-4 {
+  width: 700px;
+  height: 700px;
+  top: 50%;
+  right: -200px;
+  transform: translateY(-50%);
+  background: rgba(16, 185, 129, 0.7);
+  animation: floatCircle 9s ease-in-out infinite;
+  animation-delay: 0.5s;
 }
 
-.floating-3 {
-  top: 33%;
-  right: 25%;
-  width: 160px;
-  height: 160px;
-  background: linear-gradient(135deg, #7c2d12 0%, #dc2626 50%, #f59e0b 100%);
-  border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
-  opacity: 0.25;
-  animation: float 8s ease-in-out infinite reverse;
+.circle-5 {
+  width: 350px;
+  height: 350px;
+  bottom: -50px;
+  right: 100px;
+  background: rgba(110, 231, 183, 0.5);
+  animation: floatCircle 11s ease-in-out infinite;
+  animation-delay: 1.5s;
 }
 
-.floating-4 {
-  top: 60%;
-  left: 15%;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #065f46 0%, #047857 100%);
-  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-  opacity: 0.35;
-  animation: float 5s ease-in-out infinite;
-  animation-delay: -1s;
+.circle-6 {
+  width: 450px;
+  height: 450px;
+  top: 20%;
+  right: -100px;
+  background: rgba(134, 239, 172, 0.4);
+  animation: floatCircle 7s ease-in-out infinite;
+  animation-delay: 3s;
 }
 
 /* Content styles */
 .hero-heading {
-  position: relative;
-  z-index: 10;
   margin-bottom: 3rem;
 }
 
 .hero-heading h1 {
-  font-size: 8rem;
+  font-size: 4.5rem;
   font-weight: 300;
   color: #1f2937;
   line-height: 1.1;
@@ -115,24 +149,23 @@
 }
 
 .hero-heading p {
-  font-size: 1.25rem;
+  font-size: 2rem;
   color: #6b7280;
   font-weight: 300;
+  text-align: center;
 }
 
 /* Modern glassmorphism search bar */
-.hero-section .search-bar {
-  position: relative;
-  z-index: 10;
+.search-bar {
   width: 100%;
-  max-width: 64rem;
+  max-width: 100%;
   display: flex;
   align-items: center;
   padding: 0.5rem;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border-radius:30px;
+  border-radius: 30px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
   margin: 0;
@@ -227,75 +260,209 @@
   transform: translateY(0);
 }
 
-/* Animations */
-@keyframes float {
-  0%, 100% { 
-    transform: translateY(0px) rotate(0deg); 
-  }
-  25% {
-    transform: translateY(-15px) rotate(5deg);
-  }
-  50% { 
-    transform: translateY(-25px) rotate(0deg); 
-  }
-  75% {
-    transform: translateY(-10px) rotate(-5deg);
-  }
+/* Images Container */
+.images-container {
+  position: relative;
+  width: 500px;
+  height: 500px;
 }
 
-@keyframes bounce {
+/* Image Wrapper Styles */
+.image-wrapper {
+  position: absolute;
+  width: 180px;
+  height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 5;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* Individual Image Positioning */
+.image-1 {
+  top: 50px;
+  left: 50px;
+  transform: rotate(-8deg);
+  z-index: 6;
+  animation: float 6s ease-in-out infinite;
+}
+
+.image-2 {
+  top: 20px;
+  left: 180px;
+  transform: rotate(5deg);
+  z-index: 4;
+  animation: float 8s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.image-3 {
+  top: 150px;
+  left: 280px;
+  transform: rotate(-12deg);
+  z-index: 7;
+  animation: float 7s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.image-4 {
+  top: 280px;
+  left: 180px;
+  transform: rotate(10deg);
+  z-index: 5;
+  animation: float 9s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.image-5 {
+  top: 320px;
+  left: 30px;
+  transform: rotate(-6deg);
+  z-index: 3;
+  animation: float 8.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.image-6 {
+  top: 180px;
+  left: 120px;
+  transform: rotate(3deg);
+  z-index: 8;
+  animation: float 7.5s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+/* Hover Effects */
+.image-wrapper:hover {
+  transform: scale(1.15) rotate(0deg) !important;
+  z-index: 20 !important;
+  box-shadow: 0 25px 60px rgba(5, 150, 105, 0.3);
+  border-color: #059669;
+}
+
+.image-wrapper.hovered {
+  transform: scale(1.15) rotate(0deg) !important;
+  z-index: 20 !important;
+  box-shadow: 0 25px 60px rgba(5, 150, 105, 0.3);
+  border-color: #059669;
+}
+
+.image-wrapper.hovered img {
+  transform: scale(1.05);
+}
+
+.image-wrapper.blurred {
+  opacity: 0.4;
+  filter: blur(3px);
+  transform: scale(0.95) !important;
+}
+
+/* Hover state for images container */
+.images-container:hover .image-wrapper:not(.hovered) {
+  opacity: 0.6;
+  filter: blur(2px);
+  transform: scale(0.95);
+}
+
+/* Animations */
+@keyframes floatCircle {
   0%, 100% { 
     transform: translateY(0px) scale(1); 
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-10px) scale(1.02);
+    opacity: 0.8;
   }
   50% { 
     transform: translateY(-20px) scale(1.05); 
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(-8px) scale(1.02);
+    opacity: 0.8;
   }
 }
 
-@keyframes pulse {
+@keyframes float {
   0%, 100% { 
-    opacity: 0.3;
-    transform: rotate(-15deg) scale(1);
+    transform: translateY(0px) rotate(var(--rotate, 0deg)); 
+  }
+  25% {
+    transform: translateY(-8px) rotate(calc(var(--rotate, 0deg) + 2deg));
   }
   50% { 
-    opacity: 0.5;
-    transform: rotate(-10deg) scale(1.1);
+    transform: translateY(-15px) rotate(var(--rotate, 0deg)); 
+  }
+  75% {
+    transform: translateY(-5px) rotate(calc(var(--rotate, 0deg) - 1deg));
   }
 }
 
+/* Set individual rotation values for float animation */
+.image-1 { --rotate: -8deg; }
+.image-2 { --rotate: 5deg; }
+.image-3 { --rotate: -12deg; }
+.image-4 { --rotate: 10deg; }
+.image-5 { --rotate: -6deg; }
+.image-6 { --rotate: 3deg; }
+
 /* Responsive Design */
-@media screen and (max-width: 1024px) {
-  .hero-section {
-    padding: 80px 50px;
+@media screen and (max-width: 1200px) {
+  .hero-content {
+    gap: 2rem;
   }
   
-  .hero-section::before {
-    width: 75%;
-    clip-path: ellipse(90% 100% at 100% 50%);
+  .hero-heading h1 {
+    font-size: 3.5rem;
+  }
+  
+  .images-container {
+    width: 400px;
+    height: 400px;
+  }
+  
+  .image-wrapper {
+    width: 140px;
+    height: 180px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 3rem;
+  }
+  
+  .hero-left {
+    max-width: 100%;
   }
   
   .hero-heading h1 {
     font-size: 3rem;
   }
   
-  .floating-1 {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .floating-2 {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .floating-3 {
-    width: 100px;
-    height: 100px;
+  .images-container {
+    width: 350px;
+    height: 350px;
   }
   
   .search-bar {
     flex-direction: column;
     gap: 0.5rem;
+    padding: 1rem;
   }
   
   .search-field,
@@ -316,11 +483,6 @@
     padding: 60px 20px;
   }
   
-  .hero-section::before {
-    width: 80%;
-    clip-path: ellipse(85% 100% at 100% 50%);
-  }
-  
   .hero-heading h1 {
     font-size: 2.5rem;
   }
@@ -329,18 +491,23 @@
     font-size: 1rem;
   }
   
-  .floating-element {
-    display: none;
+  .images-container {
+    width: 300px;
+    height: 300px;
   }
   
-  .hero-section::after {
-    display: none;
+  .image-wrapper {
+    width: 100px;
+    height: 130px;
   }
   
-  .search-bar {
-    max-width: 100%;
-    padding: 0.75rem;
-  }
+  /* Adjust positions for mobile */
+  .image-1 { top: 30px; left: 30px; }
+  .image-2 { top: 10px; left: 140px; }
+  .image-3 { top: 100px; left: 200px; }
+  .image-4 { top: 200px; left: 140px; }
+  .image-5 { top: 220px; left: 20px; }
+  .image-6 { top: 120px; left: 100px; }
 }
 
 @media screen and (max-width: 480px) {
@@ -348,18 +515,30 @@
     padding: 40px 15px;
   }
   
-  .hero-section::before {
-    width: 85%;
-    right: -5%;
-    clip-path: ellipse(90% 100% at 90% 50%);
-  }
-  
   .hero-heading h1 {
     font-size: 2rem;
+  }
+  
+  .images-container {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .image-wrapper {
+    width: 80px;
+    height: 100px;
   }
   
   .search-btn {
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
+  
+  /* Further adjust positions for small mobile */
+  .image-1 { top: 20px; left: 20px; }
+  .image-2 { top: 5px; left: 110px; }
+  .image-3 { top: 80px; left: 150px; }
+  .image-4 { top: 150px; left: 110px; }
+  .image-5 { top: 170px; left: 15px; }
+  .image-6 { top: 90px; left: 70px; }
 }
