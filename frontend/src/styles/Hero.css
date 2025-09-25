@@ -38,12 +38,14 @@
 /* Left Side Content */
 .hero-left {
   flex: 1;
-  max-width: 600px;
+  /* max-width: 600px; */
+  justify-content: center;
+  align-items: center;
 }
 
 /* Right Side Images */
 .hero-right {
-  flex: 1;
+  /* flex: 1; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -161,8 +163,8 @@
   max-width: 100%;
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.85);
+  padding: 0.2rem;
+  background: rgba(255, 255, 255, 0);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 30px;
@@ -241,13 +243,13 @@
   background:#79B4B7;
   color: white;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   border-radius:30px;
   font-size: 1.125rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+  box-shadow: 0 4px 15px #79b4b74b;
 }
 
 .hero-content .search-btn:hover {
@@ -348,14 +350,14 @@
   transform: scale(1.15) rotate(0deg) !important;
   z-index: 20 !important;
   box-shadow: 0 25px 60px rgba(5, 150, 105, 0.3);
-  border-color: #059669;
+  border-color: #79B4B7;
 }
 
 .image-wrapper.hovered {
   transform: scale(1.15) rotate(0deg) !important;
   z-index: 20 !important;
   box-shadow: 0 25px 60px rgba(5, 150, 105, 0.3);
-  border-color: #059669;
+  border-color: #79B4B7;
 }
 
 .image-wrapper.hovered img {
