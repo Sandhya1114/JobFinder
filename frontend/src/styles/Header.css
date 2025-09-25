@@ -1,9 +1,9 @@
 /* CSS Custom Properties for Header Colors */
 .header-colors {
   /* Primary green colors */
-  --header-emerald-600: #059669;
-  --header-emerald-500: #10b981;
-  --header-emerald-700: #047857;
+  --header-emerald-600: #79B4B7;
+  --header-emerald-500: #79B4B7;
+  --header-emerald-700: #79B4B7;
   
   /* Amber/Orange colors */
   --header-amber-800: #92400e;
@@ -32,7 +32,7 @@ header {
   height: 12vh;
   transition: all 0.3s ease-in-out;
   backdrop-filter: blur(30px);
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f0fdf4 100%);
+  /* background: linear-gradient(135deg, #79B4B7 0%, #79B4B7 30%, #79B4B7 100%); */
 }
 
 /* Sticky behavior enabled */
@@ -153,7 +153,7 @@ header.shrink .header-container {
 
 /* Active state for desktop navigation - matching hero green */
 .header-options a.active {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   color: white !important;
   box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
   transform: translateY(-1px);
@@ -162,7 +162,7 @@ header.shrink .header-container {
 /* Hover effect for non-active links */
 .header-options a:not(.active):hover {
   background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  color: #79B4B7;
   transform: translateY(-1px);
 }
 
@@ -174,7 +174,7 @@ header.shrink .header-options a {
 }
 
 header.shrink .header-options a.active {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7);
   color: white !important;
 }
 
@@ -202,7 +202,7 @@ header.shrink .header-options a.active {
 
 .header-smart-search .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: #059669;
+  border-color: #79B4B7;
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
 }
 
@@ -223,7 +223,7 @@ header.shrink .header-options a.active {
 }
 
 .logo span {
-  color: #059669;
+  color: #79B4B7;
 }
 
 /* Desktop Account Section */
@@ -233,7 +233,7 @@ header.shrink .header-options a.active {
 }
 
 .accounts-btn button {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   color: white;
   font-size: 17px;
   border: none;
@@ -246,7 +246,7 @@ header.shrink .header-options a.active {
 }
 
 .accounts-btn button:hover {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  background: linear-gradient(135deg, #047857 0%, #79B4B7 100%);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
 }
@@ -262,7 +262,7 @@ header.shrink .header-options a.active {
 .user-avatar {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -310,7 +310,7 @@ header.shrink .header-options a.active {
 
 .user-menu button:hover {
   background: rgba(5, 150, 105, 0.1);
-  color: #059669;
+  color: #79B4B7;
 }
 
 /* Hamburger Menu Styles */
@@ -328,7 +328,7 @@ header.shrink .header-options a.active {
 .hamburger span {
   width: 100%;
   height: 3px;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
@@ -402,7 +402,7 @@ header.shrink .header-options a.active {
 }
 
 .mobile-logo span {
-  color: #059669;
+  color: #79B4B7;
 }
 
 .close-btn {
@@ -415,13 +415,13 @@ header.shrink .header-options a.active {
   justify-content: center;
   cursor: pointer;
   font-size: 16px;
-  color: #059669;
+  color: #79B4B7;
   transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
 .close-btn:hover {
-  background: #059669;
+  background: #79B4B7;
   color: white;
   transform: rotate(90deg);
 }
@@ -449,7 +449,7 @@ header.shrink .header-options a.active {
 }
 
 .mobile-smart-search .search-input:focus {
-  border-color: #059669;
+  border-color: #79B4B7;
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
 }
 
@@ -497,12 +497,12 @@ header.shrink .header-options a.active {
 .mobile-nav-links a:hover {
   transform: translateX(10px);
   border-color: rgba(5, 150, 105, 0.3);
-  color: #059669;
+  color: #79B4B7;
 }
 
 /* Active state for mobile navigation - matching hero */
 .mobile-nav-links a.active {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background: #79B4B7;
   color: white !important;
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
@@ -527,7 +527,7 @@ header.shrink .header-options a.active {
 .mobile-nav-links a:not(.active):hover {
   transform: translateX(10px);
   border-color: rgba(5, 150, 105, 0.3);
-  color: #059669;
+  color: #79B4B7;
 }
 
 .nav-icon {
@@ -537,7 +537,7 @@ header.shrink .header-options a.active {
   justify-content: center;
   z-index: 1;
   position: relative;
-  color: #059669;
+  color: #79B4B7;
   transition: all 0.3s ease;
 }
 
@@ -569,7 +569,7 @@ header.shrink .header-options a.active {
 .mobile-user-avatar {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -626,7 +626,7 @@ header.shrink .header-options a.active {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  background:#79B4B7;
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -656,7 +656,7 @@ header.shrink .header-options a.active {
 
 .mobile-user-actions button:hover,
 .auth-btn:hover {
-  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  background: linear-gradient(135deg, #047857 0%, #79B4B7 100%);
   transform: translateY(-3px);
   box-shadow: 0 15px 35px rgba(5, 150, 105, 0.4);
   border-color: rgba(255, 255, 255, 0.3);
@@ -803,7 +803,7 @@ header.shrink .header-options a.active {
 
 .smart-search-container .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: #059669;
+  border-color: #79B4B7;
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
 }
 
@@ -817,6 +817,6 @@ header.shrink .header-options a.active {
 .search-input-wrapper .search-input:focus-visible,
 .search-input-wrapper .search-input:active,
 .search-input-wrapper input:focus-visible {
-  border: 1px solid #059669;
+  border: 1px solid #79B4B7;
   outline: none;
 }

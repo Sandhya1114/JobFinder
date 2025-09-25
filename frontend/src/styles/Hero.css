@@ -1,8 +1,8 @@
 :root {
   /* Color variables for easy customization */
-  --primary-bg: #ecfdf5;
-  --secondary-bg: #f0fdfa;
-  --tertiary-bg: #f0fdf4;
+  --primary-bg: #fff;
+  --secondary-bg: #79B4B7;
+  --tertiary-bg: #79B4B7;
   --circle-primary: rgba(5, 150, 105, 0.12);
   --circle-secondary: rgba(16, 185, 129, 0.08);
   --circle-tertiary: rgba(52, 211, 153, 0.06);
@@ -16,7 +16,7 @@
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 30%, var(--tertiary-bg) 100%);
+  background: var(--primary-bg) ;
   display: flex;
   align-items: center;
   padding: 0 2rem;
@@ -75,7 +75,7 @@
   height: 600px;
   top: -200px;
   left: -100px;
-  background: rgba(134, 239, 172, 0.6);
+  background: #79B4B7;
   animation: floatCircle 8s ease-in-out infinite;
 }
 
@@ -84,7 +84,7 @@
   height: 500px;
   top: -150px;
   left: 200px;
-  background: rgba(167, 243, 208, 0.5);
+  background: #79b4b7a2;
   animation: floatCircle 10s ease-in-out infinite;
   animation-delay: 1s;
 }
@@ -94,18 +94,18 @@
   height: 400px;
   bottom: -100px;
   left: 50px;
-  background: rgba(52, 211, 153, 0.4);
+  background: #79b4b7d1;
   animation: floatCircle 12s ease-in-out infinite;
   animation-delay: 2s;
 }
 
-.circle-4 {
+/* .circle-4 {
   width: 700px;
   height: 700px;
   top: 50%;
   right: -200px;
   transform: translateY(-50%);
-  background: rgba(16, 185, 129, 0.7);
+  background: #79B4B7;
   animation: floatCircle 9s ease-in-out infinite;
   animation-delay: 0.5s;
 }
@@ -115,17 +115,17 @@
   height: 350px;
   bottom: -50px;
   right: 100px;
-  background: rgba(110, 231, 183, 0.5);
+  background: #79B4B7;
   animation: floatCircle 11s ease-in-out infinite;
   animation-delay: 1.5s;
-}
+} */
 
 .circle-6 {
   width: 450px;
   height: 450px;
   top: 20%;
   right: -100px;
-  background: rgba(134, 239, 172, 0.4);
+  background: #79b4b7ad;
   animation: floatCircle 7s ease-in-out infinite;
   animation-delay: 3s;
 }
@@ -138,13 +138,13 @@
 .hero-heading h1 {
   font-size: 4.5rem;
   font-weight: 300;
-  color: #1f2937;
+  color: #ffffff;
   line-height: 1.1;
   margin-bottom: 1rem;
 }
 
 .hero-heading .highlight {
-  color: #059669;
+  color: #375253;
   font-weight: 500;
 }
 
@@ -237,12 +237,12 @@
   color: #9ca3af;
 }
 
-.search-btn {
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+.hero-content .search-btn {
+  background:#79B4B7;
   color: white;
   border: none;
   padding: 1rem 2rem;
-  border-radius: 0.75rem;
+  border-radius:30px;
   font-size: 1.125rem;
   font-weight: 500;
   cursor: pointer;
@@ -250,10 +250,10 @@
   box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
 }
 
-.search-btn:hover {
+.hero-content .search-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
-  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  background: #79B4B7;
 }
 
 .search-btn:active {
