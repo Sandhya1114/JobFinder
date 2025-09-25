@@ -2536,7 +2536,7 @@ h1 {
 
 .filter-dropdown-btn:hover {
   border-color: #79B4B7;
-  color: #79B4B7;
+  color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(93, 97, 191, 0.15);
 }
@@ -2548,7 +2548,7 @@ h1 {
 }
 
 .filter-dropdown-btn:hover i:first-child {
-  color: #79B4B7;
+  color: #ffffff;
 }
 
 .filter-dropdown-btn i:last-child {

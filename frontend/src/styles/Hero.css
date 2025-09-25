@@ -14,7 +14,7 @@
 /* Modern Nature-Inspired Hero Section */
 .hero-section {
   position: relative;
-  min-height: 100vh;
+     min-height: 91vh;
   overflow: hidden;
   background: var(--primary-bg) ;
   display: flex;
@@ -272,8 +272,8 @@
 /* Image Wrapper Styles */
 .image-wrapper {
   position: absolute;
-  width: 180px;
-  height: 220px;
+  /* width: 180px; */
+  height: 500px;
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
@@ -293,7 +293,7 @@
 
 /* Individual Image Positioning */
 .image-1 {
-  top: 50px;
+  /* top: 50px; */
   left: 50px;
   transform: rotate(-8deg);
   z-index: 6;

@@ -44,7 +44,7 @@ function Hero() {
   // Image data - update these paths to match your public folder structure
   const images = [
     // { id: 1, src: "./laptop2.jpg", alt: "Professional 1" },
-    { id: 2, src: "/girl.jpg", alt: "Professional 2" },
+    { id: 2, src: "/blue.jpg", alt: "Professional 2" },
     // { id: 3, src: "/hands.jpg", alt: "Professional 3" },
     // { id: 4, src: "/static.jpg", alt: "Professional 4" },
     // { id: 5, src: "/growth.jpg", alt: "Professional 5" },
