@@ -1,3 +1,29 @@
+/* CSS Custom Properties for Header Colors */
+.header-colors {
+  /* Primary green colors */
+  --header-emerald-600: #059669;
+  --header-emerald-500: #10b981;
+  --header-emerald-700: #047857;
+  
+  /* Amber/Orange colors */
+  --header-amber-800: #92400e;
+  --header-amber-700: #b45309;
+  
+  /* Green colors */
+  --header-green-800: #166534;
+  --header-green-600: #16a34a;
+  
+  /* Gray colors */
+  --header-gray-800: #1f2937;
+  --header-gray-500: #6b7280;
+  --header-gray-700: #374151;
+  
+  /* Background colors */
+  --header-emerald-50: #ecfdf5;
+  --header-teal-50: #f0fdfa;
+  --header-green-50: #f0fdf4;
+}
+
 /* Base header styles */
 header {
   padding: 10px 0;
