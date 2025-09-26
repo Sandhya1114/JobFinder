@@ -259,8 +259,9 @@
 .categories{
    text-align: center;
 }
-.categories h1{
+.main .categories h1{
     font-size: 54px;
+    color: 000;
 }
 .categoriesbtn{
     border-radius: 30px;

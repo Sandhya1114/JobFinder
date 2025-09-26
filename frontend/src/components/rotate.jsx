@@ -14,52 +14,52 @@ const Categories3DSlider = () => {
     {
       name: "Technology",
       description: "Explore jobs in software, AI, and tech innovation.",
-      color: "#79B4B7"
+      color:  "#000"
     },
     {
       name: "Design",
       description: "Careers in graphic, UI/UX, and visual design.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Marketing",
       description: "Digital marketing, branding, and social media roles.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Finance",
       description: "Jobs in banking, accounting, and fintech.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Healthcare",
       description: "Opportunities in hospitals, clinics, and biotech.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Education",
       description: "Teaching, tutoring, and edtech positions.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Engineering",
       description: "Roles in mechanical, civil, and electrical engineering.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Sales",
       description: "Inside/outside sales and business development jobs.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Research",
       description: "Academic, clinical, and market research careers.",
-      color: "#79B4B7"
+      color: "#000"
     },
     {
       name: "Writing",
       description: "Creative, technical, and content writing roles.",
-      color: "#79B4B7"
+      color: "#000"
     }
   ];
 

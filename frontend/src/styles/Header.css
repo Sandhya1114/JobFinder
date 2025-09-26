@@ -1,38 +1,58 @@
-/* CSS Custom Properties for Header Colors */
-.header-colors {
-  /* Primary green colors */
-  --header-emerald-600: #79B4B7;
-  --header-emerald-500: #79B4B7;
-  --header-emerald-700: #79B4B7;
+/* Color Variables */
+header {
+  --primary-orange: #fea116;
+  --primary-black: #000000;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --text-primary: #000000;
+  --text-secondary: #5a5a58;
+  --hover-bg: rgba(254, 161, 22, 0.1);
+  --hover-color: #fea116;
+  --active-bg: linear-gradient(to right, #fea116, #fea116);
+  --active-shadow: rgba(254, 161, 22, 0.3);
+  --menu-bg: rgba(255, 255, 255, 0.95);
+  --menu-border: rgba(255, 255, 255, 0.3);
+  --mobile-accent: #fea116;
+  --mobile-hover: rgba(254, 161, 22, 0.1);
+  --auth-bg: linear-gradient(135deg, #000 0%, #000000 100%);
+  --search-bg: rgba(255, 255, 255, 0.95);
+  --search-border: rgba(254, 161, 22, 0.2);
+  --search-focus: rgba(254, 161, 22, 0.3);
+  --dropdown-bg: rgba(255, 255, 255, 0.98);
+  --suggestion-hover: rgba(254, 161, 22, 0.05);
+  --suggestion-selected: rgba(254, 161, 22, 0.1);
   
-  /* Amber/Orange colors */
-  --header-amber-800: #92400e;
-  --header-amber-700: #b45309;
-  
-  /* Green colors */
-  --header-green-800: #166534;
-  --header-green-600: #16a34a;
-  
-  /* Gray colors */
-  --header-gray-800: #1f2937;
-  --header-gray-500: #6b7280;
-  --header-gray-700: #374151;
-  
-  /* Background colors */
-  --header-emerald-50: #ecfdf5;
-  --header-teal-50: #f0fdfa;
-  --header-green-50: #f0fdf4;
 }
 
-/* Base header styles */
+/* Base header styles with enhanced glass effect */
 header {
   padding: 10px 0;
   top: 0;
   z-index: 100;
   height: 12vh;
   transition: all 0.3s ease-in-out;
-  backdrop-filter: blur(30px);
-  /* background: linear-gradient(135deg, #79B4B7 0%, #79B4B7 30%, #79B4B7 100%); */
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.05) 50%, 
+    rgba(254, 161, 22, 0.03) 100%);
+  position: relative;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(254, 161, 22, 0.08) 0%, 
+    transparent 30%, 
+    rgba(0, 0, 0, 0.02) 100%);
+  pointer-events: none;
 }
 
 /* Sticky behavior enabled */
@@ -49,9 +69,11 @@ header.non-sticky {
 header.shrink {
   padding: 5px 0;
   height: 5.5vh;
+  backdrop-filter: blur(50px);
+  -webkit-backdrop-filter: blur(50px);
 }
 
-/* Header container */
+/* Header container with enhanced glass effect */
 .header-container {
   height: 65px;
   display: flex;
@@ -59,67 +81,48 @@ header.shrink {
   align-items: center;
   width: 80%;
   margin: auto;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0.08) 50%, 
+    rgba(254, 161, 22, 0.05) 100%);
+  border: 1px solid var(--glass-border);
   border-radius: 35px;
   padding: 0px 10px;
   margin-top: 10px;
   transition: all 0.5s ease-in-out;
   position: relative;
   gap: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(254, 161, 22, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Add organic shapes to header background - matching hero */
-/* .header-container::before {
+.header-container::before {
   content: '';
   position: absolute;
-  top: -30px;
-  right: 5%;
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, #92400e 0%, #b45309 100%);
-  border-radius: 70% 30% 30% 70% / 60% 40% 60% 40%;
-  opacity: 0.4;
-  z-index: -1;
-  animation: float 6s ease-in-out infinite;
-}
-
-.header-container::after {
-  content: '';
-  position: absolute;
-  top: -20px;
-  left: 10%;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #166534 0%, #16a34a 100%);
-  border-radius: 50%;
-  opacity: 0.5;
-  z-index: -1;
-  animation: float 8s ease-in-out infinite reverse;
-} */
-
-@keyframes float {
-  0%, 100% { 
-    transform: translateY(0px) rotate(0deg); 
-  }
-  25% {
-    transform: translateY(-10px) rotate(3deg);
-  }
-  50% { 
-    transform: translateY(-15px) rotate(0deg); 
-  }
-  75% {
-    transform: translateY(-5px) rotate(-3deg);
-  }
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 50%, 
+    rgba(254, 161, 22, 0.03) 100%);
+  border-radius: 35px;
+  pointer-events: none;
 }
 
 /* Shrinked header container */
 header.shrink .header-container {
   width: 55%;
   height: 65px;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%, 
+    rgba(255, 255, 255, 0.1) 50%, 
+    rgba(254, 161, 22, 0.08) 100%);
 }
 
 /* Desktop Navigation container */
@@ -129,6 +132,8 @@ header.shrink .header-container {
   gap: 30px;
   flex: 1;
   justify-content: center;
+  z-index: 2;
+  position: relative;
 }
 
 /* Navigation links container */
@@ -141,7 +146,7 @@ header.shrink .header-container {
 .header-options a {
   margin: 0;
   text-decoration: none;
-  color: #1f2937;
+  color: var(--text-primary);
   font-size: 20px;
   font-weight: 600;
   font-family: monospace;
@@ -149,21 +154,28 @@ header.shrink .header-container {
   border-radius: 20px;
   position: relative;
   transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-/* Active state for desktop navigation - matching hero green */
+/* Active state for desktop navigation */
 .header-options a.active {
-  background:#79B4B7;
-  color: white !important;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+ background: var(--hover-bg);
+  color: var(--hover-color);
   transform: translateY(-1px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  /* box-shadow: 0 2px 8px rgba(254, 161, 22, 0.2); */
 }
 
 /* Hover effect for non-active links */
 .header-options a:not(.active):hover {
-  background: rgba(5, 150, 105, 0.1);
-  color: #79B4B7;
+  background: var(--hover-bg);
+  color: var(--hover-color);
   transform: translateY(-1px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 2px 8px rgba(254, 161, 22, 0.2);
 }
 
 /* Shrinked nav links */
@@ -174,7 +186,7 @@ header.shrink .header-options a {
 }
 
 header.shrink .header-options a.active {
-  background:#79B4B7;
+  background: var(--active-bg);
   color: white !important;
 }
 
@@ -184,6 +196,8 @@ header.shrink .header-options a.active {
   max-width: 400px;
   min-width: 250px;
   margin: 0 20px;
+  z-index: 2;
+  position: relative;
 }
 
 /* Ensure SmartSearchBar fits well in header */
@@ -192,48 +206,54 @@ header.shrink .header-options a.active {
 }
 
 .header-smart-search .search-input {
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  background: var(--search-bg);
+  border: 1px solid var(--search-border);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   font-size: 14px;
   padding: 10px 14px 10px 40px;
-  border-radius: 25px;
+  box-shadow: 0 2px 8px rgba(254, 161, 22, 0.1);
 }
 
 .header-smart-search .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: #79B4B7;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+  box-shadow: 0 0 0 2px var(--search-focus);
+  border-color: var(--primary-orange);
 }
 
 .header-smart-search .suggestions-dropdown {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--dropdown-bg);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--search-border);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
-/* Logo styles - matching hero colors */
+/* Logo styles */
 .logo {
   margin-left: 33px;
   font-family: monospace;
   font-size: 20px;
   flex: 0 0 auto;
-  color: #1f2937;
+  color: var(--text-primary);
+  z-index: 2;
+  position: relative;
 }
 
 .logo span {
-  color: #79B4B7;
+  color: var(--primary-orange);
 }
 
 /* Desktop Account Section */
 .accounts-btn {
   flex: 0 0 auto;
   margin-left: auto;
+  z-index: 2;
+  position: relative;
 }
 
 .accounts-btn button {
-  background:#79B4B7;
+  background: var(--auth-bg);
   color: white;
   font-size: 17px;
   border: none;
@@ -242,13 +262,14 @@ header.shrink .header-options a.active {
   border-radius: 35px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2); */
 }
 
 .accounts-btn button:hover {
-  background: linear-gradient(135deg, #047857 0%, #79B4B7 100%);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+  /* box-shadow: 0 8px 25px rgba(254, 161, 22, 0.3); */
 }
 
 /* User avatar + menu */
@@ -257,12 +278,13 @@ header.shrink .header-options a.active {
   display: flex;
   align-items: center;
   gap: 1rem;
+  z-index: 2;
 }
 
 .user-avatar {
   width: 50px;
   height: 50px;
-  background:#79B4B7;
+  background: var(--auth-bg);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -273,44 +295,69 @@ header.shrink .header-options a.active {
   text-transform: uppercase;
   cursor: pointer;
   margin-right: 10px;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.user-avatar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
-}
-
-/* User menu dropdown */
+/* User menu dropdown with enhanced glass effect */
 .user-menu {
-  padding: 28px;
+  padding: 15px 0;
   position: absolute;
-  top: 54px;
+  top: 60px;
   right: 12px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  color: #1f2937;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 26px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  z-index: 100;
+  background: var(--menu-bg);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  color: var(--text-primary);
+  border: 1px solid var(--menu-border);
+  border-radius: 12px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(254, 161, 22, 0.1);
+  z-index: 1001;
   display: flex;
   flex-direction: column;
+  min-width: 200px;
+}
+
+.user-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 50%, 
+    rgba(254, 161, 22, 0.03) 100%);
+  border-radius: 12px;
+  pointer-events: none;
 }
 
 .user-menu button {
   background: transparent;
   border: none;
+  padding: 12px 20px;
   text-align: left;
   cursor: pointer;
-  color: #1f2937;
-  transition: all 0.3s ease;
+  width: 100%;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  z-index: 1;
+  position: relative;
 }
 
 .user-menu button:hover {
-  background: rgba(5, 150, 105, 0.1);
-  color: #79B4B7;
+  background: var(--hover-bg);
+  color: var(--hover-color);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 /* Hamburger Menu Styles */
@@ -323,12 +370,14 @@ header.shrink .header-options a.active {
   justify-content: space-between;
   margin-right: 20px;
   flex: 0 0 auto;
+  z-index: 2;
+  position: relative;
 }
 
 .hamburger span {
   width: 100%;
   height: 3px;
-  background:#79B4B7;
+  background-color: var(--text-primary);
   border-radius: 2px;
   transition: all 0.3s ease;
 }
@@ -345,7 +394,7 @@ header.shrink .header-options a.active {
   transform: rotate(-45deg) translate(8px, -8px);
 }
 
-/* Mobile Menu Overlay */
+/* Mobile Menu Overlay with enhanced glass effect */
 .mobile-menu-overlay {
   position: fixed;
   top: 0;
@@ -353,7 +402,8 @@ header.shrink .header-options a.active {
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.95);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 9999;
   opacity: 0;
   visibility: hidden;
@@ -366,19 +416,38 @@ header.shrink .header-options a.active {
   visibility: visible;
 }
 
-/* Mobile Menu - matching hero background */
+/* Mobile Menu with glass effect */
 .mobile-menu {
   position: absolute;
   top: 0;
   right: 0;
   width: 320px;
   height: 100vh;
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f0fdf4 100%);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(255, 255, 255, 0.9) 50%, 
+    rgba(254, 161, 22, 0.05) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
   overflow-y: auto;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(254, 161, 22, 0.03) 0%, 
+    transparent 50%, 
+    rgba(0, 0, 0, 0.02) 100%);
+  pointer-events: none;
 }
 
 .mobile-menu-overlay.active .mobile-menu {
@@ -390,50 +459,52 @@ header.shrink .header-options a.active {
   justify-content: space-between;
   align-items: center;
   padding: 30px 25px 20px;
-  border-bottom: 2px solid rgba(5, 150, 105, 0.1);
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.05) 0%, transparent 100%);
+  border-bottom: 2px solid rgba(254, 161, 22, 0.1);
+  background: linear-gradient(135deg, rgba(254, 161, 22, 0.05) 0%, transparent 100%);
+  z-index: 1;
+  position: relative;
 }
 
 .mobile-logo h3 {
   font-family: monospace;
   font-size: 1.5rem;
   margin: 0;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .mobile-logo span {
-  color: #79B4B7;
+  color: var(--text-secondary);
 }
 
 .close-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(5, 150, 105, 0.1);
+  background: var(--mobile-hover);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: 16px;
-  color: #79B4B7;
+  color: var(--mobile-accent);
   transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
 .close-btn:hover {
-  background: #79B4B7;
+  background: var(--mobile-accent);
   color: white;
   transform: rotate(90deg);
-}
-
-.close-btn i {
-  transition: transform 0.3s ease;
 }
 
 /* Mobile Smart Search */
 .mobile-smart-search {
   padding: 20px 25px;
-  border-bottom: 1px solid rgba(5, 150, 105, 0.1);
+  border-bottom: 1px solid rgba(254, 161, 22, 0.1);
+  z-index: 1;
+  position: relative;
 }
 
 .mobile-smart-search .smart-search-container {
@@ -442,15 +513,10 @@ header.shrink .header-options a.active {
 
 .mobile-smart-search .search-input {
   font-size: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border-radius: 15px;
-}
-
-.mobile-smart-search .search-input:focus {
-  border-color: #79B4B7;
-  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.2);
+  background: var(--search-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--search-border);
 }
 
 .mobile-nav-links {
@@ -458,6 +524,8 @@ header.shrink .header-options a.active {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  z-index: 1;
+  position: relative;
 }
 
 .mobile-nav-links a {
@@ -465,7 +533,7 @@ header.shrink .header-options a.active {
   align-items: center;
   gap: 20px;
   text-decoration: none;
-  color: #1f2937;
+  color: #2d3748;
   font-size: 18px;
   font-weight: 600;
   font-family: monospace;
@@ -476,6 +544,8 @@ header.shrink .header-options a.active {
   overflow: hidden;
   margin-bottom: 8px;
   border: 2px solid transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .mobile-nav-links a::before {
@@ -485,7 +555,7 @@ header.shrink .header-options a.active {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  background: linear-gradient(135deg, var(--mobile-hover) 0%, rgba(254, 161, 22, 0.05) 100%);
   transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
 }
@@ -496,16 +566,16 @@ header.shrink .header-options a.active {
 
 .mobile-nav-links a:hover {
   transform: translateX(10px);
-  border-color: rgba(5, 150, 105, 0.3);
-  color: #79B4B7;
+  border-color: rgba(254, 161, 22, 0.3);
+  color: var(--mobile-accent);
 }
 
-/* Active state for mobile navigation - matching hero */
+/* Active state for mobile navigation */
 .mobile-nav-links a.active {
-  background: #79B4B7;
+  background: var(--active-bg);
   color: white !important;
   border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+  box-shadow: 0 8px 25px var(--active-shadow);
   transform: translateX(5px);
 }
 
@@ -519,17 +589,6 @@ header.shrink .header-options a.active {
   transform: scale(1.1);
 }
 
-/* Hover effect for non-active mobile links */
-.mobile-nav-links a:not(.active):hover::before {
-  left: 0;
-}
-
-.mobile-nav-links a:not(.active):hover {
-  transform: translateX(10px);
-  border-color: rgba(5, 150, 105, 0.3);
-  color: #79B4B7;
-}
-
 .nav-icon {
   font-size: 20px;
   width: 30px;
@@ -537,7 +596,7 @@ header.shrink .header-options a.active {
   justify-content: center;
   z-index: 1;
   position: relative;
-  color: #79B4B7;
+  color: var(--mobile-accent);
   transition: all 0.3s ease;
 }
 
@@ -553,9 +612,11 @@ header.shrink .header-options a.active {
 
 .mobile-account {
   padding: 30px 25px;
-  border-top: 2px solid rgba(5, 150, 105, 0.1);
-  background: linear-gradient(135deg, rgba(5, 150, 105, 0.02) 0%, transparent 100%);
+  border-top: 2px solid rgba(254, 161, 22, 0.1);
+  background: linear-gradient(135deg, rgba(254, 161, 22, 0.02) 0%, transparent 100%);
   margin-top: auto;
+  z-index: 1;
+  position: relative;
 }
 
 .mobile-user-info {
@@ -569,7 +630,7 @@ header.shrink .header-options a.active {
 .mobile-user-avatar {
   width: 80px;
   height: 80px;
-  background:#79B4B7;
+  background: var(--auth-bg);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -579,38 +640,42 @@ header.shrink .header-options a.active {
   font-size: 2rem;
   text-transform: uppercase;
   box-shadow: 
-    0 10px 30px rgba(5, 150, 105, 0.3),
-    0 4px 15px rgba(5, 150, 105, 0.2),
+    0 10px 30px rgba(254, 161, 22, 0.3),
+    0 4px 15px rgba(254, 161, 22, 0.2),
     inset 0 2px 0 rgba(255, 255, 255, 0.3);
   border: 4px solid rgba(255, 255, 255, 0.9);
   animation: pulse 2s infinite;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 @keyframes pulse {
   0%, 100% {
     box-shadow: 
-      0 10px 30px rgba(5, 150, 105, 0.3),
-      0 4px 15px rgba(5, 150, 105, 0.2),
+      0 10px 30px rgba(254, 161, 22, 0.3),
+      0 4px 15px rgba(254, 161, 22, 0.2),
       inset 0 2px 0 rgba(255, 255, 255, 0.3),
-      0 0 0 0 rgba(5, 150, 105, 0.4);
+      0 0 0 0 rgba(254, 161, 22, 0.4);
   }
   50% {
     box-shadow: 
-      0 10px 30px rgba(5, 150, 105, 0.3),
-      0 4px 15px rgba(5, 150, 105, 0.2),
+      0 10px 30px rgba(254, 161, 22, 0.3),
+      0 4px 15px rgba(254, 161, 22, 0.2),
       inset 0 2px 0 rgba(255, 255, 255, 0.3),
-      0 0 0 15px rgba(5, 150, 105, 0);
+      0 0 0 15px rgba(254, 161, 22, 0);
   }
 }
 
 .user-email {
   font-size: 14px;
-  color: #6b7280;
+  color: #666;
   font-weight: 500;
   padding: 8px 16px;
-  background: rgba(5, 150, 105, 0.05);
+  background: var(--mobile-hover);
   border-radius: 20px;
-  border: 1px solid rgba(5, 150, 105, 0.1);
+  border: 1px solid rgba(254, 161, 22, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .mobile-user-actions {
@@ -626,7 +691,7 @@ header.shrink .header-options a.active {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background:#79B4B7;
+  background: var(--auth-bg);
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -639,7 +704,9 @@ header.shrink .header-options a.active {
   position: relative;
   overflow: hidden;
   border: 2px solid transparent;
-  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2);
 }
 
 .mobile-user-actions button::before,
@@ -656,9 +723,8 @@ header.shrink .header-options a.active {
 
 .mobile-user-actions button:hover,
 .auth-btn:hover {
-  background: linear-gradient(135deg, #047857 0%, #79B4B7 100%);
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(5, 150, 105, 0.4);
+  box-shadow: 0 15px 35px rgba(254, 161, 22, 0.4);
   border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -778,45 +844,407 @@ header.shrink .header-options a.active {
   }
 }
 
+/* Small Mobile Styles */
+@media screen and (max-width: 480px) {
+  .header-container {
+    width: 90%;
+    padding: 0px 15px;
+    border-radius: 25px;
+  }
+  
+  .logo {
+    margin-left: 5px;
+    font-size: 14px;
+  }
+  
+  .logo h3 {
+    font-size: 1rem;
+  }
+  
+  .hamburger {
+    width: 25px;
+    height: 20px;
+    margin-right: 10px;
+  }
+  
+  .hamburger span {
+    height: 2px;
+  }
+  
+  .mobile-menu {
+    width: 280px;
+  }
+  
+  .mobile-nav-links a {
+    font-size: 16px;
+    padding: 15px 18px;
+  }
+  
+  .mobile-user-actions button,
+  .mobile-account > button {
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+  
+  .mobile-smart-search {
+    padding: 15px 20px;
+  }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 360px) {
+  .header-container {
+    padding: 0px 10px;
+  }
+  
+  .logo h3 {
+    font-size: 0.9rem;
+  }
+  
+  .hamburger {
+    width: 22px;
+    height: 18px;
+    margin-right: 5px;
+  }
+  
+  .mobile-menu {
+    width: 260px;
+  }
+}
+
+/* Jobs page specific styles */
+.jobs-page .header-options.desktop-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+  max-width: none;
+}
+
+.jobs-page .nav-links {
+  gap: 20px;
+}
+
+.jobs-page .header-options.desktop-nav a {
+  font-size: 18px;
+}
+
+.jobs-page .header-options.desktop-nav a.active {
+  background: var(--active-bg);
+  color: white !important;
+  box-shadow: 0 4px 15px var(--active-shadow);
+}
+
 /* Animation for active links */
 @keyframes activeGlow {
   0%, 100% {
-    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+    box-shadow: 0 4px 15px var(--active-shadow);
   }
   50% {
-    box-shadow: 0 4px 20px rgba(5, 150, 105, 0.5);
+    box-shadow: 0 4px 20px rgba(254, 161, 22, 0.5);
   }
 }
 
-.header-options a.active,
+/* .header-options a.active,
 .mobile-nav-links a.active {
   animation: activeGlow 2s infinite;
+} */
+
+/* Ensure proper spacing for jobs page header */
+.jobs-page .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
 }
 
-/* Smart search container integration */
-.smart-search-container .search-input {
-  background: rgba(255, 255, 255, 0.9);
+.jobs-page .logo {
+  flex: 0 0 auto;
+}
+
+.jobs-page .accounts-btn.desktop-account {
+  flex: 0 0 auto;
+  margin-left: 0;
+}
+
+/* Header layout adjustments for smart search */
+.jobs-page .header-options.desktop-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex: 1;
+}
+
+.jobs-page .nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+.jobs-page .nav-links a {
+  margin: 0px 15px;
+  font-size: 18px;
+}
+
+/* Compact search button positioning */
+.header-options.desktop-nav {
+  position: relative;
+}
+
+/* Mobile search section */
+.mobile-search-section {
+  padding: 20px 25px;
+  border-bottom: 2px solid rgba(254, 161, 22, 0.1);
+  background: linear-gradient(135deg, rgba(254, 161, 22, 0.02) 0%, transparent 100%);
+}
+
+/* User menu improvements */
+.user-menu-header {
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(254, 161, 22, 0.1);
+  margin-bottom: 10px;
+}
+
+.user-menu-header .user-email {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.user-menu button i {
+  width: 16px;
+  font-size: 14px;
+}
+
+/* Auth button styling */
+.auth-button {
+  background: var(--auth-bg);
+  color: white;
+  font-size: 15px;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2);
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(254, 161, 22, 0.3);
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1200px) {
+  .header-search-wrapper {
+    max-width: 300px;
+    margin: 0 15px;
+  }
+  
+  .jobs-page .nav-links a {
+    margin: 0px 10px;
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .header-search-wrapper {
+    max-width: 250px;
+    margin: 0 10px;
+  }
+  
+  .jobs-page .nav-links a {
+    margin: 0px 8px;
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .jobs-page .header-options.desktop-nav {
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .header-search-wrapper {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+  }
+  
+  .jobs-page .nav-links {
+    gap: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /* Hide desktop search on mobile */
+  .header-search-wrapper {
+    display: none;
+  }
+  
+  /* Mobile search styling */
+  .mobile-search-section .smart-search-container {
+    width: 100%;
+  }
+  
+  .mobile-search-section .search-input {
+    font-size: 16px;
+    border-radius: 12px;
+  }
+  
+  .mobile-search-section .suggestions-dropdown {
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Smart search container integration with glass effect */
+.smart-search-container .search-input {
+  background: var(--search-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 2px solid var(--search-border);
   transition: all 0.3s ease;
 }
 
 .smart-search-container .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: #79B4B7;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px var(--search-focus);
 }
 
 .smart-search-container .suggestions-dropdown {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--dropdown-bg);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--search-border);
 }
 
-/* Remove focus outlines */
-.search-input-wrapper .search-input:focus-visible,
-.search-input-wrapper .search-input:active,
-.search-input-wrapper input:focus-visible {
-  border: 1px solid #79B4B7;
+/* Animation for search suggestions */
+.smart-search-container .suggestions-dropdown {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced hover effects for suggestions */
+.smart-search-container .suggestion-item:hover {
+  background: var(--suggestion-hover);
+  transform: translateX(2px);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+}
+
+.smart-search-container .suggestion-item.selected {
+  background: var(--suggestion-selected);
+  transform: translateX(4px);
+}
+
+/* Suggestion categories styling */
+.smart-search-container .suggestion-meta {
+  background: rgba(254, 161, 22, 0.1);
+  color: var(--primary-black);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-block;
+  margin-top: 2px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.smart-search-container .suggestion-content.recent .suggestion-meta {
+  background: rgba(254, 161, 22, 0.15);
+  color: var(--primary-black);
+}
+
+.smart-search-container .suggestion-content.popular .suggestion-meta {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--primary-black);
+}
+
+.search-input-wrapper .search-input:focus-visible {
+  border: 2px solid var(--primary-orange);
   outline: none;
+}
+
+.search-input-wrapper .search-input:active {
+  border: 2px solid var(--primary-orange);
+}
+
+.search-input-wrapper input:focus-visible {
+  border: 2px solid var(--primary-orange);
+  outline: none;
+}
+
+/* Enhanced glass morphism effects */
+.header-container,
+.mobile-menu,
+.user-menu {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+/* Frosted glass overlay for enhanced depth */
+.header-container::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  height: 50%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.15) 0%, 
+    rgba(255, 255, 255, 0.05) 50%, 
+    transparent 100%);
+  border-radius: 34px 34px 0 0;
+  pointer-events: none;
+}
+
+/* Subtle orange glow for brand identity */
+.header-container:hover {
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 16px rgba(254, 161, 22, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Enhanced mobile menu glass effect */
+.mobile-menu::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 1px;
+  height: 30%;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(254, 161, 22, 0.03) 50%, 
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* Smooth transitions for all glass elements */
+* {
+  transition: backdrop-filter 0.3s ease, 
+              -webkit-backdrop-filter 0.3s ease,
+              background 0.3s ease,
+              box-shadow 0.3s ease;
 }
