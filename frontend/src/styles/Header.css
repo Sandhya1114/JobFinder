@@ -81,10 +81,10 @@ header.shrink {
   align-items: center;
   width: 80%;
   margin: auto;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    rgba(255, 255, 255, 0.08) 50%, 
-    rgba(254, 161, 22, 0.05) 100%);
+ background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.842) 0%, 
+    rgba(255, 255, 255, 0.638) 50%, 
+    rgba(254, 161, 22, 0.326) 100%);
   border: 1px solid var(--glass-border);
   border-radius: 35px;
   padding: 0px 10px;
@@ -96,7 +96,7 @@ header.shrink {
   -webkit-backdrop-filter: blur(30px);
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(254, 161, 22, 0.05),
+    0 2px 8px rgba(254, 161, 22, 0.17),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -120,9 +120,9 @@ header.shrink .header-container {
   width: 55%;
   height: 65px;
   background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.2) 0%, 
-    rgba(255, 255, 255, 0.1) 50%, 
-    rgba(254, 161, 22, 0.08) 100%);
+    rgba(255, 255, 255, 0.842) 0%, 
+    rgba(255, 255, 255, 0.638) 50%, 
+    rgba(254, 161, 22, 0.326) 100%);
 }
 
 /* Desktop Navigation container */
@@ -233,7 +233,7 @@ header.shrink .header-options a.active {
 .logo {
   margin-left: 33px;
   font-family: monospace;
-  font-size: 20px;
+  font-size: 15px;
   flex: 0 0 auto;
   color: var(--text-primary);
   z-index: 2;
@@ -242,6 +242,11 @@ header.shrink .header-options a.active {
 
 .logo span {
   color: var(--primary-orange);
+}
+header.shrink .logo{
+  margin-left: 13px;
+  font-family: monospace;
+  font-size: 15px;
 }
 
 /* Desktop Account Section */
