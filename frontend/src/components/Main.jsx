@@ -36,7 +36,7 @@ function Main() {
           ))}
         </div>
       </section> */}
-       <JobCards/>
+       {/* <JobCards/> */}
     </main>
  
 
