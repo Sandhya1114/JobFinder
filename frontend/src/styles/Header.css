@@ -174,7 +174,7 @@ header.shrink .header-options a {
 }
 
 header.shrink .header-options a.active {
-  background:#79B4B7);
+  background:#79B4B7;
   color: white !important;
 }
 
