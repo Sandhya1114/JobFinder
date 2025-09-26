@@ -2,11 +2,14 @@ import React from "react";
 import "../styles/Main.css";
 import Categories3DRing from "./rotate";
 import JobCards from "./jobCard/JobCard";
+   import JobPlatformServices from './JobPlatformServices';
+// import './JobPlatformServices.css';
 
 function Main() {
   const categories = ["IT Jobs", "Marketing", "Finance", "Engineering", "Remote Jobs"];
 
   return (
+    <>
     <main className="main">
       {/* <section className="categories">
         <h2>Browse Jobs by Category</h2>
@@ -35,6 +38,11 @@ function Main() {
       </section> */}
        <JobCards/>
     </main>
+ 
+
+
+<JobPlatformServices />
+    </>
   );
 }
 

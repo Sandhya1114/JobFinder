@@ -91,8 +91,8 @@ background: linear-gradient(90deg, #B1AB86 5%, #FEFAE0 95%); */
 background: linear-gradient(90deg, rgba(249, 233, 191, 1) 5%, rgba(255, 182, 152, 1) 95%); */
 /* background: linear-gradient(90deg, #002147, #283636); */
 /* background: linear-gradient(135deg, #f7f9fc 0%, #d6e7f0 100%); */
-background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f0fdf4 100%);
-
+/* background: linear-gradient(135deg, #ecfdf5 0%, #f0fdfa 30%, #f0fdf4 100%); */
+background-color: white;
      box-sizing:border-box;
  }
         .fa:hover {
