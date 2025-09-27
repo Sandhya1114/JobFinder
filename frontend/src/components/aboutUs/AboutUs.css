@@ -1,4 +1,29 @@
-/* AboutUs.css */
+/* AboutUs.css - Orange Theme with CSS Variables */
+
+/* CSS Variables */
+.about-container {
+  --primary-color: #fea116;        /* Main orange color */
+  --secondary-color: #e8900c;      /* Darker orange for hover */
+  --accent-color: #ff8c00;         /* Additional orange accent */
+  --text-primary: #1f2937;         /* Dark text */
+  --text-secondary: #6b7280;       /* Light text */
+  --text-light: rgba(255, 255, 255, 0.9); /* Light text for dark backgrounds */
+  --border-color: #fed7aa;         /* Light orange border */
+  --background-light: #fff7ed;     /* Light orange background */
+  --background-lighter: #fffbf5;   /* Even lighter background */
+  --glass-bg: rgba(255, 255, 255, 0.1); /* Glass background */
+  --glass-border: rgba(254, 161, 22, 0.2); /* Glass border */
+  
+  /* Shadow variables with primary color */
+  --shadow-light: rgba(254, 161, 22, 0.1);
+  --shadow-medium: rgba(254, 161, 22, 0.15);
+  --shadow-strong: rgba(254, 161, 22, 0.25);
+  
+  /* Gradient variables */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  --gradient-text: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+  --gradient-hero: linear-gradient(135deg, var(--background-light) 0%, var(--background-lighter) 100%);
+}
 
 /* Font Awesome Icons */
 /* @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'); */
@@ -78,12 +103,12 @@
 /* Base Styles */
 .about-container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #79B4B7;
+  color: var(--text-primary);
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  
   min-height: 100vh;
+  /* background: var(--background-lighter); */
 }
 
 /* Hero Section */
@@ -96,7 +121,7 @@
   margin-bottom: 60px;
   border-radius: 20px;
   overflow: hidden;
- 
+  /* background: var(--gradient-hero); */
   transform: translateY(50px);
   opacity: 0;
   transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -108,21 +133,21 @@
 }
 
 .glass-hero-content {
-  background: rgba(66, 64, 64, 0.1);
+  background: var(--glass-bg);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
   padding: 50px;
   border-radius: 20px;
   text-align: center;
   width: 90vw;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px var(--shadow-medium);
 }
 
 .glass-hero-content .hero-title {
   font-size: 4rem;
   margin-bottom: 15px;
-  background-color:#79B4B7;
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -131,6 +156,7 @@
 
 .glass-hero-content .hero-subtitle {
   font-size: 1.5rem;
+  color: var(--text-primary);
   opacity: 0.9;
   margin-bottom: 30px;
   animation: slideInRight 1s ease-out 0.3s both;
@@ -160,18 +186,19 @@
   font-size: 2rem;
   margin-bottom: 8px;
   animation: float 3s ease-in-out infinite;
-  color: #79B4B7;
+  color: var(--primary-color);
   display: block;
 }
 
 .stat-number {
   font-size: 2rem;
   font-weight: bold;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .stat-label {
   font-size: 0.9rem;
+  color: var(--text-secondary);
   opacity: 0.8;
 }
 
@@ -184,13 +211,13 @@
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px var(--shadow-light);
+  border: 1px solid var(--glass-border);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   opacity: 0;
   transform: translateY(30px) rotateX(10deg);
@@ -203,27 +230,28 @@
 
 .glass-card:hover {
   transform: translateY(-10px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(31, 38, 135, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 40px var(--shadow-strong);
+  border: 1px solid var(--primary-color);
 }
 
 .glass-card h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: #79B4B7;
+  color: var(--primary-color);
   font-weight: 600;
 }
 
 .glass-card p {
   line-height: 1.6;
   margin-bottom: 15px;
+  color: var(--text-primary);
   opacity: 0.9;
 }
 
 .glass-card ul {
   padding-left: 20px;
   margin-top: 15px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .glass-card li {
@@ -235,6 +263,7 @@
 .glass-card li:hover {
   opacity: 1;
   transform: translateX(5px);
+  color: var(--primary-color);
 }
 
 /* Feature Cards */
@@ -250,7 +279,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
   transition: left 0.5s;
 }
 
@@ -263,7 +292,7 @@
   text-align: center;
   margin-bottom: 20px;
   animation: pulse 2s infinite;
-  color: #fff;
+  color: var(--primary-color);
   display: block;
 }
 
@@ -276,12 +305,16 @@
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
+  background: var(--glass-bg);
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
 }
 
 .mission-title {
   font-size: 2.5rem;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, #79B4B7 0%, #fff 100%);
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -289,6 +322,7 @@
 .mission-text {
   font-size: 1.1rem;
   line-height: 1.8;
+  color: var(--text-primary);
   opacity: 0.9;
 }
 
@@ -301,7 +335,7 @@
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 40px;
-  background: linear-gradient(135deg, #79B4B7 0%, #fff 100%);
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
@@ -317,13 +351,22 @@
 .value-card {
   text-align: center;
   padding: 40px 20px;
+  background: var(--glass-bg);
+  border-radius: 15px;
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+}
+
+.value-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px var(--shadow-medium);
 }
 
 .value-icon {
   font-size: 3rem;
   margin-bottom: 20px;
   display: block;
-  color: #fff;
+  color: var(--primary-color);
   text-align: center;
 }
 
@@ -341,26 +384,30 @@
 .team-member {
   text-align: center;
   padding: 30px 20px;
+  background: var(--glass-bg);
+  border-radius: 15px;
+  border: 1px solid var(--glass-border);
   transition: all 0.3s ease;
 }
 
 .team-member:hover {
   transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 25px var(--shadow-medium);
 }
 
 .member-avatar {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #fff 0%, #79B4B7 100%);
+  background: var(--gradient-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
   font-weight: bold;
-  color: #1a1a2e;
+  color: white;
   margin: 0 auto 20px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid var(--border-color);
   transition: all 0.3s ease;
 }
 
@@ -371,16 +418,17 @@
 .team-member h3 {
   margin-bottom: 10px;
   font-size: 1.3rem;
+  color: var(--text-primary);
 }
 
 .member-role {
-  color: #fff;
+  color: var(--primary-color);
   font-weight: 600;
   margin-bottom: 5px;
 }
 
 .member-specialty {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   font-style: italic;
   font-size: 0.9rem;
 }
@@ -391,13 +439,16 @@
   padding: 40px;
   margin-bottom: 50px;
   position: relative;
+  background: var(--glass-bg);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
 }
 
 .steps-section h2 {
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 40px;
-  background: linear-gradient(135deg, #79B4B7 0%, #fff 100%);
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -418,8 +469,8 @@
 
 .step-number {
   margin-top: 17px;
-  background: linear-gradient(135deg, #fff, #79B4B7);
-  color: #1a1a2e;
+  background: var(--gradient-primary);
+  color: white;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -430,13 +481,13 @@
   font-size: 1.4rem;
   margin-right: 25px;
   flex-shrink: 0;
-  box-shadow: 0 5px 15px rgba(168, 230, 207, 0.3);
+  box-shadow: 0 5px 15px var(--shadow-light);
   transition: all 0.3s ease;
 }
 
 .step:hover .step-number {
   transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 8px 25px rgba(168, 230, 207, 0.5);
+  box-shadow: 0 8px 25px var(--shadow-medium);
 }
 
 .step-content {
@@ -446,10 +497,12 @@
 .step-content h3 {
   margin-bottom: 15px;
   font-size: 1.4rem;
+  color: var(--text-primary);
 }
 
 .step-content p {
   line-height: 1.6;
+  color: var(--text-primary);
   opacity: 0.9;
 }
 
@@ -457,26 +510,30 @@
 .cta-section {
   margin-bottom: 40px;
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 
 .cta-card {
   text-align: center;
   padding: 50px 30px;
-  background: linear-gradient(135deg, rgba(168, 230, 207, 0.1) 0%, rgba(255, 255, 255, 0.1) 100%);
+  background: var(--glass-bg);
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px var(--shadow-light);
 }
 
 .cta-title {
   font-size: 2.5rem;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, #79B4B7 0%, #fff 100%);
+  background: var(--gradient-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .cta-description {
   font-size: 1.2rem;
+  color: var(--text-primary);
   opacity: 0.9;
   margin-bottom: 30px;
   max-width: 600px;
@@ -485,8 +542,8 @@
 }
 
 .cta-button {
-  background: linear-gradient(135deg, #fff 0%, #79B4B7 50%, #fff 100%);
-  color: #1a1a2e;
+  background: var(--gradient-primary);
+  color: white;
   border: none;
   padding: 15px 40px;
   font-size: 1.2rem;
@@ -496,12 +553,13 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(168, 230, 207, 0.3);
+  box-shadow: 0 5px 15px var(--shadow-light);
 }
 
 .cta-button:hover {
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 10px 25px rgba(168, 230, 207, 0.5);
+  box-shadow: 0 10px 25px var(--shadow-strong);
+  background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
 }
 
 .cta-button span {
