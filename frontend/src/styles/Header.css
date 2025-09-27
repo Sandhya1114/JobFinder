@@ -1,62 +1,11 @@
-/* Color Variables */
-/* #1da09c
-#363062
-#006064 */
-
-header {
-  --primary-orange: #fea116;
-  --primary-black: #000000;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
-  --glass-shadow: rgba(0, 0, 0, 0.1);
-  --text-primary: #000000;
-  --text-secondary: #5a5a58;
-  --hover-bg: rgba(254, 161, 22, 0.1);
-  --hover-color: #fea116;
-  --active-bg: linear-gradient(to right, #fea116, #fea116);
-  --active-shadow: rgba(254, 161, 22, 0.3);
-  --menu-bg: rgba(255, 255, 255, 0.95);
-  --menu-border: rgba(255, 255, 255, 0.3);
-  --mobile-accent: #fea116;
-  --mobile-hover: rgba(254, 161, 22, 0.1);
-  --auth-bg: linear-gradient(135deg, #000 0%, #000000 100%);
-  --search-bg: rgba(255, 255, 255, 0.95);
-  --search-border: rgba(254, 161, 22, 0.2);
-  --search-focus: rgba(254, 161, 22, 0.3);
-  --dropdown-bg: rgba(255, 255, 255, 0.98);
-  --suggestion-hover: rgba(254, 161, 22, 0.05);
-  --suggestion-selected: rgba(254, 161, 22, 0.1);
-  
-}
-
-/* Base header styles with enhanced glass effect */
+/* Base header styles */
 header {
   padding: 10px 0;
   top: 0;
   z-index: 100;
   height: 12vh;
   transition: all 0.3s ease-in-out;
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    rgba(255, 255, 255, 0.05) 50%, 
-    rgba(254, 161, 22, 0.03) 100%);
-  position: relative;
-}
-
-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(254, 161, 22, 0.08) 0%, 
-    transparent 30%, 
-    rgba(0, 0, 0, 0.02) 100%);
-  pointer-events: none;
+  backdrop-filter: blur(30px);
 }
 
 /* Sticky behavior enabled */
@@ -73,60 +22,45 @@ header.non-sticky {
 header.shrink {
   padding: 5px 0;
   height: 5.5vh;
-  backdrop-filter: blur(50px);
-  -webkit-backdrop-filter: blur(50px);
 }
 
-/* Header container with enhanced glass effect */
+/* Header container */
 .header-container {
+  border: 1px solid #fb923c;
+  box-shadow: 0 8px 32px rgba(254, 161, 22, 0.1);
+    border: 1px solid #fed7aa9f;
   height: 65px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 80%;
   margin: auto;
- background: linear-gradient(135deg, 
+  background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.842) 0%, 
     rgba(255, 255, 255, 0.638) 50%, 
     rgba(254, 161, 22, 0.326) 100%);
-  border: 1px solid var(--glass-border);
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
   border-radius: 35px;
   padding: 0px 10px;
   margin-top: 10px;
   transition: all 0.5s ease-in-out;
   position: relative;
-  gap: 20px;
-  backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(254, 161, 22, 0.17),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.header-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    transparent 50%, 
-    rgba(254, 161, 22, 0.03) 100%);
-  border-radius: 35px;
-  pointer-events: none;
+  gap: 20px; /* Add gap for better spacing */
 }
 
 /* Shrinked header container */
 header.shrink .header-container {
+  border: 1px solid #fb923c;
+  box-shadow: 0 8px 32px rgba(254, 161, 22, 0.1);
+    border: 1px solid #fed7aa9f;
   width: 55%;
   height: 65px;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.842) 0%, 
     rgba(255, 255, 255, 0.638) 50%, 
     rgba(254, 161, 22, 0.326) 100%);
+    box-shadow: 0 8px 32px rgba(254, 161, 22, 0.1);
+    border: 1px solid #fed7aa9f;
 }
 
 /* Desktop Navigation container */
@@ -136,8 +70,6 @@ header.shrink .header-container {
   gap: 30px;
   flex: 1;
   justify-content: center;
-  z-index: 2;
-  position: relative;
 }
 
 /* Navigation links container */
@@ -150,7 +82,7 @@ header.shrink .header-container {
 .header-options a {
   margin: 0;
   text-decoration: none;
-  color: var(--text-primary);
+  color: #000000;
   font-size: 20px;
   font-weight: 600;
   font-family: monospace;
@@ -158,28 +90,21 @@ header.shrink .header-container {
   border-radius: 20px;
   position: relative;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 /* Active state for desktop navigation */
 .header-options a.active {
- background: var(--hover-bg);
-  color: var(--hover-color);
+ background: rgba(254, 161, 22, 0.1);
+  color: #fea116;
+  /* box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3); */
   transform: translateY(-1px);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  /* box-shadow: 0 2px 8px rgba(254, 161, 22, 0.2); */
 }
 
 /* Hover effect for non-active links */
 .header-options a:not(.active):hover {
-  background: var(--hover-bg);
-  color: var(--hover-color);
+  background: rgba(254, 161, 22, 0.1);
+  color: #fea116;
   transform: translateY(-1px);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  box-shadow: 0 2px 8px rgba(254, 161, 22, 0.2);
 }
 
 /* Shrinked nav links */
@@ -190,8 +115,8 @@ header.shrink .header-options a {
 }
 
 header.shrink .header-options a.active {
-  background: var(--active-bg);
-  color: white !important;
+  background: rgba(254, 161, 22, 0.1);
+  color: #fea116;
 }
 
 /* Smart Search Bar Container in Header */
@@ -200,8 +125,6 @@ header.shrink .header-options a.active {
   max-width: 400px;
   min-width: 250px;
   margin: 0 20px;
-  z-index: 2;
-  position: relative;
 }
 
 /* Ensure SmartSearchBar fits well in header */
@@ -210,10 +133,9 @@ header.shrink .header-options a.active {
 }
 
 .header-smart-search .search-input {
-  background: var(--search-bg);
-  border: 1px solid var(--search-border);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(254, 161, 22, 0.2);
+  backdrop-filter: blur(10px);
   font-size: 14px;
   padding: 10px 14px 10px 40px;
   box-shadow: 0 2px 8px rgba(254, 161, 22, 0.1);
@@ -221,15 +143,14 @@ header.shrink .header-options a.active {
 
 .header-smart-search .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  box-shadow: 0 0 0 2px var(--search-focus);
-  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 2px rgba(254, 161, 22, 0.3);
+  border-color: #fea116;
 }
 
 .header-smart-search .suggestions-dropdown {
-  background: var(--dropdown-bg);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid var(--search-border);
+  border: 1px solid rgba(254, 161, 22, 0.2);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
@@ -237,16 +158,15 @@ header.shrink .header-options a.active {
 .logo {
   margin-left: 33px;
   font-family: monospace;
-  font-size: 15px;
+  font-size: 20px;
   flex: 0 0 auto;
-  color: var(--text-primary);
-  z-index: 2;
-  position: relative;
+  color: #000000;
 }
 
 .logo span {
-  color: var(--primary-orange);
+  color: #fea116;
 }
+
 header.shrink .logo{
   margin-left: 13px;
   font-family: monospace;
@@ -257,12 +177,10 @@ header.shrink .logo{
 .accounts-btn {
   flex: 0 0 auto;
   margin-left: auto;
-  z-index: 2;
-  position: relative;
 }
 
 .accounts-btn button {
-  background: var(--auth-bg);
+  background-color:#1264d9;
   color: white;
   font-size: 17px;
   border: none;
@@ -272,13 +190,12 @@ header.shrink .logo{
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  /* box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2); */
+  box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2);
 }
 
 .accounts-btn button:hover {
   transform: translateY(-2px);
-  /* box-shadow: 0 8px 25px rgba(254, 161, 22, 0.3); */
+  box-shadow: 0 8px 25px rgba(254, 161, 22, 0.3);
 }
 
 /* User avatar + menu */
@@ -287,13 +204,12 @@ header.shrink .logo{
   display: flex;
   align-items: center;
   gap: 1rem;
-  z-index: 2;
 }
 
 .user-avatar {
   width: 50px;
   height: 50px;
-  background: var(--auth-bg);
+  background: linear-gradient(135deg, #000 0%, #000000 100%);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -306,20 +222,18 @@ header.shrink .logo{
   margin-right: 10px;
   box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
-/* User menu dropdown with enhanced glass effect */
+/* User menu dropdown */
 .user-menu {
   padding: 15px 0;
   position: absolute;
   top: 60px;
   right: 12px;
-  background: var(--menu-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  color: var(--text-primary);
-  border: 1px solid var(--menu-border);
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.1),
@@ -330,21 +244,6 @@ header.shrink .logo{
   min-width: 200px;
 }
 
-.user-menu::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    transparent 50%, 
-    rgba(254, 161, 22, 0.03) 100%);
-  border-radius: 12px;
-  pointer-events: none;
-}
-
 .user-menu button {
   background: transparent;
   border: none;
@@ -352,21 +251,18 @@ header.shrink .logo{
   text-align: left;
   cursor: pointer;
   width: 100%;
-  color: var(--text-primary);
+  color: #000000;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 14px;
   transition: all 0.2s ease;
-  z-index: 1;
-  position: relative;
 }
 
 .user-menu button:hover {
-  background: var(--hover-bg);
-  color: var(--hover-color);
+  background: rgba(254, 161, 22, 0.1);
+  color: #fea116;
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
 }
 
 /* Hamburger Menu Styles */
@@ -379,14 +275,12 @@ header.shrink .logo{
   justify-content: space-between;
   margin-right: 20px;
   flex: 0 0 auto;
-  z-index: 2;
-  position: relative;
 }
 
 .hamburger span {
   width: 100%;
   height: 3px;
-  background-color: var(--text-primary);
+  background-color: #000000;
   border-radius: 2px;
   transition: all 0.3s ease;
 }
@@ -403,7 +297,7 @@ header.shrink .logo{
   transform: rotate(-45deg) translate(8px, -8px);
 }
 
-/* Mobile Menu Overlay with enhanced glass effect */
+/* Mobile Menu Overlay */
 .mobile-menu-overlay {
   position: fixed;
   top: 0;
@@ -412,7 +306,6 @@ header.shrink .logo{
   height: 100vh;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   z-index: 9999;
   opacity: 0;
   visibility: hidden;
@@ -425,7 +318,7 @@ header.shrink .logo{
   visibility: visible;
 }
 
-/* Mobile Menu with glass effect */
+/* Mobile Menu */
 .mobile-menu {
   position: absolute;
   top: 0;
@@ -437,26 +330,11 @@ header.shrink .logo{
     rgba(255, 255, 255, 0.9) 50%, 
     rgba(254, 161, 22, 0.05) 100%);
   backdrop-filter: blur(30px);
-  -webkit-backdrop-filter: blur(30px);
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0;
   overflow-y: auto;
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
-}
-
-.mobile-menu::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, 
-    rgba(254, 161, 22, 0.03) 0%, 
-    transparent 50%, 
-    rgba(0, 0, 0, 0.02) 100%);
-  pointer-events: none;
 }
 
 .mobile-menu-overlay.active .mobile-menu {
@@ -470,40 +348,37 @@ header.shrink .logo{
   padding: 30px 25px 20px;
   border-bottom: 2px solid rgba(254, 161, 22, 0.1);
   background: linear-gradient(135deg, rgba(254, 161, 22, 0.05) 0%, transparent 100%);
-  z-index: 1;
-  position: relative;
 }
 
 .mobile-logo h3 {
   font-family: monospace;
   font-size: 1.5rem;
   margin: 0;
-  color: var(--text-primary);
+  color: #000000;
 }
 
 .mobile-logo span {
-  color: var(--text-secondary);
+  color: #5a5a58;
 }
 
 .close-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--mobile-hover);
+  background: rgba(254, 161, 22, 0.1);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: 16px;
-  color: var(--mobile-accent);
+  color: #fea116;
   transition: all 0.3s ease;
   border: 2px solid transparent;
 }
 
 .close-btn:hover {
-  background: var(--mobile-accent);
+  background: #fea116;
   color: white;
   transform: rotate(90deg);
 }
@@ -512,8 +387,6 @@ header.shrink .logo{
 .mobile-smart-search {
   padding: 20px 25px;
   border-bottom: 1px solid rgba(254, 161, 22, 0.1);
-  z-index: 1;
-  position: relative;
 }
 
 .mobile-smart-search .smart-search-container {
@@ -522,10 +395,9 @@ header.shrink .logo{
 
 .mobile-smart-search .search-input {
   font-size: 16px;
-  background: var(--search-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid var(--search-border);
+  border: 1px solid rgba(254, 161, 22, 0.2);
 }
 
 .mobile-nav-links {
@@ -533,8 +405,6 @@ header.shrink .logo{
   display: flex;
   flex-direction: column;
   gap: 5px;
-  z-index: 1;
-  position: relative;
 }
 
 .mobile-nav-links a {
@@ -554,7 +424,6 @@ header.shrink .logo{
   margin-bottom: 8px;
   border: 2px solid transparent;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .mobile-nav-links a::before {
@@ -564,7 +433,7 @@ header.shrink .logo{
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--mobile-hover) 0%, rgba(254, 161, 22, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(254, 161, 22, 0.1) 0%, rgba(254, 161, 22, 0.05) 100%);
   transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 0;
 }
@@ -576,15 +445,15 @@ header.shrink .logo{
 .mobile-nav-links a:hover {
   transform: translateX(10px);
   border-color: rgba(254, 161, 22, 0.3);
-  color: var(--mobile-accent);
+  color: #fea116;
 }
 
 /* Active state for mobile navigation */
 .mobile-nav-links a.active {
-  background: var(--active-bg);
+  background: linear-gradient(to right, #fea116, #fea116);
   color: white !important;
   border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 25px var(--active-shadow);
+  box-shadow: 0 8px 25px rgba(254, 161, 22, 0.3);
   transform: translateX(5px);
 }
 
@@ -605,7 +474,7 @@ header.shrink .logo{
   justify-content: center;
   z-index: 1;
   position: relative;
-  color: var(--mobile-accent);
+  color: #fea116;
   transition: all 0.3s ease;
 }
 
@@ -624,8 +493,6 @@ header.shrink .logo{
   border-top: 2px solid rgba(254, 161, 22, 0.1);
   background: linear-gradient(135deg, rgba(254, 161, 22, 0.02) 0%, transparent 100%);
   margin-top: auto;
-  z-index: 1;
-  position: relative;
 }
 
 .mobile-user-info {
@@ -639,7 +506,7 @@ header.shrink .logo{
 .mobile-user-avatar {
   width: 80px;
   height: 80px;
-  background: var(--auth-bg);
+  background: linear-gradient(135deg, #000 0%, #000000 100%);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -655,7 +522,6 @@ header.shrink .logo{
   border: 4px solid rgba(255, 255, 255, 0.9);
   animation: pulse 2s infinite;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 @keyframes pulse {
@@ -680,11 +546,10 @@ header.shrink .logo{
   color: #666;
   font-weight: 500;
   padding: 8px 16px;
-  background: var(--mobile-hover);
+  background: rgba(254, 161, 22, 0.1);
   border-radius: 20px;
   border: 1px solid rgba(254, 161, 22, 0.1);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .mobile-user-actions {
@@ -700,7 +565,7 @@ header.shrink .logo{
   align-items: center;
   justify-content: center;
   gap: 12px;
-  background: var(--auth-bg);
+  background: linear-gradient(135deg, #000 0%, #000000 100%);
   color: white;
   font-size: 16px;
   font-weight: 600;
@@ -714,7 +579,6 @@ header.shrink .logo{
   overflow: hidden;
   border: 2px solid transparent;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2);
 }
 
@@ -939,15 +803,15 @@ header.shrink .logo{
 }
 
 .jobs-page .header-options.desktop-nav a.active {
-  background: var(--active-bg);
-  color: white !important;
-  box-shadow: 0 4px 15px var(--active-shadow);
+  background: rgba(254, 161, 22, 0.1);
+  color: #fea116;
+  /* box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3); */
 }
 
 /* Animation for active links */
 @keyframes activeGlow {
   0%, 100% {
-    box-shadow: 0 4px 15px var(--active-shadow);
+    box-shadow: 0 4px 15px rgba(254, 161, 22, 0.3);
   }
   50% {
     box-shadow: 0 4px 20px rgba(254, 161, 22, 0.5);
@@ -981,7 +845,7 @@ header.shrink .logo{
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  /* gap: 30px; */
   flex: 1;
 }
 
@@ -1027,7 +891,7 @@ header.shrink .logo{
 
 /* Auth button styling */
 .auth-button {
-  background: var(--auth-bg);
+  background-color:#1264d9;
   color: white;
   font-size: 15px;
   border: none;
@@ -1037,7 +901,6 @@ header.shrink .logo{
   transition: all 0.3s ease;
   font-weight: 500;
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 15px rgba(254, 161, 22, 0.2);
 }
 
@@ -1113,24 +976,22 @@ header.shrink .logo{
 
 /* Smart search container integration with glass effect */
 .smart-search-container .search-input {
-  background: var(--search-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 2px solid var(--search-border);
+  border: 2px solid rgba(254, 161, 22, 0.2);
   transition: all 0.3s ease;
 }
 
 .smart-search-container .search-input:focus {
   background: rgba(255, 255, 255, 1);
-  border-color: var(--primary-orange);
-  box-shadow: 0 0 0 3px var(--search-focus);
+  border-color: #fea116;
+  box-shadow: 0 0 0 3px rgba(254, 161, 22, 0.3);
 }
 
 .smart-search-container .suggestions-dropdown {
-  background: var(--dropdown-bg);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid var(--search-border);
+  border: 1px solid rgba(254, 161, 22, 0.2);
 }
 
 /* Animation for search suggestions */
@@ -1151,21 +1012,20 @@ header.shrink .logo{
 
 /* Enhanced hover effects for suggestions */
 .smart-search-container .suggestion-item:hover {
-  background: var(--suggestion-hover);
+  background: rgba(254, 161, 22, 0.05);
   transform: translateX(2px);
   backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
 }
 
 .smart-search-container .suggestion-item.selected {
-  background: var(--suggestion-selected);
+  background: rgba(254, 161, 22, 0.1);
   transform: translateX(4px);
 }
 
 /* Suggestion categories styling */
 .smart-search-container .suggestion-meta {
   background: rgba(254, 161, 22, 0.1);
-  color: var(--primary-black);
+  color: #000000;
   padding: 2px 6px;
   border-radius: 4px;
   font-size: 10px;
@@ -1173,87 +1033,28 @@ header.shrink .logo{
   display: inline-block;
   margin-top: 2px;
   backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
 }
 
 .smart-search-container .suggestion-content.recent .suggestion-meta {
   background: rgba(254, 161, 22, 0.15);
-  color: var(--primary-black);
+  color: #000000;
 }
 
 .smart-search-container .suggestion-content.popular .suggestion-meta {
   background: rgba(16, 185, 129, 0.1);
-  color: var(--primary-black);
+  color: #000000;
 }
 
 .search-input-wrapper .search-input:focus-visible {
-  border: 2px solid var(--primary-orange);
+  border: 2px solid #fea116;
   outline: none;
 }
 
 .search-input-wrapper .search-input:active {
-  border: 2px solid var(--primary-orange);
+  border: 2px solid #fea116;
 }
 
 .search-input-wrapper input:focus-visible {
-  border: 2px solid var(--primary-orange);
+  border: 2px solid #fea116;
   outline: none;
-}
-
-/* Enhanced glass morphism effects */
-.header-container,
-.mobile-menu,
-.user-menu {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  backdrop-filter: blur(40px);
-  -webkit-backdrop-filter: blur(40px);
-}
-
-/* Frosted glass overlay for enhanced depth */
-.header-container::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  right: 1px;
-  height: 50%;
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.15) 0%, 
-    rgba(255, 255, 255, 0.05) 50%, 
-    transparent 100%);
-  border-radius: 34px 34px 0 0;
-  pointer-events: none;
-}
-
-/* Subtle orange glow for brand identity */
-.header-container:hover {
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 2px 16px rgba(254, 161, 22, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-/* Enhanced mobile menu glass effect */
-.mobile-menu::after {
-  content: '';
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  right: 1px;
-  height: 30%;
-  background: linear-gradient(180deg, 
-    rgba(255, 255, 255, 0.1) 0%, 
-    rgba(254, 161, 22, 0.03) 50%, 
-    transparent 100%);
-  pointer-events: none;
-}
-
-/* Smooth transitions for all glass elements */
-* {
-  transition: backdrop-filter 0.3s ease, 
-              -webkit-backdrop-filter 0.3s ease,
-              background 0.3s ease,
-              box-shadow 0.3s ease;
 }

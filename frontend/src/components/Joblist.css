@@ -177,7 +177,9 @@ h1 {
 
 .job-details {
   margin-bottom: 15px;
+  margin-top: -10px;
 }
+
 
 .job-category {
   margin-bottom: 10px;
@@ -2143,6 +2145,7 @@ h1 {
   gap: 6px;
   transition: all 0.3s ease;
   margin-right: 10px;
+  padding:12px 15px;
 }
 
 .view-details-btn:hover {

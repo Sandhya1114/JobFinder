@@ -441,7 +441,7 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
               onClick={() => onViewDetails(job)}
               className="view-details-btn"
             >
-              <i className="fa fa-eye"></i>
+              {/* <i className="fa fa-eye"></i> */}
               View Details
             </button>
             <button onClick={handleSaveJob} className="save-btn">
