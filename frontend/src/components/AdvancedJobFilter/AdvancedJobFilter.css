@@ -1,13 +1,13 @@
 /* AdvancedJobFilter.css */
 
-.advanced-job-filter {
+.advancedFilterContainer {
   width: 100%;
   min-height: 100vh;
   background-color: #f5f7fa;
   padding: 20px;
 }
 
-.filter-container {
+.advancedFilterWrapper {
   display: flex;
   gap: 20px;
   max-width: 1400px;
@@ -15,7 +15,7 @@
 }
 
 /* Filter Sidebar */
-.filter-sidebar {
+.advancedFilterSidebar {
   width: 300px;
   background: white;
   border-radius: 8px;
@@ -28,7 +28,7 @@
   overflow-y: auto;
 }
 
-.filter-header {
+.advancedFilterHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,14 +37,14 @@
   border-bottom: 2px solid #e5e7eb;
 }
 
-.filter-header h2 {
+.advancedFilterHeader h2 {
   font-size: 24px;
   font-weight: 600;
   color: #1f2937;
   margin: 0;
 }
 
-.clear-all-btn {
+.advancedFilterClearAllBtn {
   background: #ef4444;
   color: white;
   border: none;
@@ -55,22 +55,22 @@
   transition: background 0.2s;
 }
 
-.clear-all-btn:hover {
+.advancedFilterClearAllBtn:hover {
   background: #dc2626;
 }
 
 /* Filter Sections */
-.filter-section {
+.advancedFilterSection {
   margin-bottom: 20px;
   border-bottom: 1px solid #e5e7eb;
   padding-bottom: 15px;
 }
 
-.filter-section:last-child {
+.advancedFilterSection:last-child {
   border-bottom: none;
 }
 
-.filter-section-header {
+.advancedFilterSectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -79,20 +79,20 @@
   user-select: none;
 }
 
-.filter-section-header h3 {
+.advancedFilterSectionHeader h3 {
   font-size: 16px;
   font-weight: 600;
   color: #374151;
   margin: 0;
 }
 
-.filter-section-controls {
+.advancedFilterSectionControls {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.active-count {
+.advancedFilterActiveCount {
   background: #3b82f6;
   color: white;
   padding: 2px 8px;
@@ -101,23 +101,23 @@
   font-weight: 600;
 }
 
-.expand-icon {
+.advancedFilterExpandIcon {
   color: #6b7280;
   font-size: 12px;
   transition: transform 0.2s;
 }
 
-.expand-icon.expanded {
+.advancedFilterExpandIcon.advancedFilterExpanded {
   transform: rotate(180deg);
 }
 
-.filter-options {
+.advancedFilterOptions {
   padding: 10px 0;
   max-height: 300px;
   overflow-y: auto;
 }
 
-.filter-option {
+.advancedFilterOption {
   display: flex;
   align-items: center;
   padding: 8px 4px;
@@ -126,18 +126,18 @@
   border-radius: 4px;
 }
 
-.filter-option:hover {
+.advancedFilterOption:hover {
   background: #f3f4f6;
 }
 
-.filter-option input[type="checkbox"] {
+.advancedFilterOption input[type="checkbox"] {
   width: 18px;
   height: 18px;
   margin-right: 10px;
   cursor: pointer;
 }
 
-.filter-label {
+.advancedFilterLabel {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -146,23 +146,27 @@
   color: #4b5563;
 }
 
-.filter-name {
+.advancedFilterName {
   flex: 1;
 }
 
-.filter-count {
+.advancedFilterCount {
   color: #9ca3af;
   font-size: 13px;
 }
 
 /* Search Form */
-.search-form {
+.advancedFilterSearchForm {
   display: flex;
+  flex-direction: column;
   gap: 8px;
   margin-bottom: 10px;
 }
-
-.search-input {
+.advancedFilterSearchForm .fa-solid, .fas {
+    font-weight: 900;
+    color: white;
+}
+.advancedFilterSearchInput {
   flex: 1;
   padding: 10px 12px;
   border: 1px solid #d1d5db;
@@ -172,11 +176,11 @@
   transition: border-color 0.2s;
 }
 
-.search-input:focus {
+.advancedFilterSearchInput:focus {
   border-color: #3b82f6;
 }
 
-.search-btn {
+.advancedFilterSearchBtn {
   padding: 10px 16px;
   background: #3b82f6;
   color: white;
@@ -188,11 +192,11 @@
   transition: background 0.2s;
 }
 
-.search-btn:hover {
+.advancedFilterSearchBtn:hover {
   background: #2563eb;
 }
 
-.clear-filter-btn {
+.advancedFilterClearFilterBtn {
   width: 100%;
   padding: 8px;
   background: #f3f4f6;
@@ -204,19 +208,21 @@
   transition: background 0.2s;
 }
 
-.clear-filter-btn:hover {
+.advancedFilterClearFilterBtn:hover {
   background: #e5e7eb;
 }
 
 /* Salary Inputs */
-.salary-inputs {
-  display: flex;
-  align-items: center;
+.advancedFilterSalaryInputs {
+  display: flex
+;
+    flex-direction: column;
+    align-items: center;
   gap: 8px;
   padding: 10px 0;
 }
 
-.salary-input {
+.advancedFilterSalaryInput {
   flex: 1;
   padding: 8px 10px;
   border: 1px solid #d1d5db;
@@ -225,11 +231,11 @@
   outline: none;
 }
 
-.salary-input:focus {
+.advancedFilterSalaryInput:focus {
   border-color: #3b82f6;
 }
 
-.apply-salary-btn {
+.advancedFilterApplySalaryBtn {
   padding: 8px 12px;
   background: #10b981;
   color: white;
@@ -240,17 +246,17 @@
   white-space: nowrap;
 }
 
-.apply-salary-btn:hover {
+.advancedFilterApplySalaryBtn:hover {
   background: #059669;
 }
 
 /* Main Content */
-.filter-main-content {
+.advancedFilterMainContent {
   flex: 1;
   min-width: 0;
 }
 
-.content-header {
+.advancedFilterContentHeader {
   background: white;
   padding: 20px;
   border-radius: 8px;
@@ -263,7 +269,7 @@
   gap: 15px;
 }
 
-.mobile-filter-toggle {
+.advancedFilterMobileToggle {
   display: none;
   padding: 10px 16px;
   background: #3b82f6;
@@ -275,7 +281,7 @@
   position: relative;
 }
 
-.filter-badge {
+.advancedFilterBadge {
   position: absolute;
   top: -8px;
   right: -8px;
@@ -287,25 +293,25 @@
   font-weight: 600;
 }
 
-.results-info {
+.advancedFilterResultsInfo {
   font-size: 16px;
   color: #374151;
   font-weight: 500;
 }
 
-.sort-controls {
+.advancedFilterSortControls {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.sort-controls label {
+.advancedFilterSortControls label {
   font-size: 14px;
   color: #6b7280;
   font-weight: 500;
 }
 
-.sort-select {
+.advancedFilterSortSelect {
   padding: 8px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
@@ -316,7 +322,7 @@
 }
 
 /* Active Filters */
-.active-filters {
+.advancedFilterActiveFilters {
   background: white;
   padding: 15px 20px;
   border-radius: 8px;
@@ -324,21 +330,21 @@
   margin-bottom: 20px;
 }
 
-.active-filters-label {
+.advancedFilterActiveFiltersLabel {
   font-size: 14px;
   color: #6b7280;
   font-weight: 500;
   margin-right: 10px;
 }
 
-.active-filter-tags {
+.advancedFilterActiveTags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
 
-.filter-tag {
+.advancedFilterTag {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -350,7 +356,7 @@
   font-weight: 500;
 }
 
-.filter-tag button {
+.advancedFilterTag button {
   background: none;
   border: none;
   color: #1e40af;
@@ -366,17 +372,17 @@
   transition: background 0.2s;
 }
 
-.filter-tag button:hover {
+.advancedFilterTag button:hover {
   background: rgba(30, 64, 175, 0.1);
 }
 
 /* Jobs List */
-.jobs-list {
+.advancedFilterJobsList {
   display: grid;
   gap: 20px;
 }
 
-.job-card {
+.advancedFilterJobCard {
   background: white;
   padding: 24px;
   border-radius: 8px;
@@ -384,18 +390,18 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.job-card:hover {
+.advancedFilterJobCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.job-card-header {
+.advancedFilterJobCardHeader {
   display: flex;
   gap: 15px;
   margin-bottom: 16px;
 }
 
-.company-logo {
+.advancedFilterCompanyLogo {
   width: 60px;
   height: 60px;
   border-radius: 8px;
@@ -404,31 +410,31 @@
   padding: 8px;
 }
 
-.job-title-section {
+.advancedFilterJobTitleSection {
   flex: 1;
 }
 
-.job-title {
+.advancedFilterJobTitle {
   font-size: 20px;
   font-weight: 600;
   color: #1f2937;
   margin: 0 0 8px 0;
 }
 
-.company-name {
+.advancedFilterCompanyName {
   font-size: 16px;
   color: #6b7280;
   margin: 0;
 }
 
-.job-details {
+.advancedFilterJobDetails {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 16px;
 }
 
-.job-detail {
+.advancedFilterJobDetail {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -436,18 +442,18 @@
   color: #4b5563;
 }
 
-.detail-icon {
+.advancedFilterDetailIcon {
   font-size: 16px;
 }
 
-.job-description {
+.advancedFilterJobDescription {
   color: #6b7280;
   font-size: 14px;
   line-height: 1.6;
   margin-bottom: 16px;
 }
 
-.job-card-footer {
+.advancedFilterJobCardFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -455,7 +461,7 @@
   border-top: 1px solid #e5e7eb;
 }
 
-.job-category {
+.advancedFilterJobCategory {
   padding: 6px 12px;
   background: #f3f4f6;
   color: #4b5563;
@@ -464,7 +470,7 @@
   font-weight: 500;
 }
 
-.view-job-btn {
+.advancedFilterViewJobBtn {
   padding: 10px 20px;
   background: #3b82f6;
   color: white;
@@ -476,20 +482,20 @@
   transition: background 0.2s;
 }
 
-.view-job-btn:hover {
+.advancedFilterViewJobBtn:hover {
   background: #2563eb;
 }
 
 /* Loading and Error States */
-.filter-loading,
-.loading-spinner {
+.advancedFilterLoading,
+.advancedFilterLoadingSpinner {
   text-align: center;
   padding: 40px;
   color: #6b7280;
   font-size: 16px;
 }
 
-.error-message {
+.advancedFilterErrorMessage {
   background: #fee2e2;
   color: #991b1b;
   padding: 16px;
@@ -498,20 +504,20 @@
   text-align: center;
 }
 
-.no-results {
+.advancedFilterNoResults {
   text-align: center;
   padding: 60px 20px;
   background: white;
   border-radius: 8px;
 }
 
-.no-results p {
+.advancedFilterNoResults p {
   font-size: 18px;
   color: #6b7280;
   margin-bottom: 20px;
 }
 
-.clear-filters-cta {
+.advancedFilterClearFiltersCta {
   padding: 12px 24px;
   background: #3b82f6;
   color: white;
@@ -523,7 +529,7 @@
 }
 
 /* Pagination */
-.pagination {
+.advancedFilterPagination {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -535,7 +541,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.pagination-btn {
+.advancedFilterPaginationBtn {
   padding: 10px 20px;
   background: #3b82f6;
   color: white;
@@ -547,16 +553,16 @@
   transition: background 0.2s;
 }
 
-.pagination-btn:hover:not(:disabled) {
+.advancedFilterPaginationBtn:hover:not(:disabled) {
   background: #2563eb;
 }
 
-.pagination-btn:disabled {
+.advancedFilterPaginationBtn:disabled {
   background: #d1d5db;
   cursor: not-allowed;
 }
 
-.pagination-info {
+.advancedFilterPaginationInfo {
   font-size: 14px;
   color: #4b5563;
   font-weight: 500;
@@ -564,17 +570,17 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .filter-sidebar {
+  .advancedFilterSidebar {
     width: 250px;
   }
 }
 
 @media (max-width: 768px) {
-  .filter-container {
+  .advancedFilterWrapper {
     flex-direction: column;
   }
   
-  .filter-sidebar {
+  .advancedFilterSidebar {
     position: fixed;
     left: -100%;
     top: 0;
@@ -585,73 +591,73 @@
     max-height: 100vh;
   }
   
-  .filter-sidebar.open {
+  .advancedFilterSidebar.advancedFilterOpen {
     left: 0;
   }
   
-  .mobile-filter-toggle {
+  .advancedFilterMobileToggle {
     display: inline-flex;
     align-items: center;
     gap: 8px;
   }
   
-  .content-header {
+  .advancedFilterContentHeader {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .sort-controls {
+  .advancedFilterSortControls {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .sort-select {
+  .advancedFilterSortSelect {
     width: 100%;
   }
   
-  .job-card-header {
+  .advancedFilterJobCardHeader {
     flex-direction: column;
     text-align: center;
   }
   
-  .company-logo {
+  .advancedFilterCompanyLogo {
     margin: 0 auto;
   }
   
-  .job-details {
+  .advancedFilterJobDetails {
     flex-direction: column;
     gap: 8px;
   }
   
-  .job-card-footer {
+  .advancedFilterJobCardFooter {
     flex-direction: column;
     gap: 12px;
   }
   
-  .view-job-btn {
+  .advancedFilterViewJobBtn {
     width: 100%;
   }
 }
 
 /* Scrollbar Styling */
-.filter-sidebar::-webkit-scrollbar,
-.filter-options::-webkit-scrollbar {
+.advancedFilterSidebar::-webkit-scrollbar,
+.advancedFilterOptions::-webkit-scrollbar {
   width: 6px;
 }
 
-.filter-sidebar::-webkit-scrollbar-track,
-.filter-options::-webkit-scrollbar-track {
+.advancedFilterSidebar::-webkit-scrollbar-track,
+.advancedFilterOptions::-webkit-scrollbar-track {
   background: #f3f4f6;
   border-radius: 3px;
 }
 
-.filter-sidebar::-webkit-scrollbar-thumb,
-.filter-options::-webkit-scrollbar-thumb {
+.advancedFilterSidebar::-webkit-scrollbar-thumb,
+.advancedFilterOptions::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 3px;
 }
 
-.filter-sidebar::-webkit-scrollbar-thumb:hover,
-.filter-options::-webkit-scrollbar-thumb:hover {
+.advancedFilterSidebar::-webkit-scrollbar-thumb:hover,
+.advancedFilterOptions::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
