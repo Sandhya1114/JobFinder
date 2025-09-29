@@ -24,7 +24,320 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // ============ API ROUTES ============
+//n ============ ADVANCED FILTER ROUTES (PLACED FIRST) ============
 
+// Get all unique filter values from database
+app.get('/api/advanced-filters/options', async (req, res) => {
+  try {
+    console.log('📊 Advanced filters options endpoint hit');
+    
+    const [
+      categoriesResult,
+      companiesResult,
+      locationsResult,
+      typesResult,
+      experienceLevelsResult,
+      salaryDataResult
+    ] = await Promise.all([
+      supabase.from('categories').select('id, name, slug').order('name'),
+      supabase.from('companies').select('id, name, logo').order('name'),
+      supabase.from('jobs').select('location').not('location', 'is', null),
+      supabase.from('jobs').select('type').not('type', 'is', null),
+      supabase.from('jobs').select('experience').not('experience', 'is', null),
+      supabase.from('jobs').select('salary_min, salary_max, salary_currency').not('salary_min', 'is', null)
+    ]);
+
+    // Process locations
+    const locationsSet = new Set();
+    (locationsResult.data || []).forEach(item => {
+      if (item.location) {
+        item.location.split(',').forEach(loc => {
+          const trimmed = loc.trim();
+          if (trimmed) locationsSet.add(trimmed);
+        });
+      }
+    });
+
+    // Process job types
+    const typesSet = new Set();
+    (typesResult.data || []).forEach(item => {
+      if (item.type) typesSet.add(item.type.trim());
+    });
+
+    // Process experience levels
+    const experienceSet = new Set();
+    (experienceLevelsResult.data || []).forEach(item => {
+      if (item.experience) experienceSet.add(item.experience.trim());
+    });
+
+    // Calculate salary ranges
+    const salaries = (salaryDataResult.data || [])
+      .filter(item => item.salary_min !== null)
+      .map(item => ({
+        min: item.salary_min,
+        max: item.salary_max || item.salary_min,
+        currency: item.salary_currency
+      }));
+
+    const minSalary = salaries.length > 0 ? Math.min(...salaries.map(s => s.min)) : 0;
+    const maxSalary = salaries.length > 0 ? Math.max(...salaries.map(s => s.max)) : 0;
+
+    // Create dynamic salary ranges
+    const salaryRanges = [];
+    if (minSalary > 0 && maxSalary > 0) {
+      const range = maxSalary - minSalary;
+      const step = Math.ceil(range / 5);
+      
+      for (let i = 0; i < 5; i++) {
+        const rangeMin = minSalary + (step * i);
+        const rangeMax = i === 4 ? null : minSalary + (step * (i + 1));
+        
+        salaryRanges.push({
+          id: `${rangeMin}-${rangeMax || 'plus'}`,
+          label: rangeMax 
+            ? `$${rangeMin.toLocaleString()} - $${rangeMax.toLocaleString()}`
+            : `$${rangeMin.toLocaleString()}+`,
+          min: rangeMin,
+          max: rangeMax
+        });
+      }
+    }
+
+    const response = {
+      categories: (categoriesResult.data || []).map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug
+      })),
+      companies: (companiesResult.data || []).map(comp => ({
+        id: comp.id,
+        name: comp.name,
+        logo: comp.logo
+      })),
+      locations: Array.from(locationsSet).sort().map(loc => ({
+        id: loc.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        name: loc,
+        value: loc
+      })),
+      types: Array.from(typesSet).sort().map(type => ({
+        id: type.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        name: type,
+        value: type
+      })),
+      experienceLevels: Array.from(experienceSet).sort().map(exp => ({
+        id: exp.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        name: exp,
+        value: exp
+      })),
+      salaryRanges: salaryRanges,
+      stats: {
+        totalCategories: categoriesResult.data?.length || 0,
+        totalCompanies: companiesResult.data?.length || 0,
+        totalLocations: locationsSet.size,
+        totalTypes: typesSet.size,
+        totalExperienceLevels: experienceSet.size,
+        minSalary,
+        maxSalary
+      }
+    };
+
+    console.log('✅ Returning filter options:', response.stats);
+    res.json(response);
+  } catch (error) {
+    console.error('❌ Error fetching filter options:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get job counts for each filter option
+app.get('/api/advanced-filters/counts', async (req, res) => {
+  try {
+    console.log('📊 Advanced filters counts endpoint hit');
+    
+    const { data: allJobs } = await supabase
+      .from('jobs')
+      .select('category_id, company_id, location, type, experience, salary_min, salary_max');
+
+    const jobs = allJobs || [];
+
+    // Count by category
+    const categoryCounts = {};
+    jobs.forEach(job => {
+      if (job.category_id) {
+        categoryCounts[job.category_id] = (categoryCounts[job.category_id] || 0) + 1;
+      }
+    });
+
+    // Count by company
+    const companyCounts = {};
+    jobs.forEach(job => {
+      if (job.company_id) {
+        companyCounts[job.company_id] = (companyCounts[job.company_id] || 0) + 1;
+      }
+    });
+
+    // Count by location
+    const locationCounts = {};
+    jobs.forEach(job => {
+      if (job.location) {
+        job.location.split(',').forEach(loc => {
+          const trimmed = loc.trim();
+          if (trimmed) {
+            locationCounts[trimmed] = (locationCounts[trimmed] || 0) + 1;
+          }
+        });
+      }
+    });
+
+    // Count by type
+    const typeCounts = {};
+    jobs.forEach(job => {
+      if (job.type) {
+        typeCounts[job.type] = (typeCounts[job.type] || 0) + 1;
+      }
+    });
+
+    // Count by experience
+    const experienceCounts = {};
+    jobs.forEach(job => {
+      if (job.experience) {
+        experienceCounts[job.experience] = (experienceCounts[job.experience] || 0) + 1;
+      }
+    });
+
+    const response = {
+      categories: categoryCounts,
+      companies: companyCounts,
+      locations: locationCounts,
+      types: typeCounts,
+      experienceLevels: experienceCounts,
+      totalJobs: jobs.length
+    };
+
+    console.log('✅ Returning filter counts:', response);
+    res.json(response);
+  } catch (error) {
+    console.error('❌ Error fetching filter counts:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Apply advanced filters to get filtered jobs
+app.get('/api/advanced-filters/jobs', async (req, res) => {
+  try {
+    console.log('📊 Advanced filters jobs endpoint hit with params:', req.query);
+    
+    const {
+      categories,
+      companies,
+      locations,
+      types,
+      experienceLevels,
+      salaryMin,
+      salaryMax,
+      search,
+      page = 1,
+      limit = 20,
+      sortBy = 'created_at',
+      sortOrder = 'desc'
+    } = req.query;
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    let query = supabase
+      .from('jobs')
+      .select(`
+        *,
+        categories (id, name, slug),
+        companies (id, name, logo)
+      `, { count: 'exact' });
+
+    // Apply filters
+    if (categories) {
+      const categoryArray = categories.split(',').filter(Boolean);
+      if (categoryArray.length > 0) {
+        query = query.in('category_id', categoryArray);
+      }
+    }
+
+    if (companies) {
+      const companyArray = companies.split(',').filter(Boolean);
+      if (companyArray.length > 0) {
+        query = query.in('company_id', companyArray);
+      }
+    }
+
+    if (locations) {
+      const locationArray = locations.split(',').filter(Boolean);
+      if (locationArray.length > 0) {
+        const locationConditions = locationArray.map(loc => `location.ilike.%${loc}%`).join(',');
+        query = query.or(locationConditions);
+      }
+    }
+
+    if (types) {
+      const typeArray = types.split(',').filter(Boolean);
+      if (typeArray.length > 0) {
+        query = query.in('type', typeArray);
+      }
+    }
+
+    if (experienceLevels) {
+      const expArray = experienceLevels.split(',').filter(Boolean);
+      if (expArray.length > 0) {
+        const expConditions = expArray.map(exp => `experience.ilike.%${exp}%`).join(',');
+        query = query.or(expConditions);
+      }
+    }
+
+    if (salaryMin) {
+      query = query.gte('salary_min', parseInt(salaryMin));
+    }
+
+    if (salaryMax) {
+      query = query.lte('salary_max', parseInt(salaryMax));
+    }
+
+    if (search && search.trim()) {
+      const searchTerm = search.trim();
+      query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+    }
+
+    // Apply sorting
+    const ascending = sortOrder.toLowerCase() === 'asc';
+    query = query.order(sortBy, { ascending });
+
+    // Apply pagination
+    query = query.range(offset, offset + limitNum - 1);
+
+    const { data: jobs, error, count } = await query;
+
+    if (error) throw error;
+
+    const totalJobs = count || 0;
+    const totalPages = Math.ceil(totalJobs / limitNum);
+
+    const response = {
+      jobs: jobs || [],
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalJobs,
+        jobsPerPage: limitNum,
+        hasNextPage: pageNum < totalPages,
+        hasPreviousPage: pageNum > 1
+      }
+    };
+
+    console.log('✅ Returning filtered jobs:', response.pagination);
+    res.json(response);
+  } catch (error) {
+    console.error('❌ Error fetching filtered jobs:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 // UPDATED: Get all jobs with pagination and filters (FIXED COMPANY SEARCH)
 app.get('/api/jobs', async (req, res) => {
   try {
@@ -239,6 +552,8 @@ app.get('/api/companies', async (req, res) => {
 });
 
 // Add these routes to your existing Express.js backend
+// Add these endpoints to your server.js file
+
 
 // ============ DASHBOARD API ROUTES ============
 

@@ -436,6 +436,7 @@ import educationReducer from './educationSlice';
 import skillsReducer from './skillsSlice';
 import workExperienceReducer from './workExperienceSlice';
 import resumesReducer from './resumesSlice';
+import advancedFilterReducer from './advancedFilterSlice';
 
 // Export actions for use in components
 export const {
@@ -474,6 +475,7 @@ const store = configureStore({
     skills: skillsReducer,
     workExperience: workExperienceReducer,
     resumes: resumesReducer,
+    advancedFilter: advancedFilterReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

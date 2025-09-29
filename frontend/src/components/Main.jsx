@@ -3,6 +3,7 @@ import "../styles/Main.css";
 import Categories3DRing from "./rotate";
 import JobCards from "./jobCard/JobCard";
    import JobPlatformServices from './JobPlatformServices';
+import AdvancedJobFilter from "./AdvancedJobFilter/AdvancedJobFilter";
 // import './JobPlatformServices.css';
 
 function Main() {
@@ -37,6 +38,7 @@ function Main() {
         </div>
       </section> */}
        {/* <JobCards/> */}
+       <AdvancedJobFilter/>
     </main>
  
 
