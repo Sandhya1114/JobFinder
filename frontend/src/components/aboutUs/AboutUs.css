@@ -2,9 +2,9 @@
 
 /* CSS Variables */
 .about-container {
-  --primary-color: #fea116;        /* Main orange color */
-  --secondary-color: #e8900c;      /* Darker orange for hover */
-  --accent-color: #ff8c00;         /* Additional orange accent */
+  --primary-color: #000000;        /* Main orange color */
+  --secondary-color: #000000;      /* Darker orange for hover */
+  --accent-color: #000000;         /* Additional orange accent */
   --text-primary: #1f2937;         /* Dark text */
   --text-secondary: #6b7280;       /* Light text */
   --text-light: rgba(255, 255, 255, 0.9); /* Light text for dark backgrounds */
