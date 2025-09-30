@@ -4,6 +4,7 @@ import Categories3DRing from "./rotate";
 import JobCards from "./jobCard/JobCard";
    import JobPlatformServices from './JobPlatformServices';
 import AdvancedJobFilter from "./AdvancedJobFilter/AdvancedJobFilter";
+import QuickFilters from "./QuickFilters";
 // import './JobPlatformServices.css';
 
 function Main() {
@@ -23,6 +24,7 @@ function Main() {
         </div>
       </section> */}
       <Categories3DRing/>
+       <QuickFilters />
 {/*       
       <section className="recommended">
         <h2>Recommended Jobs</h2>
