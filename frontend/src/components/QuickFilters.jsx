@@ -43,7 +43,7 @@ const QuickFilters = () => {
     'entry-level': 'fa-user-plus',
     'mid-level': 'fa-user-check',
     'mid level': 'fa-user-check',
-    'senior': 'fa-user-crown',
+    'senior': 'fa-user-tie',
     // Job types
     'full-time': 'fa-clock',
     'full time': 'fa-clock',
@@ -203,7 +203,8 @@ const QuickFilters = () => {
     navigate(`/jobs?${params.toString()}`);
   };
 
-  // Group filters by type for better organization
+ 
+  
   const groupedFilters = {
     location: quickFilterOptions.filter(f => f.filterType === 'location'),
     experience: quickFilterOptions.filter(f => f.filterType === 'experience'),
@@ -212,36 +213,35 @@ const QuickFilters = () => {
     company: quickFilterOptions.filter(f => f.filterType === 'company')
   };
 
-  // Don't render if no options are available
   if (quickFilterOptions.length === 0) {
     return (
-      <div className="quick-filters-container">
-        <div className="quick-filters-header">
+      <div className="homeQuickFiltersContainer">
+        <div className="homeQuickFiltersHeader">
           <h2>Quick Job Filters</h2>
-          <p>Loading filters...</p>
+          <p className="homeLoadingMessage">Loading filters...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="quick-filters-container">
-      <div className="quick-filters-header">
+    <div className="homeQuickFiltersContainer">
+      <div className="homeQuickFiltersHeader">
         <h2>Quick Job Filters</h2>
         <p>Find your perfect job with one click</p>
       </div>
 
-      {/* Location Filters - Extracted from jobs data */}
+      {/* Location Filters */}
       {groupedFilters.location.length > 0 && (
-        <div className="filter-section">
-          <h3 className="filter-section-title">
+        <div className="homeFilterSection">
+          <h3 className="homeFilterSectionTitle">
             <i className="fa fa-map-marker-alt"></i> Work Location
           </h3>
-          <div className="quick-filters-grid">
+          <div className="homeQuickFiltersGrid">
             {groupedFilters.location.map((option) => (
               <div
                 key={option.id}
-                className="quick-filter-card"
+                className="homeQuickFilterCard"
                 onClick={() => handleFilterClick(option)}
                 role="button"
                 tabIndex={0}
@@ -251,11 +251,11 @@ const QuickFilters = () => {
                   }
                 }}
               >
-                <div className="filter-icon">
+                <div className="homeFilterIcon">
                   <i className={`fa ${option.icon}`}></i>
                 </div>
-                <div className="filter-label">{option.label}</div>
-                <div className="filter-arrow">
+                <div className="homeFilterLabel">{option.label}</div>
+                <div className="homeFilterArrow">
                   <i className="fa fa-arrow-right"></i>
                 </div>
               </div>
@@ -264,17 +264,17 @@ const QuickFilters = () => {
         </div>
       )}
 
-      {/* Experience Level Filters - Extracted from jobs data */}
+      {/* Experience Level Filters */}
       {groupedFilters.experience.length > 0 && (
-        <div className="filter-section">
-          <h3 className="filter-section-title">
+        <div className="homeFilterSection">
+          <h3 className="homeFilterSectionTitle">
             <i className="fa fa-user-tie"></i> Experience Level
           </h3>
-          <div className="quick-filters-grid">
+          <div className="homeQuickFiltersGrid">
             {groupedFilters.experience.map((option) => (
               <div
                 key={option.id}
-                className="quick-filter-card"
+                className="homeQuickFilterCard"
                 onClick={() => handleFilterClick(option)}
                 role="button"
                 tabIndex={0}
@@ -284,11 +284,11 @@ const QuickFilters = () => {
                   }
                 }}
               >
-                <div className="filter-icon">
+                <div className="homeFilterIcon">
                   <i className={`fa ${option.icon}`}></i>
                 </div>
-                <div className="filter-label">{option.label}</div>
-                <div className="filter-arrow">
+                <div className="homeFilterLabel">{option.label}</div>
+                <div className="homeFilterArrow">
                   <i className="fa fa-arrow-right"></i>
                 </div>
               </div>
@@ -297,17 +297,17 @@ const QuickFilters = () => {
         </div>
       )}
 
-      {/* Job Type Filters - Extracted from jobs data */}
+      {/* Job Type Filters */}
       {groupedFilters.type.length > 0 && (
-        <div className="filter-section">
-          <h3 className="filter-section-title">
+        <div className="homeFilterSection">
+          <h3 className="homeFilterSectionTitle">
             <i className="fa fa-briefcase"></i> Job Type
           </h3>
-          <div className="quick-filters-grid">
+          <div className="homeQuickFiltersGrid">
             {groupedFilters.type.map((option) => (
               <div
                 key={option.id}
-                className="quick-filter-card"
+                className="homeQuickFilterCard"
                 onClick={() => handleFilterClick(option)}
                 role="button"
                 tabIndex={0}
@@ -317,11 +317,11 @@ const QuickFilters = () => {
                   }
                 }}
               >
-                <div className="filter-icon">
+                <div className="homeFilterIcon">
                   <i className={`fa ${option.icon}`}></i>
                 </div>
-                <div className="filter-label">{option.label}</div>
-                <div className="filter-arrow">
+                <div className="homeFilterLabel">{option.label}</div>
+                <div className="homeFilterArrow">
                   <i className="fa fa-arrow-right"></i>
                 </div>
               </div>
@@ -330,17 +330,17 @@ const QuickFilters = () => {
         </div>
       )}
 
-      {/* Category Filters - ALL from database */}
+      {/* Category Filters */}
       {groupedFilters.category.length > 0 && (
-        <div className="filter-section">
-          <h3 className="filter-section-title">
+        <div className="homeFilterSection">
+          <h3 className="homeFilterSectionTitle">
             <i className="fa fa-layer-group"></i> Browse by Category
           </h3>
-          <div className="quick-filters-grid">
+          <div className="homeQuickFiltersGrid">
             {groupedFilters.category.map((option) => (
               <div
                 key={option.id}
-                className="quick-filter-card"
+                className="homeQuickFilterCard"
                 onClick={() => handleFilterClick(option)}
                 role="button"
                 tabIndex={0}
@@ -350,11 +350,11 @@ const QuickFilters = () => {
                   }
                 }}
               >
-                <div className="filter-icon">
+                <div className="homeFilterIcon">
                   <i className={`fa ${option.icon}`}></i>
                 </div>
-                <div className="filter-label">{option.label}</div>
-                <div className="filter-arrow">
+                <div className="homeFilterLabel">{option.label}</div>
+                <div className="homeFilterArrow">
                   <i className="fa fa-arrow-right"></i>
                 </div>
               </div>
@@ -363,17 +363,17 @@ const QuickFilters = () => {
         </div>
       )}
 
-      {/* Company Filters - ALL from database */}
+      {/* Company Filters */}
       {groupedFilters.company.length > 0 && (
-        <div className="filter-section">
-          <h3 className="filter-section-title">
+        <div className="homeFilterSection">
+          <h3 className="homeFilterSectionTitle">
             <i className="fa fa-building"></i> Browse by Company
           </h3>
-          <div className="quick-filters-grid">
+          <div className="homeQuickFiltersGrid">
             {groupedFilters.company.map((option) => (
               <div
                 key={option.id}
-                className="quick-filter-card"
+                className="homeQuickFilterCard"
                 onClick={() => handleFilterClick(option)}
                 role="button"
                 tabIndex={0}
@@ -383,11 +383,11 @@ const QuickFilters = () => {
                   }
                 }}
               >
-                <div className="filter-icon">
+                <div className="homeFilterIcon">
                   <i className={`fa ${option.icon}`}></i>
                 </div>
-                <div className="filter-label">{option.label}</div>
-                <div className="filter-arrow">
+                <div className="homeFilterLabel">{option.label}</div>
+                <div className="homeFilterArrow">
                   <i className="fa fa-arrow-right"></i>
                 </div>
               </div>
