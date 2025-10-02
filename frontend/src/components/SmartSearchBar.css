@@ -35,7 +35,7 @@
 .search-compact-btn {
   width: 40px;
   height: 40px;
-  background: var(--background-white);
+  background:#000;
   border: 2px solid var(--glass-border);
   border-radius: 50%;
   display: flex;

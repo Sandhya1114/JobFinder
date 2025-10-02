@@ -386,12 +386,80 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
 });
 
 // Memoized Job Card Component
+// const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
+//   // Memoize truncated description
+//   const truncatedDescription = useMemo(() => {
+//     if (!job.description) return 'No description available';
+//     return job.description.length > 150 
+//       ? job.description.substring(0, 150) + '...' 
+//       : job.description;
+//   }, [job.description]);
+
+//   // Memoize formatted date
+//   const formattedDate = useMemo(() => {
+//     return job.postedDate || job.created_at 
+//       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
+//       : 'Date not available';
+//   }, [job.postedDate, job.created_at]);
+
+//   const handleSaveJob = useCallback(async () => {
+//     try {
+//       await onSave(job.id);
+//     } catch (error) {
+//       console.error('Error saving job:', error);
+//     }
+//   }, [job.id, onSave]);
+
+//   return (
+//     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
+//       <div className="job-header">
+//         <h2 className="job-title">{job.title || 'No Title'}</h2>
+//         <div className="job-meta">
+//           <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+//           <span className="job-location">{job.location || 'Location not specified'}</span>
+//         </div>
+//       </div>
+
+//       <div className="job-details job-details-minimal">
+//         <div className="job-category">
+//           <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
+//         </div>
+
+//         <div className="job-info job-info-minimal">
+//           <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
+//           <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
+//         </div>
+
+//         <div className="job-description job-description-minimal">
+//           <p>{truncatedDescription}</p>
+//         </div>
+
+//         <div className="job-footer">
+//           <span className="posted-date">Posted: {formattedDate}</span>
+//           <div className="job-actions">
+//             <button
+//               onClick={() => onViewDetails(job)}
+//               className="view-details-btn"
+//             >
+//               {/* <i className="fa fa-eye"></i> */}
+//               View Details
+//             </button>
+//             <button onClick={handleSaveJob} className="save-btn">
+//               Save Job
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+// Memoized Job Card Component
 const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
   // Memoize truncated description
   const truncatedDescription = useMemo(() => {
     if (!job.description) return 'No description available';
-    return job.description.length > 150 
-      ? job.description.substring(0, 150) + '...' 
+    return job.description.length > 120 
+      ? job.description.substring(0, 120) + '...' 
       : job.description;
   }, [job.description]);
 
@@ -411,41 +479,86 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
   }, [job.id, onSave]);
 
   return (
-    <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
-      <div className="job-header">
-        <h2 className="job-title">{job.title || 'No Title'}</h2>
-        <div className="job-meta">
-          <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-          <span className="job-location">{job.location || 'Location not specified'}</span>
+    <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-horizontal">
+     
+
+      {/* Job Content */}
+      <div className="job-content-horizontal">
+        <div className='ROWFELXLOGOJOBS'>
+         {/* Company Logo */}
+      <div className="job-logo-container">
+        {job.companies?.logo || job.company?.logo ? (
+          <img 
+            src={job.companies?.logo || job.company?.logo} 
+            alt={job.companies?.name || job.company?.name || 'Company'}
+            className="job-company-logo"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div className="job-logo-placeholder" style={{ display: (job.companies?.logo || job.company?.logo) ? 'none' : 'flex' }}>
+          <i className="fa fa-building"></i>
         </div>
       </div>
-
-      <div className="job-details job-details-minimal">
-        <div className="job-category">
-          <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
+        <div className="job-header-horizontal">
+          <div className="job-title-section">
+            <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
+            <div className="job-company-info">
+              <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+              {/* <span className="company-rating">
+                <i className="fa fa-star"></i> {job.companies?.rating || job.company?.rating || '4.0'}
+              </span>
+              <span className="company-reviews">{job.companies?.reviews || job.company?.reviews || '0'} Reviews</span> */}
+            </div>
+          </div>
+        </div>
+         </div>
+        
+        <div className="job-meta-horizontal">
+          <div className="job-meta-item">
+            <i className="fa fa-briefcase"></i>
+            <span>{job.experience || 'Not specified'}</span>
+          </div>
+          <div className="job-meta-item">
+            <i className="fa fa-map-marker"></i>
+            <span>{job.location || 'Location not specified'}</span>
+          </div>
         </div>
 
-        <div className="job-info job-info-minimal">
-          <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
-          <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-        </div>
-
-        <div className="job-description job-description-minimal">
+        <div className="job-description-horizontal">
+          <i className="fa fa-file-text-o"></i>
           <p>{truncatedDescription}</p>
         </div>
 
-        <div className="job-footer">
-          <span className="posted-date">Posted: {formattedDate}</span>
-          <div className="job-actions">
+        <div className="job-tags-horizontal">
+          {job.categories?.name || job.category?.name ? (
+            <span className="job-tag">{job.categories?.name || job.category?.name}</span>
+          ) : null}
+          {job.type ? (
+            <span className="job-tag">{job.type}</span>
+          ) : null}
+          {job.experience ? (
+            <span className="job-tag">{job.experience}</span>
+          ) : null}
+        </div>
+
+        <div className="job-footer-horizontal">
+          <span className="posted-date-horizontal">
+            <i className="fa fa-clock-o"></i>
+            {formattedDate}
+          </span>
+          <div className="job-actions-horizontal">
+            <button onClick={handleSaveJob} className="save-btn-horizontal">
+              <i className="fa fa-bookmark-o"></i>
+              Save
+            </button>
             <button
               onClick={() => onViewDetails(job)}
-              className="view-details-btn"
+              className="view-details-btn-horizontal"
             >
-              {/* <i className="fa fa-eye"></i> */}
               View Details
-            </button>
-            <button onClick={handleSaveJob} className="save-btn">
-              Save Job
             </button>
           </div>
         </div>
@@ -453,7 +566,6 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
     </div>
   );
 });
-
 // FIXED: Filter Option Component with proper display names
 const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
   const getDisplayName = () => {
