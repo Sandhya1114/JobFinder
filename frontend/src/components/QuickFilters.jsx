@@ -7,6 +7,24 @@ const QuickFilters = () => {
   const navigate = useNavigate();
   const { categories, companies, jobs } = useSelector((state) => state.jobs);
   const [quickFilterOptions, setQuickFilterOptions] = useState([]);
+  
+  // State to track expanded sections
+  const [expandedSections, setExpandedSections] = useState({
+    location: false,
+    experience: false,
+    type: false,
+    category: false,
+    company: false
+  });
+
+  // Initial items to show for each section
+  const INITIAL_ITEMS = {
+    location: 6,
+    experience: 4,
+    type: 4,
+    category: 8,
+    company: 8
+  };
 
   // Enhanced icon mapping with Font Awesome icons
   const iconMap = {
@@ -203,7 +221,23 @@ const QuickFilters = () => {
     navigate(`/jobs?${params.toString()}`);
   };
 
- 
+  const toggleSection = (sectionName) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionName]: !prev[sectionName]
+    }));
+  };
+
+  const getVisibleItems = (items, sectionType) => {
+    if (expandedSections[sectionType]) {
+      return items;
+    }
+    return items.slice(0, INITIAL_ITEMS[sectionType]);
+  };
+
+  const shouldShowViewMore = (items, sectionType) => {
+    return items.length > INITIAL_ITEMS[sectionType];
+  };
   
   const groupedFilters = {
     location: quickFilterOptions.filter(f => f.filterType === 'location'),
@@ -211,6 +245,66 @@ const QuickFilters = () => {
     type: quickFilterOptions.filter(f => f.filterType === 'type'),
     category: quickFilterOptions.filter(f => f.filterType === 'category'),
     company: quickFilterOptions.filter(f => f.filterType === 'company')
+  };
+
+  const renderFilterSection = (sectionType, title, icon, filters) => {
+    if (filters.length === 0) return null;
+
+    const visibleFilters = getVisibleItems(filters, sectionType);
+    const showButton = shouldShowViewMore(filters, sectionType);
+    const isExpanded = expandedSections[sectionType];
+
+    return (
+      <div className="homeFilterSection">
+        <h3 className="homeFilterSectionTitle">
+          <i className={`fa ${icon}`}></i> {title}
+        </h3>
+        <div className="homeQuickFiltersGrid">
+          {visibleFilters.map((option) => (
+            <div
+              key={option.id}
+              className="homeQuickFilterCard"
+              onClick={() => handleFilterClick(option)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleFilterClick(option);
+                }
+              }}
+            >
+              <div className="homeFilterIcon">
+                <i className={`fa ${option.icon}`}></i>
+              </div>
+              <div className="homeFilterLabel">{option.label}</div>
+              <div className="homeFilterArrow">
+                <i className="fa fa-arrow-right"></i>
+              </div>
+            </div>
+          ))}
+        </div>
+        {showButton && (
+          <div className="homeViewMoreContainer">
+            <button 
+              className="homeViewMoreBtn"
+              onClick={() => toggleSection(sectionType)}
+            >
+              {isExpanded ? (
+                <>
+                  <span>View Less</span>
+                  <i className="fa fa-chevron-up"></i>
+                </>
+              ) : (
+                <>
+                  <span>View More ({filters.length - INITIAL_ITEMS[sectionType]})</span>
+                  <i className="fa fa-chevron-down"></i>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   if (quickFilterOptions.length === 0) {
@@ -231,170 +325,11 @@ const QuickFilters = () => {
         <p>Find your perfect job with one click</p>
       </div>
 
-      {/* Location Filters */}
-      {groupedFilters.location.length > 0 && (
-        <div className="homeFilterSection">
-          <h3 className="homeFilterSectionTitle">
-            <i className="fa fa-map-marker-alt"></i> Work Location
-          </h3>
-          <div className="homeQuickFiltersGrid">
-            {groupedFilters.location.map((option) => (
-              <div
-                key={option.id}
-                className="homeQuickFilterCard"
-                onClick={() => handleFilterClick(option)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleFilterClick(option);
-                  }
-                }}
-              >
-                <div className="homeFilterIcon">
-                  <i className={`fa ${option.icon}`}></i>
-                </div>
-                <div className="homeFilterLabel">{option.label}</div>
-                <div className="homeFilterArrow">
-                  <i className="fa fa-arrow-right"></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Experience Level Filters */}
-      {groupedFilters.experience.length > 0 && (
-        <div className="homeFilterSection">
-          <h3 className="homeFilterSectionTitle">
-            <i className="fa fa-user-tie"></i> Experience Level
-          </h3>
-          <div className="homeQuickFiltersGrid">
-            {groupedFilters.experience.map((option) => (
-              <div
-                key={option.id}
-                className="homeQuickFilterCard"
-                onClick={() => handleFilterClick(option)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleFilterClick(option);
-                  }
-                }}
-              >
-                <div className="homeFilterIcon">
-                  <i className={`fa ${option.icon}`}></i>
-                </div>
-                <div className="homeFilterLabel">{option.label}</div>
-                <div className="homeFilterArrow">
-                  <i className="fa fa-arrow-right"></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Job Type Filters */}
-      {groupedFilters.type.length > 0 && (
-        <div className="homeFilterSection">
-          <h3 className="homeFilterSectionTitle">
-            <i className="fa fa-briefcase"></i> Job Type
-          </h3>
-          <div className="homeQuickFiltersGrid">
-            {groupedFilters.type.map((option) => (
-              <div
-                key={option.id}
-                className="homeQuickFilterCard"
-                onClick={() => handleFilterClick(option)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleFilterClick(option);
-                  }
-                }}
-              >
-                <div className="homeFilterIcon">
-                  <i className={`fa ${option.icon}`}></i>
-                </div>
-                <div className="homeFilterLabel">{option.label}</div>
-                <div className="homeFilterArrow">
-                  <i className="fa fa-arrow-right"></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Category Filters */}
-      {groupedFilters.category.length > 0 && (
-        <div className="homeFilterSection">
-          <h3 className="homeFilterSectionTitle">
-            <i className="fa fa-layer-group"></i> Browse by Category
-          </h3>
-          <div className="homeQuickFiltersGrid">
-            {groupedFilters.category.map((option) => (
-              <div
-                key={option.id}
-                className="homeQuickFilterCard"
-                onClick={() => handleFilterClick(option)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleFilterClick(option);
-                  }
-                }}
-              >
-                <div className="homeFilterIcon">
-                  <i className={`fa ${option.icon}`}></i>
-                </div>
-                <div className="homeFilterLabel">{option.label}</div>
-                <div className="homeFilterArrow">
-                  <i className="fa fa-arrow-right"></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Company Filters */}
-      {groupedFilters.company.length > 0 && (
-        <div className="homeFilterSection">
-          <h3 className="homeFilterSectionTitle">
-            <i className="fa fa-building"></i> Browse by Company
-          </h3>
-          <div className="homeQuickFiltersGrid">
-            {groupedFilters.company.map((option) => (
-              <div
-                key={option.id}
-                className="homeQuickFilterCard"
-                onClick={() => handleFilterClick(option)}
-                role="button"
-                tabIndex={0}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleFilterClick(option);
-                  }
-                }}
-              >
-                <div className="homeFilterIcon">
-                  <i className={`fa ${option.icon}`}></i>
-                </div>
-                <div className="homeFilterLabel">{option.label}</div>
-                <div className="homeFilterArrow">
-                  <i className="fa fa-arrow-right"></i>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {renderFilterSection('location', 'Work Location', 'fa-map-marker-alt', groupedFilters.location)}
+      {renderFilterSection('experience', 'Experience Level', 'fa-user-tie', groupedFilters.experience)}
+      {renderFilterSection('type', 'Job Type', 'fa-briefcase', groupedFilters.type)}
+      {renderFilterSection('category', 'Browse by Category', 'fa-layer-group', groupedFilters.category)}
+      {renderFilterSection('company', 'Browse by Company', 'fa-building', groupedFilters.company)}
     </div>
   );
 };
