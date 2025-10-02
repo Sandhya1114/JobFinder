@@ -133,6 +133,7 @@ import ContactUs from "./components/contactUs/ContactUs";
 import AuthForm from "./components/AuthForm";
 import { supabase } from "./supabaseClient";
 import { useDataLoader } from "./hooks/useDataLoader";
+import AllFilters from "./components/AllFilterOption/AllFilters";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -209,7 +210,7 @@ function App() {
               </>
             } 
           />
-          
+           <Route path="/filters/:filterType" element={  <> <AllFilters />  <Footer /></>} />
           <Route
             path="/auth"
             element={

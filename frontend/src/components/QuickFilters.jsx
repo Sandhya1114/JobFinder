@@ -7,15 +7,6 @@ const QuickFilters = () => {
   const navigate = useNavigate();
   const { categories, companies, jobs } = useSelector((state) => state.jobs);
   const [quickFilterOptions, setQuickFilterOptions] = useState([]);
-  
-  // State to track expanded sections
-  const [expandedSections, setExpandedSections] = useState({
-    location: false,
-    experience: false,
-    type: false,
-    category: false,
-    company: false
-  });
 
   // Initial items to show for each section
   const INITIAL_ITEMS = {
@@ -28,7 +19,6 @@ const QuickFilters = () => {
 
   // Enhanced icon mapping with Font Awesome icons
   const iconMap = {
-    // Categories
     'technology': 'fa-laptop-code',
     'software': 'fa-code',
     'it': 'fa-server',
@@ -55,14 +45,12 @@ const QuickFilters = () => {
     'consulting': 'fa-handshake',
     'startup': 'fa-rocket',
     'mnc': 'fa-building',
-    // Experience levels
     'fresher': 'fa-user-graduate',
     'entry level': 'fa-user-plus',
     'entry-level': 'fa-user-plus',
     'mid-level': 'fa-user-check',
     'mid level': 'fa-user-check',
     'senior': 'fa-user-tie',
-    // Job types
     'full-time': 'fa-clock',
     'full time': 'fa-clock',
     'part-time': 'fa-hourglass-half',
@@ -70,23 +58,19 @@ const QuickFilters = () => {
     'contract': 'fa-file-contract',
     'freelance': 'fa-laptop',
     'internship': 'fa-user-graduate',
-    // Locations
     'remote': 'fa-home',
-    // Default
     'default': 'fa-briefcase'
   };
 
   const getIcon = (name, type) => {
     const lowerName = name.toLowerCase();
     
-    // Check for matches in icon map
     for (const [key, icon] of Object.entries(iconMap)) {
       if (lowerName.includes(key)) {
         return icon;
       }
     }
     
-    // Return type-specific defaults
     if (type === 'company') return 'fa-building';
     if (type === 'category') return 'fa-briefcase';
     if (type === 'location') return 'fa-map-marker-alt';
@@ -96,7 +80,6 @@ const QuickFilters = () => {
     return iconMap.default;
   };
 
-  // Extract unique values from jobs data
   const extractUniqueValues = (field) => {
     if (!jobs || jobs.length === 0) return [];
     
@@ -113,10 +96,8 @@ const QuickFilters = () => {
   useEffect(() => {
     const filters = [];
 
-    // Extract unique locations from jobs
     const uniqueLocations = extractUniqueValues('location');
     if (uniqueLocations.length > 0) {
-      // Prioritize Remote if it exists
       const sortedLocations = uniqueLocations.sort((a, b) => {
         if (a.toLowerCase().includes('remote')) return -1;
         if (b.toLowerCase().includes('remote')) return 1;
@@ -134,7 +115,6 @@ const QuickFilters = () => {
       });
     }
 
-    // Extract unique experience levels from jobs
     const uniqueExperience = extractUniqueValues('experience');
     if (uniqueExperience.length > 0) {
       uniqueExperience.forEach(exp => {
@@ -148,7 +128,6 @@ const QuickFilters = () => {
       });
     }
 
-    // Extract unique job types from jobs
     const uniqueTypes = extractUniqueValues('type');
     if (uniqueTypes.length > 0) {
       uniqueTypes.forEach(type => {
@@ -162,7 +141,6 @@ const QuickFilters = () => {
       });
     }
 
-    // Add ALL categories from database
     if (categories && categories.length > 0) {
       categories.forEach(category => {
         filters.push({
@@ -176,7 +154,6 @@ const QuickFilters = () => {
       });
     }
 
-    // Add ALL companies from database
     if (companies && companies.length > 0) {
       companies.forEach(company => {
         filters.push({
@@ -194,7 +171,6 @@ const QuickFilters = () => {
   }, [categories, companies, jobs]);
 
   const handleFilterClick = (option) => {
-    // Build URL with query parameters based on filter type
     const params = new URLSearchParams();
     
     switch (option.filterType) {
@@ -217,28 +193,13 @@ const QuickFilters = () => {
         break;
     }
 
-    // Navigate to jobs page with the filter parameters
     navigate(`/jobs?${params.toString()}`);
   };
 
-  const toggleSection = (sectionName) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionName]: !prev[sectionName]
-    }));
+  const handleViewMore = (filterType) => {
+    navigate(`/filters/${filterType}`);
   };
 
-  const getVisibleItems = (items, sectionType) => {
-    if (expandedSections[sectionType]) {
-      return items;
-    }
-    return items.slice(0, INITIAL_ITEMS[sectionType]);
-  };
-
-  const shouldShowViewMore = (items, sectionType) => {
-    return items.length > INITIAL_ITEMS[sectionType];
-  };
-  
   const groupedFilters = {
     location: quickFilterOptions.filter(f => f.filterType === 'location'),
     experience: quickFilterOptions.filter(f => f.filterType === 'experience'),
@@ -250,9 +211,8 @@ const QuickFilters = () => {
   const renderFilterSection = (sectionType, title, icon, filters) => {
     if (filters.length === 0) return null;
 
-    const visibleFilters = getVisibleItems(filters, sectionType);
-    const showButton = shouldShowViewMore(filters, sectionType);
-    const isExpanded = expandedSections[sectionType];
+    const visibleFilters = filters.slice(0, INITIAL_ITEMS[sectionType]);
+    const hasMore = filters.length > INITIAL_ITEMS[sectionType];
 
     return (
       <div className="homeFilterSection">
@@ -283,23 +243,14 @@ const QuickFilters = () => {
             </div>
           ))}
         </div>
-        {showButton && (
+        {hasMore && (
           <div className="homeViewMoreContainer">
             <button 
               className="homeViewMoreBtn"
-              onClick={() => toggleSection(sectionType)}
+              onClick={() => handleViewMore(sectionType)}
             >
-              {isExpanded ? (
-                <>
-                  <span>View Less</span>
-                  <i className="fa fa-chevron-up"></i>
-                </>
-              ) : (
-                <>
-                  <span>View More ({filters.length - INITIAL_ITEMS[sectionType]})</span>
-                  <i className="fa fa-chevron-down"></i>
-                </>
-              )}
+              <span>View All {title}</span>
+              <i className="fa fa-arrow-right"></i>
             </button>
           </div>
         )}
