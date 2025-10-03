@@ -24,6 +24,161 @@ app.use(express.json());
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // ============ API ROUTES ============
+// Add this to your existing server.js file after your other route definitions
+
+// ============ GROQ AI ANALYSIS ROUTES ============
+
+// ATS Resume Analysis Endpoint
+app.post('/api/analyze-resume', async (req, res) => {
+  try {
+    console.log('📄 ATS Resume analysis endpoint hit');
+    
+    const { resumeContent, jobDescContent } = req.body;
+
+    if (!resumeContent || resumeContent.trim().length < 50) {
+      return res.status(400).json({ 
+        error: 'Resume content must be at least 50 characters long' 
+      });
+    }
+
+    const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
+    
+    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Analyze resumes with precision and provide detailed, actionable feedback. Return ONLY valid JSON without any markdown formatting or code blocks.`;
+    
+    const userPrompt = hasJobDesc 
+      ? `Analyze this resume against the job description and provide a comprehensive ATS analysis.
+
+RESUME:
+${resumeContent}
+
+JOB DESCRIPTION:
+${jobDescContent}
+
+Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+{
+  "ats_score": <number 0-100>,
+  "score_breakdown": {
+    "keyword_match": <number 0-100>,
+    "skills_match": <number 0-100>,
+    "experience_relevance": <number 0-100>,
+    "format_structure": <number 0-100>,
+    "achievement_quantification": <number 0-100>
+  },
+  "match_percentage": <number 0-100>,
+  "overall_assessment": "<detailed assessment string>",
+  "missing_skills": {
+    "critical": ["skill1", "skill2"],
+    "important": ["skill3"],
+    "nice_to_have": ["skill4"]
+  },
+  "present_skills": ["skill1", "skill2", "skill3"],
+  "suggestions": [
+    {
+      "category": "category name",
+      "priority": "high/medium/low",
+      "recommendation": "specific recommendation",
+      "impact": "expected impact"
+    }
+  ],
+  "strengths": ["strength1", "strength2"],
+  "red_flags": ["flag1", "flag2"],
+  "competitive_analysis": "analysis string",
+  "next_steps": ["step1", "step2"]
+}`
+      : `Analyze this resume for general ATS compatibility and quality.
+
+RESUME:
+${resumeContent}
+
+Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+{
+  "ats_score": <number 0-100>,
+  "score_breakdown": {
+    "keyword_match": <number 0-100>,
+    "skills_match": <number 0-100>,
+    "experience_relevance": <number 0-100>,
+    "format_structure": <number 0-100>,
+    "achievement_quantification": <number 0-100>
+  },
+  "match_percentage": <number 0-100>,
+  "overall_assessment": "<detailed assessment string>",
+  "missing_skills": {
+    "critical": [],
+    "important": ["recommended skill1"],
+    "nice_to_have": ["skill2"]
+  },
+  "present_skills": ["skill1", "skill2", "skill3"],
+  "suggestions": [
+    {
+      "category": "category name",
+      "priority": "high/medium/low",
+      "recommendation": "specific recommendation",
+      "impact": "expected impact"
+    }
+  ],
+  "strengths": ["strength1", "strength2"],
+  "red_flags": ["flag1", "flag2"],
+  "competitive_analysis": "analysis string",
+  "next_steps": ["step1", "step2"]
+}`;
+
+    // Call Groq API
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 4000
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Groq API error:', errorData);
+      return res.status(response.status).json({ 
+        error: errorData.error?.message || 'API request failed' 
+      });
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content.trim();
+    
+    // Clean markdown formatting if present
+    const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    // Parse and return JSON
+    const analysisResults = JSON.parse(cleanContent);
+    
+    console.log('✅ Resume analysis completed successfully');
+    res.json(analysisResults);
+
+  } catch (error) {
+    console.error('❌ Error analyzing resume:', error);
+    res.status(500).json({ 
+      error: error.message || 'Analysis failed' 
+    });
+  }
+});
+
+// Health check for Groq integration
+app.get('/api/groq/health', (req, res) => {
+  const hasApiKey = !!process.env.GROQ_API_KEY;
+  res.json({ 
+    status: hasApiKey ? 'OK' : 'Missing API Key',
+    groqConfigured: hasApiKey,
+    message: hasApiKey 
+      ? 'Groq API is configured and ready' 
+      : 'GROQ_API_KEY environment variable not found'
+  });
+});
 //n ============ ADVANCED FILTER ROUTES (PLACED FIRST) ============
 
 // Get all unique filter values from database

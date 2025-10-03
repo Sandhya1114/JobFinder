@@ -134,6 +134,7 @@ import AuthForm from "./components/AuthForm";
 import { supabase } from "./supabaseClient";
 import { useDataLoader } from "./hooks/useDataLoader";
 import AllFilters from "./components/AllFilterOption/AllFilters";
+import ATSResumeAnalyzer from "./components/ATS/AtsAnalyzer";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -249,7 +250,7 @@ function App() {
             path="/dashboard"
             element={<Dashboard user={user} onSignOut={handleSignOut} />}
           />
-          
+          <Route path="/score" element={<ATSResumeAnalyzer/>}/>
           <Route path="/footer" element={<Footer />} />
         </Routes>
       </div>

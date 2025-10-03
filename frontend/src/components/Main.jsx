@@ -5,6 +5,8 @@ import JobCards from "./jobCard/JobCard";
    import JobPlatformServices from './JobPlatformServices';
 import AdvancedJobFilter from "./AdvancedJobFilter/AdvancedJobFilter";
 import QuickFilters from "./QuickFilters";
+import ATSResumeAnalyzer from "./ATS/AtsAnalyzer";
+// import ATSResumeAnalyzer from "./ATS/AtsAnalyzer";
 // import './JobPlatformServices.css';
 
 function Main() {
@@ -25,6 +27,7 @@ function Main() {
       </section> */}
       <Categories3DRing/>
        <QuickFilters />
+       <ATSResumeAnalyzer/>
 {/*       
       <section className="recommended">
         <h2>Recommended Jobs</h2>

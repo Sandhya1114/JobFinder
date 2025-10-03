@@ -92,6 +92,10 @@
   height: 35px;
   width: 35px;
 }
+.searchContainer  .fa{
+  display: flex;
+  font-size: 15px;
+}
 
 .searchInput {
   /* width: 100%; */
