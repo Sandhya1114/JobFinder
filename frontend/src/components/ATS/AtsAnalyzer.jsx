@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Briefcase, CheckCircle, AlertCircle, AlertTriangle, Loader2, ChevronDown, ChevronUp, Shield, Target, Zap, FileCheck } from 'lucide-react';
-import './EnhancedATS.css';
+import './AtsAnalyzer.css';
 
 const ATSResumeAnalyzer = () => {
   const [resumeFile, setResumeFile] = useState(null);
@@ -62,7 +62,7 @@ const ATSResumeAnalyzer = () => {
     setTimeout(() => setAnalysisStep('Generating recommendations'), 3000);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+      const response = await fetch(`${API_BASE_URL}/analyze-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
