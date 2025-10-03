@@ -474,4 +474,3 @@ const analyzeWithBackend = async (resumeContent, jobDescContent) => {
   );
 };
 
-export default ATSResumeAnalyzer;
