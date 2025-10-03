@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, FileText, Briefcase, CheckCircle, AlertCircle, TrendingUp, Target, Award, Loader2 } from 'lucide-react';
+import './AtsAnalyzer.css';
 
 const ATSResumeAnalyzer = () => {
   const [resumeFile, setResumeFile] = useState(null);
@@ -11,7 +12,7 @@ const ATSResumeAnalyzer = () => {
   const [error, setError] = useState('');
 
   // Backend API URL - uses your existing backend
-  const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL  || 'http://localhost:5000';
 
   const handleFileUpload = async (file, type) => {
     if (!file) return;
