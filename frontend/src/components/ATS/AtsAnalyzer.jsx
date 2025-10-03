@@ -102,19 +102,17 @@ const ATSResumeAnalyzer = () => {
     }
   };
 const analyzeWithBackend = async (resumeContent, jobDescContent) => {
-    try {
-      console.log('Sending request to:', `${API_BASE_URL}/api/analyze-resume`);
+     try {
+    console.log('Sending request to:', `${API_BASE_URL}/analyze-resume`);
+    
+    const response = await fetch(`${API_BASE_URL}/analyze-resume`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ resumeContent, jobDescContent })
+    });
       
-      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeContent,
-          jobDescContent
-        })
-      });
 
       // Check if response is HTML (error page)
       const contentType = response.headers.get('content-type');

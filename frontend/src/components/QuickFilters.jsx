@@ -1,288 +1,418 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import './QuickFilters.css';
+import React, { useState } from 'react';
+import { Upload, FileText, Briefcase, CheckCircle, AlertCircle, AlertTriangle, Loader2, ChevronDown, ChevronUp, X, Check } from 'lucide-react';
+import './ATSAnalyzer.css';
 
-const QuickFilters = () => {
-  const navigate = useNavigate();
-  const { categories, companies, jobs } = useSelector((state) => state.jobs);
-  const [quickFilterOptions, setQuickFilterOptions] = useState([]);
+const ATSAnalyzer = () => {
+  const [resumeFile, setResumeFile] = useState(null);
+  const [jobDescFile, setJobDescFile] = useState(null);
+  const [resumeText, setResumeText] = useState('');
+  const [jobDescText, setJobDescText] = useState('');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [results, setResults] = useState(null);
+  const [error, setError] = useState('');
+  const [expandedSections, setExpandedSections] = useState({});
 
-  // Initial items to show for each section
-  const INITIAL_ITEMS = {
-    location: 6,
-    experience: 4,
-    type: 4,
-    category: 8,
-    company: 8
-  };
+  const API_BASE_URL = 'http://localhost:5000';
 
-  // Enhanced icon mapping with Font Awesome icons
-  const iconMap = {
-    'technology': 'fa-laptop-code',
-    'software': 'fa-code',
-    'it': 'fa-server',
-    'data science': 'fa-chart-line',
-    'analytics': 'fa-chart-bar',
-    'engineering': 'fa-cogs',
-    'marketing': 'fa-bullhorn',
-    'sales': 'fa-handshake',
-    'hr': 'fa-users',
-    'human resources': 'fa-user-tie',
-    'finance': 'fa-dollar-sign',
-    'design': 'fa-palette',
-    'healthcare': 'fa-heartbeat',
-    'education': 'fa-graduation-cap',
-    'management': 'fa-tasks',
-    'customer service': 'fa-headset',
-    'project management': 'fa-project-diagram',
-    'accounting': 'fa-calculator',
-    'legal': 'fa-gavel',
-    'operations': 'fa-cog',
-    'product': 'fa-box',
-    'quality': 'fa-check-circle',
-    'research': 'fa-flask',
-    'consulting': 'fa-handshake',
-    'startup': 'fa-rocket',
-    'mnc': 'fa-building',
-    'fresher': 'fa-user-graduate',
-    'entry level': 'fa-user-plus',
-    'entry-level': 'fa-user-plus',
-    'mid-level': 'fa-user-check',
-    'mid level': 'fa-user-check',
-    'senior': 'fa-user-tie',
-    'full-time': 'fa-clock',
-    'full time': 'fa-clock',
-    'part-time': 'fa-hourglass-half',
-    'part time': 'fa-hourglass-half',
-    'contract': 'fa-file-contract',
-    'freelance': 'fa-laptop',
-    'internship': 'fa-user-graduate',
-    'remote': 'fa-home',
-    'default': 'fa-briefcase'
-  };
+  const handleFileUpload = async (file, type) => {
+    if (!file) return;
+    setError('');
 
-  const getIcon = (name, type) => {
-    const lowerName = name.toLowerCase();
-    
-    for (const [key, icon] of Object.entries(iconMap)) {
-      if (lowerName.includes(key)) {
-        return icon;
+    try {
+      let text = '';
+      if (file.type === 'text/plain') {
+        text = await file.text();
+      } else if (file.type === 'application/pdf') {
+        setError('Please convert PDF to text or paste content directly');
+        return;
       }
-    }
-    
-    if (type === 'company') return 'fa-building';
-    if (type === 'category') return 'fa-briefcase';
-    if (type === 'location') return 'fa-map-marker-alt';
-    if (type === 'experience') return 'fa-user';
-    if (type === 'type') return 'fa-calendar';
-    
-    return iconMap.default;
-  };
 
-  const extractUniqueValues = (field) => {
-    if (!jobs || jobs.length === 0) return [];
-    
-    const uniqueSet = new Set();
-    jobs.forEach(job => {
-      if (job[field] && job[field].trim()) {
-        uniqueSet.add(job[field].trim());
+      if (type === 'resume') {
+        setResumeFile(file);
+        setResumeText(text);
+      } else {
+        setJobDescFile(file);
+        setJobDescText(text);
       }
-    });
-    
-    return Array.from(uniqueSet).sort();
+    } catch (err) {
+      setError(`Error: ${err.message}`);
+    }
   };
 
-  useEffect(() => {
-    const filters = [];
-
-    const uniqueLocations = extractUniqueValues('location');
-    if (uniqueLocations.length > 0) {
-      const sortedLocations = uniqueLocations.sort((a, b) => {
-        if (a.toLowerCase().includes('remote')) return -1;
-        if (b.toLowerCase().includes('remote')) return 1;
-        return a.localeCompare(b);
-      });
-
-      sortedLocations.forEach(location => {
-        filters.push({
-          id: `location-${location.toLowerCase().replace(/[\s,]+/g, '-')}`,
-          icon: getIcon(location, 'location'),
-          label: location,
-          filterType: 'location',
-          filterValue: location
-        });
-      });
+  const analyzeResume = async () => {
+    if (!resumeText.trim()) {
+      setError('Please provide resume content');
+      return;
     }
 
-    const uniqueExperience = extractUniqueValues('experience');
-    if (uniqueExperience.length > 0) {
-      uniqueExperience.forEach(exp => {
-        filters.push({
-          id: `experience-${exp.toLowerCase().replace(/\s+/g, '-')}`,
-          icon: getIcon(exp, 'experience'),
-          label: exp,
-          filterType: 'experience',
-          filterValue: exp
-        });
+    setAnalyzing(true);
+    setError('');
+    setResults(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resumeContent: resumeText,
+          jobDescContent: jobDescText
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Analysis failed');
+      }
+
+      const data = await response.json();
+      setResults(data);
+      setExpandedSections({ content: true, section: true, ats_essentials: true, tailoring: true });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setAnalyzing(false);
     }
-
-    const uniqueTypes = extractUniqueValues('type');
-    if (uniqueTypes.length > 0) {
-      uniqueTypes.forEach(type => {
-        filters.push({
-          id: `type-${type.toLowerCase().replace(/\s+/g, '-')}`,
-          icon: getIcon(type, 'type'),
-          label: type,
-          filterType: 'type',
-          filterValue: type
-        });
-      });
-    }
-
-    if (categories && categories.length > 0) {
-      categories.forEach(category => {
-        filters.push({
-          id: `category-${category.id}`,
-          icon: getIcon(category.name, 'category'),
-          label: category.name,
-          filterType: 'category',
-          filterValue: category.id,
-          actualName: category.name
-        });
-      });
-    }
-
-    if (companies && companies.length > 0) {
-      companies.forEach(company => {
-        filters.push({
-          id: `company-${company.id}`,
-          icon: getIcon(company.name, 'company'),
-          label: company.name,
-          filterType: 'company',
-          filterValue: company.id,
-          actualName: company.name
-        });
-      });
-    }
-
-    setQuickFilterOptions(filters);
-  }, [categories, companies, jobs]);
-
-  const handleFilterClick = (option) => {
-    const params = new URLSearchParams();
-    
-    switch (option.filterType) {
-      case 'location':
-        params.set('location', option.filterValue);
-        break;
-      case 'company':
-        params.set('companies', option.filterValue);
-        break;
-      case 'experience':
-        params.set('experience', option.filterValue);
-        break;
-      case 'category':
-        params.set('categories', option.filterValue);
-        break;
-      case 'type':
-        params.set('type', option.filterValue);
-        break;
-      default:
-        break;
-    }
-
-    navigate(`/jobs?${params.toString()}`);
   };
 
-  const handleViewMore = (filterType) => {
-    navigate(`/filters/${filterType}`);
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
   };
 
-  const groupedFilters = {
-    location: quickFilterOptions.filter(f => f.filterType === 'location'),
-    experience: quickFilterOptions.filter(f => f.filterType === 'experience'),
-    type: quickFilterOptions.filter(f => f.filterType === 'type'),
-    category: quickFilterOptions.filter(f => f.filterType === 'category'),
-    company: quickFilterOptions.filter(f => f.filterType === 'company')
+  const getScoreColor = (score) => {
+    if (score >= 80) return 'score-excellent';
+    if (score >= 60) return 'score-good';
+    if (score >= 40) return 'score-fair';
+    return 'score-poor';
   };
 
-  const renderFilterSection = (sectionType, title, icon, filters) => {
-    if (filters.length === 0) return null;
-
-    const visibleFilters = filters.slice(0, INITIAL_ITEMS[sectionType]);
-    const hasMore = filters.length > INITIAL_ITEMS[sectionType];
-
-    return (
-      <div className="homeFilterSection">
-        <h3 className="homeFilterSectionTitle">
-          <i className={`fa ${icon}`}></i> {title}
-        </h3>
-        <div className="homeQuickFiltersGrid">
-          {visibleFilters.map((option) => (
-            <div
-              key={option.id}
-              className="homeQuickFilterCard"
-              onClick={() => handleFilterClick(option)}
-              role="button"
-              tabIndex={0}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  handleFilterClick(option);
-                }
-              }}
-            >
-              <div className="homeFilterIcon">
-                <i className={`fa ${option.icon}`}></i>
-              </div>
-              <div className="homeFilterLabel">{option.label}</div>
-              <div className="homeFilterArrow">
-                <i className="fa fa-arrow-right"></i>
-              </div>
-            </div>
-          ))}
-        </div>
-        {hasMore && (
-          <div className="homeViewMoreContainer">
-            <button 
-              className="homeViewMoreBtn"
-              onClick={() => handleViewMore(sectionType)}
-            >
-              <span>View All {title}</span>
-              <i className="fa fa-arrow-right"></i>
-            </button>
-          </div>
-        )}
-      </div>
-    );
+  const StatusIcon = ({ status }) => {
+    if (status === 'pass') return <CheckCircle size={18} className="icon-success" />;
+    if (status === 'warning') return <AlertTriangle size={18} className="icon-warning" />;
+    return <AlertCircle size={18} className="icon-error" />;
   };
-
-  if (quickFilterOptions.length === 0) {
-    return (
-      <div className="homeQuickFiltersContainer">
-        <div className="homeQuickFiltersHeader">
-          <h2>Quick Job Filters</h2>
-          <p className="homeLoadingMessage">Loading filters...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="homeQuickFiltersContainer">
-      <div className="homeQuickFiltersHeader">
-        <h2>Quick Job Filters</h2>
-        <p>Find your perfect job with one click</p>
+    <div className="ats-analyzer">
+      <div className="ats-header">
+        <h1>ATS Resume Analyzer</h1>
+        <p>Get detailed feedback with specific corrections</p>
       </div>
 
-      {renderFilterSection('location', 'Work Location', 'fa-map-marker-alt', groupedFilters.location)}
-      {renderFilterSection('experience', 'Experience Level', 'fa-user-tie', groupedFilters.experience)}
-      {renderFilterSection('type', 'Job Type', 'fa-briefcase', groupedFilters.type)}
-      {renderFilterSection('category', 'Browse by Category', 'fa-layer-group', groupedFilters.category)}
-      {renderFilterSection('company', 'Browse by Company', 'fa-building', groupedFilters.company)}
+      <div className="ats-upload-section">
+        <div className="upload-group">
+          <label>
+            <FileText size={20} />
+            Resume *
+          </label>
+          <div className="upload-area" onClick={() => document.getElementById('resume-input').click()}>
+            <input
+              id="resume-input"
+              type="file"
+              accept=".txt"
+              onChange={(e) => handleFileUpload(e.target.files[0], 'resume')}
+              style={{ display: 'none' }}
+            />
+            <Upload size={32} />
+            {resumeFile ? (
+              <div>
+                <p className="file-success">✓ {resumeFile.name}</p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setResumeFile(null);
+                    setResumeText('');
+                  }}
+                  className="remove-btn"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p>Click to upload</p>
+                <p className="upload-hint">TXT files only</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="upload-group">
+          <label>
+            <Briefcase size={20} />
+            Job Description (Optional)
+          </label>
+          <div className="upload-area" onClick={() => document.getElementById('job-input').click()}>
+            <input
+              id="job-input"
+              type="file"
+              accept=".txt"
+              onChange={(e) => handleFileUpload(e.target.files[0], 'jobdesc')}
+              style={{ display: 'none' }}
+            />
+            <Upload size={32} />
+            {jobDescFile ? (
+              <div>
+                <p className="file-success">✓ {jobDescFile.name}</p>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setJobDescFile(null);
+                    setJobDescText('');
+                  }}
+                  className="remove-btn"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <div>
+                <p>Click to upload</p>
+                <p className="upload-hint">For better matching</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <details className="paste-section">
+        <summary>Or paste text directly</summary>
+        <div className="textarea-group">
+          <textarea
+            value={resumeText}
+            onChange={(e) => setResumeText(e.target.value)}
+            placeholder="Paste resume text..."
+            rows={6}
+          />
+          <textarea
+            value={jobDescText}
+            onChange={(e) => setJobDescText(e.target.value)}
+            placeholder="Paste job description (optional)..."
+            rows={6}
+          />
+        </div>
+      </details>
+
+      {error && (
+        <div className="error-box">
+          <AlertCircle size={20} />
+          <p>{error}</p>
+        </div>
+      )}
+
+      <button
+        onClick={analyzeResume}
+        disabled={analyzing || !resumeText.trim()}
+        className="analyze-btn"
+      >
+        {analyzing ? (
+          <>
+            <Loader2 size={20} className="spinner" />
+            Analyzing...
+          </>
+        ) : (
+          'Analyze Resume'
+        )}
+      </button>
+
+      {results && (
+        <div className="results-section">
+          <div className="score-overview">
+            <div className="score-circle">
+              <svg viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="85" fill="none" stroke="#e5e7eb" strokeWidth="15" />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="85"
+                  fill="none"
+                  stroke={results.overall_score >= 80 ? '#10b981' : results.overall_score >= 60 ? '#f59e0b' : '#ef4444'}
+                  strokeWidth="15"
+                  strokeDasharray={`${(results.overall_score / 100) * 534} 534`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 100 100)"
+                />
+              </svg>
+              <div className="score-text">
+                <div className={`score-number ${getScoreColor(results.overall_score)}`}>
+                  {results.overall_score}
+                </div>
+                <div className="score-label">/ 100</div>
+              </div>
+            </div>
+            <div className="score-details">
+              <p className="issues-count">{results.total_issues} Issues Found</p>
+              <p className="parse-rate">Parse Rate: {results.parse_rate}%</p>
+              <p className="summary">{results.summary}</p>
+            </div>
+          </div>
+
+          {Object.entries(results.categories).map(([key, data]) => (
+            <div key={key} className="category-section">
+              <button className="category-header" onClick={() => toggleSection(key)}>
+                <div className="category-title">
+                  <span>{key.replace(/_/g, ' ').toUpperCase()}</span>
+                </div>
+                <div className="category-meta">
+                  <span className={`category-score ${getScoreColor(data.score)}`}>
+                    {data.score}%
+                  </span>
+                  {expandedSections[key] ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                </div>
+              </button>
+
+              {expandedSections[key] && (
+                <div className="category-content">
+                  {data.checks && Object.entries(data.checks).map(([checkKey, checkData]) => (
+                    <div key={checkKey} className="check-item">
+                      <div className="check-header">
+                        <StatusIcon status={checkData.status} />
+                        <h4>{checkKey.replace(/_/g, ' ').toUpperCase()}</h4>
+                      </div>
+                      
+                      {checkData.message && (
+                        <p className="check-message">{checkData.message}</p>
+                      )}
+
+                      {checkData.value !== undefined && (
+                        <div className="check-value">
+                          <span>Value: {checkData.value}%</span>
+                        </div>
+                      )}
+
+                      {checkData.missing && checkData.missing.length > 0 && (
+                        <div className="missing-items">
+                          <p className="missing-label">Missing:</p>
+                          <ul>
+                            {checkData.missing.map((item, idx) => (
+                              <li key={idx}>
+                                <X size={14} className="icon-error" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {checkData.present && checkData.present.length > 0 && (
+                        <div className="present-items">
+                          <p className="present-label">Present:</p>
+                          <ul>
+                            {checkData.present.map((item, idx) => (
+                              <li key={idx}>
+                                <Check size={14} className="icon-success" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {checkData.matched && (
+                        <div className="matched-items">
+                          <p>Matched ({checkData.match_percentage}%):</p>
+                          <div className="tags">
+                            {checkData.matched.map((item, idx) => (
+                              <span key={idx} className="tag tag-success">{item}</span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {checkData.examples && checkData.examples.length > 0 && (
+                        <div className="examples">
+                          <p>Examples:</p>
+                          <ul>
+                            {checkData.examples.map((ex, idx) => (
+                              <li key={idx}>{ex}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {checkData.suggestions && checkData.suggestions.length > 0 && (
+                        <div className="suggestions">
+                          <p>Suggestions:</p>
+                          <ul>
+                            {checkData.suggestions.map((sug, idx) => (
+                              <li key={idx}>{sug}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {checkData.repeated_phrases && checkData.repeated_phrases.length > 0 && (
+                        <div className="repeated-phrases">
+                          <p>Repeated Phrases to Fix:</p>
+                          <ul>
+                            {checkData.repeated_phrases.map((phrase, idx) => (
+                              <li key={idx} className="error-text">{phrase}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {checkData.errors && checkData.errors.length > 0 && (
+                        <div className="error-list">
+                          <p>Errors to Correct:</p>
+                          <ul>
+                            {checkData.errors.map((err, idx) => (
+                              <li key={idx} className="error-text">{err}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+
+                  {data.issues && data.issues.length > 0 && (
+                    <div className="issues-list">
+                      <h4>Issues & Corrections:</h4>
+                      {data.issues.map((issue, idx) => (
+                        <div key={idx} className={`issue-card issue-${issue.type}`}>
+                          <div className="issue-header">
+                            <h5>{issue.title}</h5>
+                            <span className={`priority-badge priority-${issue.impact}`}>
+                              {issue.impact}
+                            </span>
+                          </div>
+                          <p className="issue-description">{issue.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+
+          {results.detailed_feedback && (
+            <div className="feedback-section">
+              <h3>Detailed Improvements</h3>
+              {results.detailed_feedback.improvements.map((imp, idx) => (
+                <div key={idx} className="improvement-card">
+                  <div className="improvement-header">
+                    <span className="improvement-category">{imp.category}</span>
+                    <span className={`priority-badge priority-${imp.priority}`}>
+                      {imp.priority}
+                    </span>
+                  </div>
+                  <p className="improvement-recommendation">{imp.recommendation}</p>
+                  {imp.example && (
+                    <div className="improvement-example">
+                      <strong>Example:</strong> {imp.example}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default QuickFilters;
+export default ATSAnalyzer;
