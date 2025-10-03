@@ -12,7 +12,33 @@ const ATSResumeAnalyzer = () => {
   const [error, setError] = useState('');
 
   // Backend API URL - uses your existing backend
-  const API_BASE_URL =  import.meta.env.VITE_API_BASE_URL  || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+  const extractTextFromPDF = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const typedArray = new Uint8Array(e.target.result);
+          const pdf = await pdfjsLib.getDocument(typedArray).promise;
+          let fullText = '';
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n';
+          }
+
+          resolve(fullText);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = () => reject(new Error('Failed to read file'));
+      reader.readAsArrayBuffer(file);
+    });
+  };
 
   const handleFileUpload = async (file, type) => {
     if (!file) return;
@@ -23,18 +49,41 @@ const ATSResumeAnalyzer = () => {
       return;
     }
 
+    setError('');
+    setAnalyzing(true);
+
     try {
       let text = '';
-      
+
       if (file.type === 'text/plain') {
         text = await file.text();
+      } else if (file.type === 'application/pdf') {
+        // Load PDF.js library if not already loaded
+        if (!window.pdfjsLib) {
+          const script = document.createElement('script');
+          script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+          document.head.appendChild(script);
+          
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = () => reject(new Error('Failed to load PDF.js'));
+          });
+
+          // Set worker
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+
+        text = await extractTextFromPDF(file);
       } else {
-        setError('For demo: Please use text files or paste text directly');
+        setError('Please upload PDF or TXT files only');
+        setAnalyzing(false);
         return;
       }
 
       if (!text || text.trim().length < 50) {
         setError('Text must be at least 50 characters');
+        setAnalyzing(false);
         return;
       }
 
@@ -48,6 +97,8 @@ const ATSResumeAnalyzer = () => {
       setError('');
     } catch (err) {
       setError(`Error processing file: ${err.message}`);
+    } finally {
+      setAnalyzing(false);
     }
   };
 
@@ -111,136 +162,136 @@ const ATSResumeAnalyzer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8 pt-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">ATS Resume Analyzer</h1>
-          <p className="text-gray-600">Get instant AI-powered feedback on your resume</p>
+    <div className="ats-container">
+      <div className="ats-wrapper">
+        <div className="ats-header">
+          <h1 className="ats-title">ATS Resume Analyzer</h1>
+          <p className="ats-subtitle">Get instant AI-powered feedback on your resume</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+        <div className="ats-card">
+          <div className="ats-content">
+            <div className="ats-upload-grid">
               <div>
-                <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">
+                <label className="ats-label">
                   <FileText size={20} />
                   Resume *
                 </label>
                 <div 
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition cursor-pointer bg-gray-50"
+                  className="ats-upload-area"
                   onClick={() => document.getElementById('resume-input').click()}
                 >
                   <input
                     id="resume-input"
                     type="file"
-                    accept=".txt"
-                    className="hidden"
+                    accept=".txt,.pdf"
+                    className="ats-file-input"
                     onChange={(e) => handleFileUpload(e.target.files[0], 'resume')}
                   />
-                  <Upload size={32} className="mx-auto text-gray-400 mb-2" />
+                  <Upload size={32} className="ats-upload-icon" />
                   {resumeFile ? (
                     <div>
-                      <p className="text-green-600 font-medium">✓ {resumeFile.name}</p>
+                      <p className="ats-file-success">✓ {resumeFile.name}</p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setResumeFile(null);
                           setResumeText('');
                         }}
-                        className="mt-2 text-red-600 hover:text-red-700"
+                        className="ats-remove-btn"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-gray-600">Click to upload</p>
-                      <p className="text-sm text-gray-400">TXT files only</p>
+                      <p className="ats-upload-text">Click to upload</p>
+                      <p className="ats-upload-hint">PDF or TXT files</p>
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">
+                <label className="ats-label">
                   <Briefcase size={20} />
                   Job Description (Optional)
                 </label>
                 <div 
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition cursor-pointer bg-gray-50"
+                  className="ats-upload-area"
                   onClick={() => document.getElementById('jobdesc-input').click()}
                 >
                   <input
                     id="jobdesc-input"
                     type="file"
-                    accept=".txt"
-                    className="hidden"
+                    accept=".txt,.pdf"
+                    className="ats-file-input"
                     onChange={(e) => handleFileUpload(e.target.files[0], 'jobdesc')}
                   />
-                  <Upload size={32} className="mx-auto text-gray-400 mb-2" />
+                  <Upload size={32} className="ats-upload-icon" />
                   {jobDescFile ? (
                     <div>
-                      <p className="text-green-600 font-medium">✓ {jobDescFile.name}</p>
+                      <p className="ats-file-success">✓ {jobDescFile.name}</p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setJobDescFile(null);
                           setJobDescText('');
                         }}
-                        className="mt-2 text-red-600 hover:text-red-700"
+                        className="ats-remove-btn"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-gray-600">Click to upload</p>
-                      <p className="text-sm text-gray-400">For better matching</p>
+                      <p className="ats-upload-text">Click to upload</p>
+                      <p className="ats-upload-hint">For better matching</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            <details className="bg-gray-50 rounded-lg p-4">
-              <summary className="cursor-pointer font-medium text-gray-700">Or paste text directly</summary>
-              <div className="grid md:grid-cols-2 gap-4 mt-4">
+            <details className="ats-details">
+              <summary className="ats-details-summary">Or paste text directly</summary>
+              <div className="ats-textarea-grid">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Resume Text</label>
+                  <label className="ats-textarea-label">Resume Text</label>
                   <textarea
                     value={resumeText}
                     onChange={(e) => setResumeText(e.target.value)}
                     placeholder="Paste your resume text here..."
-                    className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="ats-textarea"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Job Description Text</label>
+                  <label className="ats-textarea-label">Job Description Text</label>
                   <textarea
                     value={jobDescText}
                     onChange={(e) => setJobDescText(e.target.value)}
                     placeholder="Paste job description here (optional)..."
-                    className="w-full h-40 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="ats-textarea"
                   />
                 </div>
               </div>
             </details>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3">
-                <AlertCircle size={20} className="text-red-600 flex-shrink-0" />
-                <p className="text-red-800">{error}</p>
+              <div className="ats-error">
+                <AlertCircle size={20} className="ats-error-icon" />
+                <p className="ats-error-text">{error}</p>
               </div>
             )}
 
             <button
               onClick={analyzeResume}
               disabled={analyzing || !resumeText.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 rounded-lg transition flex items-center justify-center gap-2"
+              className="ats-analyze-btn"
             >
               {analyzing ? (
                 <>
-                  <Loader2 size={20} className="animate-spin" />
+                  <Loader2 size={20} className="ats-spinner" />
                   Analyzing...
                 </>
               ) : (
@@ -250,10 +301,10 @@ const ATSResumeAnalyzer = () => {
           </div>
 
           {results && (
-            <div className="mt-8 space-y-6">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 text-center">
-                <div className="inline-block relative">
-                  <svg viewBox="0 0 200 200" className="w-48 h-48">
+            <div className="ats-results">
+              <div className="ats-score-card">
+                <div className="ats-score-circle-wrapper">
+                  <svg viewBox="0 0 200 200" className="ats-score-svg">
                     <circle cx="100" cy="100" r="90" fill="none" stroke="#e5e7eb" strokeWidth="12" />
                     <circle
                       cx="100"
@@ -267,31 +318,31 @@ const ATSResumeAnalyzer = () => {
                       transform="rotate(-90 100 100)"
                     />
                   </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-5xl font-bold" style={{ color: getScoreColor(results.ats_score) }}>
+                  <div className="ats-score-content">
+                    <div className="ats-score-number" style={{ color: getScoreColor(results.ats_score) }}>
                       {results.ats_score}
                     </div>
-                    <div className="text-lg text-gray-600">{getScoreLabel(results.ats_score)}</div>
+                    <div className="ats-score-label">{getScoreLabel(results.ats_score)}</div>
                   </div>
                 </div>
-                <p className="mt-4 text-gray-700 max-w-2xl mx-auto">{results.overall_assessment}</p>
+                <p className="ats-assessment">{results.overall_assessment}</p>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-4">
+              <div className="ats-breakdown-card">
+                <h3 className="ats-section-title">
                   <TrendingUp size={20} />
                   Score Breakdown
                 </h3>
-                <div className="space-y-4">
+                <div className="ats-breakdown-list">
                   {Object.entries(results.score_breakdown).map(([key, value]) => (
                     <div key={key}>
-                      <div className="flex justify-between mb-2">
-                        <span className="font-medium text-gray-700 capitalize">{key.replace(/_/g, ' ')}</span>
-                        <span style={{ color: getScoreColor(value) }} className="font-bold">{value}%</span>
+                      <div className="ats-breakdown-header">
+                        <span className="ats-breakdown-label">{key.replace(/_/g, ' ')}</span>
+                        <span className="ats-breakdown-value" style={{ color: getScoreColor(value) }}>{value}%</span>
                       </div>
-                      <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="ats-progress-bar">
                         <div
-                          className="h-full rounded-full transition-all"
+                          className="ats-progress-fill"
                           style={{
                             width: `${value}%`,
                             background: getScoreColor(value)
@@ -303,33 +354,33 @@ const ATSResumeAnalyzer = () => {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                  <h3 className="flex items-center gap-2 text-lg font-bold text-green-900 mb-4">
+              <div className="ats-skills-grid">
+                <div className="ats-skills-present">
+                  <h3 className="ats-skills-title">
                     <CheckCircle size={18} />
                     Present Skills ({results.present_skills.length})
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="ats-skills-tags">
                     {results.present_skills.map((skill, idx) => (
-                      <span key={idx} className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                      <span key={idx} className="ats-skill-tag ats-skill-present">
                         {skill}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-                  <h3 className="flex items-center gap-2 text-lg font-bold text-orange-900 mb-4">
+                <div className="ats-skills-missing">
+                  <h3 className="ats-skills-title">
                     <AlertCircle size={18} />
                     Missing Skills
                   </h3>
-                  <div className="space-y-3">
+                  <div className="ats-missing-skills-list">
                     {results.missing_skills.critical?.length > 0 && (
                       <div>
-                        <strong className="text-red-700">Critical:</strong>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <strong className="ats-missing-critical">Critical:</strong>
+                        <div className="ats-skills-tags">
                           {results.missing_skills.critical.map((skill, idx) => (
-                            <span key={idx} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                            <span key={idx} className="ats-skill-tag ats-skill-critical">
                               {skill}
                             </span>
                           ))}
@@ -338,10 +389,10 @@ const ATSResumeAnalyzer = () => {
                     )}
                     {results.missing_skills.important?.length > 0 && (
                       <div>
-                        <strong className="text-orange-700">Important:</strong>
-                        <div className="flex flex-wrap gap-2 mt-1">
+                        <strong className="ats-missing-important">Important:</strong>
+                        <div className="ats-skills-tags">
                           {results.missing_skills.important.map((skill, idx) => (
-                            <span key={idx} className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+                            <span key={idx} className="ats-skill-tag ats-skill-important">
                               {skill}
                             </span>
                           ))}
@@ -352,26 +403,22 @@ const ATSResumeAnalyzer = () => {
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900 mb-4">
+              <div className="ats-suggestions-card">
+                <h3 className="ats-section-title">
                   <Target size={20} />
                   Actionable Suggestions
                 </h3>
-                <div className="space-y-4">
+                <div className="ats-suggestions-list">
                   {results.suggestions.map((suggestion, idx) => (
-                    <div key={idx} className="border-l-4 border-blue-500 bg-blue-50 p-4 rounded">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-bold text-gray-900">{suggestion.category}</h4>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          suggestion.priority === 'high' ? 'bg-red-100 text-red-800' :
-                          suggestion.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                        }`}>
+                    <div key={idx} className="ats-suggestion-item">
+                      <div className="ats-suggestion-header">
+                        <h4 className="ats-suggestion-category">{suggestion.category}</h4>
+                        <span className={`ats-priority-badge ats-priority-${suggestion.priority}`}>
                           {suggestion.priority}
                         </span>
                       </div>
-                      <p className="text-gray-700 mb-2">{suggestion.recommendation}</p>
-                      <p className="text-sm text-gray-600 italic">{suggestion.impact}</p>
+                      <p className="ats-suggestion-text">{suggestion.recommendation}</p>
+                      <p className="ats-suggestion-impact">{suggestion.impact}</p>
                     </div>
                   ))}
                 </div>
@@ -380,7 +427,7 @@ const ATSResumeAnalyzer = () => {
           )}
         </div>
 
-        <div className="text-center mt-8 text-gray-600">
+        <div className="ats-footer">
           <p>Powered by Groq AI & Llama 3.3 70B</p>
         </div>
       </div>
