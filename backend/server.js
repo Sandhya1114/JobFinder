@@ -29,7 +29,6 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 // ============ GROQ AI ANALYSIS ROUTES ============
 
-// ATS Resume Analysis Endpoint
 // Add this enhanced version to replace your existing /api/analyze-resume endpoint
 
 app.post('/api/analyze-resume', async (req, res) => {
@@ -46,10 +45,10 @@ app.post('/api/analyze-resume', async (req, res) => {
 
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer and resume optimization specialist. Analyze resumes comprehensively across all dimensions: content quality, structure, ATS compatibility, and job tailoring. Provide detailed, actionable feedback. Return ONLY valid JSON without markdown formatting.`;
+    const systemPrompt = `You are an ATS analyzer. Analyze resumes across content, structure, ATS compatibility, and job tailoring. Return ONLY valid JSON.`;
     
     const userPrompt = hasJobDesc 
-      ? `Perform a comprehensive ATS analysis of this resume against the job description. Evaluate ALL categories thoroughly.
+      ? `Analyze this resume against the job description.
 
 RESUME:
 ${resumeContent}
@@ -57,7 +56,7 @@ ${resumeContent}
 JOB DESCRIPTION:
 ${jobDescContent}
 
-Provide analysis in this EXACT JSON format:
+Return this JSON format:
 {
   "overall_score": <number 0-100>,
   "total_issues": <number>,
