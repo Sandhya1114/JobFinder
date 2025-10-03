@@ -101,9 +101,10 @@ const ATSResumeAnalyzer = () => {
       setAnalyzing(false);
     }
   };
-
-  const analyzeWithBackend = async (resumeContent, jobDescContent) => {
+const analyzeWithBackend = async (resumeContent, jobDescContent) => {
     try {
+      console.log('Sending request to:', `${API_BASE_URL}/api/analyze-resume`);
+      
       const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
         method: 'POST',
         headers: {
@@ -115,18 +116,58 @@ const ATSResumeAnalyzer = () => {
         })
       });
 
+      // Check if response is HTML (error page)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('text/html')) {
+        throw new Error('Backend server not responding correctly. Please check if the server is running on ' + API_BASE_URL);
+      }
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Analysis failed');
+        let errorMessage = 'Analysis failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (e) {
+          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const analysisResults = await response.json();
       return analysisResults;
     } catch (err) {
       console.error('Analysis Error:', err);
-      throw new Error(`Analysis failed: ${err.message}`);
+      if (err.message.includes('fetch')) {
+        throw new Error('Cannot connect to backend server. Make sure it is running on ' + API_BASE_URL);
+      }
+      throw new Error(err.message);
     }
   };
+  // const analyzeWithBackend = async (resumeContent, jobDescContent) => {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         resumeContent,
+  //         jobDescContent
+  //       })
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.error || 'Analysis failed');
+  //     }
+
+  //     const analysisResults = await response.json();
+  //     return analysisResults;
+  //   } catch (err) {
+  //     console.error('Analysis Error:', err);
+  //     throw new Error(`Analysis failed: ${err.message}`);
+  //   }
+  // };
 
   const analyzeResume = async () => {
     if (!resumeText.trim()) {
