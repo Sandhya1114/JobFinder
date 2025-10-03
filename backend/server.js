@@ -29,9 +29,11 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // ============ GROQ AI ANALYSIS ROUTES ============
 
 // ATS Resume Analysis Endpoint
+// Add this enhanced version to replace your existing /api/analyze-resume endpoint
+
 app.post('/api/analyze-resume', async (req, res) => {
   try {
-    console.log('📄 ATS Resume analysis endpoint hit');
+    console.log('📄 Enhanced ATS Resume analysis endpoint hit');
     
     const { resumeContent, jobDescContent } = req.body;
 
@@ -43,10 +45,10 @@ app.post('/api/analyze-resume', async (req, res) => {
 
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Analyze resumes with precision and provide detailed, actionable feedback. Return ONLY valid JSON without any markdown formatting or code blocks.`;
+    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer and resume optimization specialist. Analyze resumes comprehensively across all dimensions: content quality, structure, ATS compatibility, and job tailoring. Provide detailed, actionable feedback. Return ONLY valid JSON without markdown formatting.`;
     
     const userPrompt = hasJobDesc 
-      ? `Analyze this resume against the job description and provide a comprehensive ATS analysis.
+      ? `Perform a comprehensive ATS analysis of this resume against the job description. Evaluate ALL categories thoroughly.
 
 RESUME:
 ${resumeContent}
@@ -54,75 +56,300 @@ ${resumeContent}
 JOB DESCRIPTION:
 ${jobDescContent}
 
-Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+Provide analysis in this EXACT JSON format:
 {
-  "ats_score": <number 0-100>,
-  "score_breakdown": {
-    "keyword_match": <number 0-100>,
-    "skills_match": <number 0-100>,
-    "experience_relevance": <number 0-100>,
-    "format_structure": <number 0-100>,
-    "achievement_quantification": <number 0-100>
-  },
-  "match_percentage": <number 0-100>,
-  "overall_assessment": "<detailed assessment string>",
-  "missing_skills": {
-    "critical": ["skill1", "skill2"],
-    "important": ["skill3"],
-    "nice_to_have": ["skill4"]
-  },
-  "present_skills": ["skill1", "skill2", "skill3"],
-  "suggestions": [
-    {
-      "category": "category name",
-      "priority": "high/medium/low",
-      "recommendation": "specific recommendation",
-      "impact": "expected impact"
+  "overall_score": <number 0-100>,
+  "total_issues": <number>,
+  "parse_rate": <number 0-100>,
+  "categories": {
+    "content": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "ATS Parse Rate",
+          "status": "pass/warning/fail",
+          "message": "Detailed explanation of parsing compatibility",
+          "score": <number 0-100>
+        },
+        {
+          "name": "Quantifying Impact",
+          "status": "pass/warning/fail",
+          "message": "Analysis of metrics and quantification",
+          "examples": ["specific examples from resume"],
+          "suggestions": ["how to improve"]
+        },
+        {
+          "name": "Repetition",
+          "status": "pass/warning/fail",
+          "message": "Overused phrases identified",
+          "repeated_phrases": ["phrase1", "phrase2"],
+          "count": <number>
+        },
+        {
+          "name": "Spelling & Grammar",
+          "status": "pass/warning/fail",
+          "message": "Grammar and spelling assessment",
+          "errors": [
+            {"error": "misspelled word", "correction": "correct word", "context": "sentence"}
+          ]
+        }
+      ]
+    },
+    "section": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "Essential Sections",
+          "status": "pass/warning/fail",
+          "message": "Analysis of resume sections",
+          "present_sections": ["Contact", "Experience", "Education"],
+          "missing_sections": ["Projects", "Certifications"],
+          "recommendations": ["Add a Projects section showcasing technical work"]
+        },
+        {
+          "name": "Contact Information",
+          "status": "pass/warning/fail",
+          "message": "Completeness of contact details",
+          "found": ["email", "phone"],
+          "missing": ["LinkedIn", "location"],
+          "suggestions": ["Add LinkedIn URL", "Include city/state"]
+        }
+      ]
+    },
+    "ats_essentials": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "File Format & Size",
+          "status": "pass/warning/fail",
+          "message": "File format analysis",
+          "details": "Assessment of ATS compatibility"
+        },
+        {
+          "name": "Design",
+          "status": "pass/warning/fail",
+          "message": "Formatting and design issues",
+          "issues": ["tables detected", "columns used"],
+          "recommendations": ["Use single column layout", "Avoid tables"]
+        },
+        {
+          "name": "Email Address",
+          "status": "pass/warning/fail",
+          "message": "Email professionalism check",
+          "email_found": "user@email.com or null",
+          "is_professional": true/false
+        },
+        {
+          "name": "Hyperlink in Header",
+          "status": "pass/warning/fail",
+          "message": "Link placement analysis",
+          "links_found": ["LinkedIn", "Portfolio"]
+        }
+      ]
+    },
+    "tailoring": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "Hard Skills",
+          "status": "pass/warning/fail",
+          "message": "Technical skills match analysis",
+          "matched_skills": ["Python", "React"],
+          "missing_skills": ["Docker", "AWS"],
+          "match_percentage": <number 0-100>
+        },
+        {
+          "name": "Soft Skills",
+          "status": "pass/warning/fail",
+          "message": "Soft skills match analysis",
+          "matched_skills": ["Leadership", "Communication"],
+          "missing_skills": ["Problem Solving"],
+          "match_percentage": <number 0-100>
+        },
+        {
+          "name": "Action Verbs",
+          "status": "pass/warning/fail",
+          "message": "Action verb strength analysis",
+          "weak_verbs": [
+            {"verb": "responsible for", "suggestion": "Led", "context": "example usage"}
+          ],
+          "strong_verbs_used": ["Developed", "Architected"],
+          "suggestions": ["Replace passive voice with action verbs"]
+        },
+        {
+          "name": "Tailored Title",
+          "status": "pass/warning/fail",
+          "message": "Job title alignment",
+          "resume_title": "Software Engineer",
+          "job_title": "Senior Full Stack Developer",
+          "match_score": <number 0-100>,
+          "suggestion": "Update title to match job posting"
+        }
+      ]
     }
-  ],
-  "strengths": ["strength1", "strength2"],
-  "red_flags": ["flag1", "flag2"],
-  "competitive_analysis": "analysis string",
-  "next_steps": ["step1", "step2"]
+  },
+  "summary": {
+    "strengths": ["strength1", "strength2"],
+    "critical_issues": ["issue1", "issue2"],
+    "quick_wins": ["quick improvement 1", "quick improvement 2"],
+    "next_steps": ["step1", "step2"]
+  },
+  "detailed_feedback": {
+    "content_quality": "Comprehensive content assessment",
+    "ats_compatibility": "Detailed ATS parsing analysis",
+    "job_alignment": "How well resume matches job requirements",
+    "competitive_edge": "What makes this resume stand out or fall short"
+  }
 }`
-      : `Analyze this resume for general ATS compatibility and quality.
+      : `Perform a comprehensive general ATS analysis of this resume. Evaluate ALL categories.
 
 RESUME:
 ${resumeContent}
 
-Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+Provide analysis in this EXACT JSON format:
 {
-  "ats_score": <number 0-100>,
-  "score_breakdown": {
-    "keyword_match": <number 0-100>,
-    "skills_match": <number 0-100>,
-    "experience_relevance": <number 0-100>,
-    "format_structure": <number 0-100>,
-    "achievement_quantification": <number 0-100>
-  },
-  "match_percentage": <number 0-100>,
-  "overall_assessment": "<detailed assessment string>",
-  "missing_skills": {
-    "critical": [],
-    "important": ["recommended skill1"],
-    "nice_to_have": ["skill2"]
-  },
-  "present_skills": ["skill1", "skill2", "skill3"],
-  "suggestions": [
-    {
-      "category": "category name",
-      "priority": "high/medium/low",
-      "recommendation": "specific recommendation",
-      "impact": "expected impact"
+  "overall_score": <number 0-100>,
+  "total_issues": <number>,
+  "parse_rate": <number 0-100>,
+  "categories": {
+    "content": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "ATS Parse Rate",
+          "status": "pass/warning/fail",
+          "message": "Detailed parsing analysis",
+          "score": <number 0-100>
+        },
+        {
+          "name": "Quantifying Impact",
+          "status": "pass/warning/fail",
+          "message": "Metrics and quantification analysis",
+          "examples": [],
+          "suggestions": []
+        },
+        {
+          "name": "Repetition",
+          "status": "pass/warning/fail",
+          "message": "Repetition analysis",
+          "repeated_phrases": [],
+          "count": 0
+        },
+        {
+          "name": "Spelling & Grammar",
+          "status": "pass/warning/fail",
+          "message": "Grammar assessment",
+          "errors": []
+        }
+      ]
+    },
+    "section": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "Essential Sections",
+          "status": "pass/warning/fail",
+          "message": "Section completeness",
+          "present_sections": [],
+          "missing_sections": [],
+          "recommendations": []
+        },
+        {
+          "name": "Contact Information",
+          "status": "pass/warning/fail",
+          "message": "Contact details check",
+          "found": [],
+          "missing": [],
+          "suggestions": []
+        }
+      ]
+    },
+    "ats_essentials": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "File Format & Size",
+          "status": "pass/warning/fail",
+          "message": "Format compatibility",
+          "details": ""
+        },
+        {
+          "name": "Design",
+          "status": "pass/warning/fail",
+          "message": "Design and formatting",
+          "issues": [],
+          "recommendations": []
+        },
+        {
+          "name": "Email Address",
+          "status": "pass/warning/fail",
+          "message": "Email check",
+          "email_found": null,
+          "is_professional": false
+        },
+        {
+          "name": "Hyperlink in Header",
+          "status": "pass/warning/fail",
+          "message": "Link analysis",
+          "links_found": []
+        }
+      ]
+    },
+    "tailoring": {
+      "score": <number 0-100>,
+      "checks": [
+        {
+          "name": "Hard Skills",
+          "status": "warning",
+          "message": "No job description provided for skill matching",
+          "matched_skills": [],
+          "missing_skills": [],
+          "match_percentage": 0,
+          "suggestions": ["Upload job description for skill matching"]
+        },
+        {
+          "name": "Soft Skills",
+          "status": "warning",
+          "message": "No job description provided",
+          "matched_skills": [],
+          "missing_skills": [],
+          "match_percentage": 0
+        },
+        {
+          "name": "Action Verbs",
+          "status": "pass/warning/fail",
+          "message": "Action verb analysis",
+          "weak_verbs": [],
+          "strong_verbs_used": [],
+          "suggestions": []
+        },
+        {
+          "name": "Tailored Title",
+          "status": "warning",
+          "message": "No job title to compare",
+          "resume_title": "",
+          "job_title": null,
+          "match_score": 0,
+          "suggestion": "Upload job description for title matching"
+        }
+      ]
     }
-  ],
-  "strengths": ["strength1", "strength2"],
-  "red_flags": ["flag1", "flag2"],
-  "competitive_analysis": "analysis string",
-  "next_steps": ["step1", "step2"]
+  },
+  "summary": {
+    "strengths": [],
+    "critical_issues": [],
+    "quick_wins": [],
+    "next_steps": []
+  },
+  "detailed_feedback": {
+    "content_quality": "",
+    "ats_compatibility": "",
+    "job_alignment": "Upload job description for tailored analysis",
+    "competitive_edge": ""
+  }
 }`;
 
-    // Call Groq API
+    // Call Groq API with enhanced prompt
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -136,7 +363,7 @@ Provide analysis in this EXACT JSON format (no markdown, no code blocks):
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.3,
-        max_tokens: 4000
+        max_tokens: 8000
       })
     });
 
@@ -157,7 +384,7 @@ Provide analysis in this EXACT JSON format (no markdown, no code blocks):
     // Parse and return JSON
     const analysisResults = JSON.parse(cleanContent);
     
-    console.log('✅ Resume analysis completed successfully');
+    console.log('✅ Enhanced resume analysis completed successfully');
     res.json(analysisResults);
 
   } catch (error) {
