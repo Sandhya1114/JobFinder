@@ -49,14 +49,24 @@ app.post('/api/analyze-resume', async (req, res) => {
     const truncatedResume = resumeContent.slice(0, maxResumeLength);
     const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
     
-    const systemPrompt = `Expert ATS analyzer. Return ONLY valid JSON, no markdown.`;
+    const systemPrompt = `Expert ATS analyzer. Analyze resumes contextually based on the candidate's field. Return ONLY valid JSON, no markdown.`;
     
-    const userPrompt = `Analyze resume${hasJobDesc ? ' against job description' : ''}.
+    const userPrompt = `Analyze this resume${hasJobDesc ? ' against the job description' : ' and identify the candidate\'s role/field from their experience'}.
 
 RESUME:
 ${truncatedResume}
-${hasJobDesc ? `\nJOB:
-${truncatedJobDesc}` : ''}
+${hasJobDesc ? `\nJOB DESCRIPTION:
+${truncatedJobDesc}` : `
+
+IMPORTANT: First identify what role/field this resume is for (e.g., Frontend Developer, Backend Developer, Data Scientist, etc.) based on skills and experience listed. Then provide relevant suggestions for THAT specific field only.`}
+
+${hasJobDesc ? '' : `
+For missing skills, only suggest skills that are:
+1. Directly relevant to the identified role
+2. Commonly required in job postings for that role
+3. Natural progressions from skills already present
+
+DO NOT suggest unrelated skills like "Cloud computing" or "Machine learning" for a Frontend Developer.`}
 
 Return JSON:
 {

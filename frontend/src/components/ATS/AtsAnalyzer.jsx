@@ -362,6 +362,14 @@ const EnhancedATSAnalyzer = () => {
 
           {results && (
             <div className="enhanced-ats-results">
+              {/* Identified Role Badge */}
+              {results.identified_role && (
+                <div className="identified-role-badge">
+                  <Award size={18} />
+                  <span>Analyzed as: <strong>{results.identified_role}</strong></span>
+                </div>
+              )}
+
               {/* Score Overview */}
               <div className="score-overview">
                 <div className="main-score">
