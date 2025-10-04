@@ -43,7 +43,7 @@ const ATSResumeAnalyzer = () => {
   const handleFileUpload = async (file, type) => {
     if (!file) return;
 
-    const maxSize = 10 * 1024 * 1024;
+    const maxSize = 15 * 1024 * 1024;
     if (file.size > maxSize) {
       setError('File size must be less than 10MB');
       return;
@@ -81,8 +81,8 @@ const ATSResumeAnalyzer = () => {
         return;
       }
 
-      if (!text || text.trim().length < 50) {
-        setError('Text must be at least 50 characters');
+      if (!text || text.trim().length < 10) {
+        setError('Text must be at least 10 characters');
         setAnalyzing(false);
         return;
       }
@@ -474,3 +474,4 @@ const analyzeWithBackend = async (resumeContent, jobDescContent) => {
   );
 };
 
+export default ATSResumeAnalyzer;
