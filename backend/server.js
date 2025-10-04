@@ -27,116 +27,76 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // Add this to your existing server.js file after your other route definitions
 
 // ============ GROQ AI ANALYSIS ROUTES ============
-
-/// ATS Resume Analysis Endpoint - Updated validation
+/// Enhanced ATS Resume Analysis Endpoint
 app.post('/api/analyze-resume', async (req, res) => {
   try {
     console.log('📄 ATS Resume analysis endpoint hit');
     
     const { resumeContent, jobDescContent } = req.body;
 
-    // Updated validation - now accepts resumes with at least 10 characters
     if (!resumeContent || resumeContent.trim().length < 10) {
       return res.status(400).json({ 
         error: 'Resume content must be at least 10 characters long' 
       });
     }
 
-    // Add a warning in the system prompt for short resumes
-    const isShortResume = resumeContent.trim().length < 100;
-    
+    const resumeLength = resumeContent.trim().length;
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Analyze resumes with precision and provide detailed, actionable feedback. ${isShortResume ? 'NOTE: This is a very short resume. Provide helpful suggestions for expanding it with more details.' : ''} Return ONLY valid JSON without any markdown formatting or code blocks.`;
+    // Truncate content if too long to stay within token limits
+    const maxResumeLength = 6000;
+    const maxJobDescLength = 3000;
+    const truncatedResume = resumeContent.slice(0, maxResumeLength);
+    const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
     
-    const userPrompt = hasJobDesc 
-      ? `Analyze this resume against the job description and provide a comprehensive ATS analysis.
+    const systemPrompt = `Expert ATS analyzer. Return ONLY valid JSON, no markdown.`;
+    
+    const userPrompt = `Analyze resume${hasJobDesc ? ' against job description' : ''}.
 
 RESUME:
-${resumeContent}
+${truncatedResume}
+${hasJobDesc ? `\nJOB:
+${truncatedJobDesc}` : ''}
 
-JOB DESCRIPTION:
-${jobDescContent}
-
-${isShortResume ? 'NOTE: This resume is very short. Please provide specific suggestions on what information should be added to improve it.\n' : ''}
-
-Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+Return JSON:
 {
-  "ats_score": <number 0-100>,
-  "score_breakdown": {
-    "keyword_match": <number 0-100>,
-    "skills_match": <number 0-100>,
-    "experience_relevance": <number 0-100>,
-    "format_structure": <number 0-100>,
-    "achievement_quantification": <number 0-100>
+  "ats_score": <0-100>,
+  "parse_rate": <0-100>,
+  "total_issues": <number>,
+  "content": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar", "severity": "error|warning|info", "message": "specific issue", "suggestion": "fix"}
+    ]
   },
-  "match_percentage": <number 0-100>,
-  "overall_assessment": "<detailed assessment string, mention if resume is incomplete or too short>",
+  "section": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "essential_sections|contact_info", "severity": "error|warning", "message": "issue", "suggestion": "fix"}
+    ]
+  },
+  "ats_essentials": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "file_format|design|email|hyperlinks", "severity": "error|warning", "message": "issue", "suggestion": "fix"}
+    ]
+  },
+  "tailoring": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "hard_skills|soft_skills|action_verbs|title", "severity": "warning|info", "message": "issue", "suggestion": "improvement"}
+    ]
+  },
+  "present_skills": ["skill1", "skill2"],
   "missing_skills": {
-    "critical": ["skill1", "skill2"],
-    "important": ["skill3"],
-    "nice_to_have": ["skill4"]
+    "critical": ["skill"],
+    "important": ["skill"],
+    "nice_to_have": ["skill"]
   },
-  "present_skills": ["skill1", "skill2", "skill3"],
-  "suggestions": [
-    {
-      "category": "category name",
-      "priority": "high/medium/low",
-      "recommendation": "specific recommendation",
-      "impact": "expected impact"
-    }
-  ],
-  "strengths": ["strength1", "strength2"],
-  "red_flags": ["flag1", "flag2", ${isShortResume ? '"Resume is too short and lacks detail"' : ''}],
-  "competitive_analysis": "analysis string",
-  "next_steps": ["step1", "step2", "Add more detailed work experience", "Include education and skills sections"]
-}`
-      : `Analyze this resume for general ATS compatibility and quality.
-
-RESUME:
-${resumeContent}
-
-${isShortResume ? 'NOTE: This resume is very short. Please provide specific suggestions on what information should be added to improve it.\n' : ''}
-
-Provide analysis in this EXACT JSON format (no markdown, no code blocks):
-{
-  "ats_score": <number 0-100>,
-  "score_breakdown": {
-    "keyword_match": <number 0-100>,
-    "skills_match": <number 0-100>,
-    "experience_relevance": <number 0-100>,
-    "format_structure": <number 0-100>,
-    "achievement_quantification": <number 0-100>
-  },
-  "match_percentage": <number 0-100>,
-  "overall_assessment": "<detailed assessment string, mention if resume is incomplete or too short>",
-  "missing_skills": {
-    "critical": [],
-    "important": ["recommended skill1"],
-    "nice_to_have": ["skill2"]
-  },
-  "present_skills": ["skill1", "skill2", "skill3"],
-  "suggestions": [
-    {
-      "category": "Resume Length & Content",
-      "priority": "high",
-      "recommendation": "Expand your resume with more details about your experience, education, and skills",
-      "impact": "A comprehensive resume significantly improves ATS scoring and hiring manager interest"
-    },
-    {
-      "category": "category name",
-      "priority": "high/medium/low",
-      "recommendation": "specific recommendation",
-      "impact": "expected impact"
-    }
-  ],
-  "strengths": ["strength1", "strength2"],
-  "red_flags": [${isShortResume ? '"Resume is too short - lacks essential details", "Missing key sections like experience, education, or skills"' : '"flag1", "flag2"'}],
-  "competitive_analysis": "analysis string${isShortResume ? ' - Note: This resume needs significant expansion to be competitive' : ''}",
-  "next_steps": ["Add detailed work experience section", "Include education and certifications", "List technical and soft skills", "step1", "step2"]
+  "overall_assessment": "brief assessment",
+  "top_recommendations": ["rec1", "rec2", "rec3"]
 }`;
 
-    // Call Groq API
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -149,8 +109,8 @@ Provide analysis in this EXACT JSON format (no markdown, no code blocks):
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.3,
-        max_tokens: 4000
+        temperature: 0.2,
+        max_tokens: 3000
       })
     });
 
@@ -164,11 +124,7 @@ Provide analysis in this EXACT JSON format (no markdown, no code blocks):
 
     const data = await response.json();
     const content = data.choices[0].message.content.trim();
-    
-    // Clean markdown formatting if present
     const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    
-    // Parse and return JSON
     const analysisResults = JSON.parse(cleanContent);
     
     console.log('✅ Resume analysis completed successfully');
