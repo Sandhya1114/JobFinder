@@ -275,23 +275,6 @@
   gap: 1.5rem;
 }
 
-/* Identified Role Badge */
-.identified-role-badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 1rem 1.5rem;
-  border-radius: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.identified-role-badge strong {
-  font-weight: 600;
-}
-
 /* Score Overview */
 .score-overview {
   display: grid;

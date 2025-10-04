@@ -4,7 +4,7 @@ import {
   TrendingUp, Target, Award, Loader2, ChevronDown, ChevronUp,
   XCircle, AlertTriangle, Info
 } from 'lucide-react';
-import './EnhancedAtsAnalyzer.css';
+import './AtsAnalyzer.css';
 
 const EnhancedATSAnalyzer = () => {
   const [resumeFile, setResumeFile] = useState(null);
@@ -119,7 +119,7 @@ const EnhancedATSAnalyzer = () => {
 
   const analyzeWithBackend = async (resumeContent, jobDescContent) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+      const response = await fetch(`${API_BASE_URL}/analyze-resume`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -362,14 +362,6 @@ const EnhancedATSAnalyzer = () => {
 
           {results && (
             <div className="enhanced-ats-results">
-              {/* Identified Role Badge */}
-              {results.identified_role && (
-                <div className="identified-role-badge">
-                  <Award size={18} />
-                  <span>Analyzed as: <strong>{results.identified_role}</strong></span>
-                </div>
-              )}
-
               {/* Score Overview */}
               <div className="score-overview">
                 <div className="main-score">
