@@ -27,246 +27,87 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // Add this to your existing server.js file after your other route definitions
 
 // ============ GROQ AI ANALYSIS ROUTES ============
-// Enhanced ATS Resume Analysis Endpoint
-// Add this to your server.js file, replacing the existing /api/analyze-resume endpoint
-
+/// Enhanced ATS Resume Analysis Endpoint
 app.post('/api/analyze-resume', async (req, res) => {
   try {
-    console.log('📄 Enhanced ATS Resume analysis endpoint hit');
+    console.log('📄 ATS Resume analysis endpoint hit');
     
     const { resumeContent, jobDescContent } = req.body;
 
-    if (!resumeContent || resumeContent.trim().length < 50) {
+    if (!resumeContent || resumeContent.trim().length < 10) {
       return res.status(400).json({ 
-        error: 'Resume content must be at least 50 characters long' 
+        error: 'Resume content must be at least 10 characters long' 
       });
     }
 
+    const resumeLength = resumeContent.trim().length;
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    const systemPrompt = `You are an expert ATS (Applicant Tracking System) analyzer. Your job is to:
-1. Identify SPECIFIC mistakes in resumes
-2. Explain WHY each mistake is a problem
-3. Provide EXACT corrections the user should make
-4. Give concrete examples
-
-Be detailed, specific, and actionable. Don't just say "improve X" - tell them exactly what's wrong and how to fix it.
-
-Return ONLY valid JSON without any markdown formatting or code blocks.`;
+    // Truncate content if too long to stay within token limits
+    const maxResumeLength = 6000;
+    const maxJobDescLength = 3000;
+    const truncatedResume = resumeContent.slice(0, maxResumeLength);
+    const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
     
-    const userPrompt = `Analyze this resume in extreme detail. For EVERY issue you find, explain:
-- What the mistake is
-- Why it's a problem for ATS
-- How to fix it (exact wording when possible)
-- Examples of good vs bad
+    const systemPrompt = `Expert ATS analyzer. Analyze resumes contextually based on the candidate's field. Return ONLY valid JSON, no markdown.`;
+    
+    const userPrompt = `Analyze this resume${hasJobDesc ? ' against the job description' : ' and identify the candidate\'s role/field from their experience'}.
 
 RESUME:
-${resumeContent}
+${truncatedResume}
+${hasJobDesc ? `\nJOB DESCRIPTION:
+${truncatedJobDesc}` : `
 
-${hasJobDesc ? `JOB DESCRIPTION:\n${jobDescContent}\n` : ''}
+IMPORTANT: First identify what role/field this resume is for (e.g., Frontend Developer, Backend Developer, Data Scientist, etc.) based on skills and experience listed. Then provide relevant suggestions for THAT specific field only.`}
 
-Provide analysis in this EXACT JSON format (no markdown, no code blocks):
+${hasJobDesc ? '' : `
+For missing skills, only suggest skills that are:
+1. Directly relevant to the identified role
+2. Commonly required in job postings for that role
+3. Natural progressions from skills already present
 
+DO NOT suggest unrelated skills like "Cloud computing" or "Machine learning" for a Frontend Developer.`}
+
+Return JSON:
 {
-  "overall_score": <number 0-100>,
-  "total_issues": <number of issues found>,
-  "parse_rate": <number 0-100 - how well ATS can read this resume>,
-  "summary": "A 2-3 sentence summary of the resume quality and main problems",
-  
-  "categories": {
-    "content": {
-      "score": <number 0-100>,
-      "issues": [
-        {
-          "type": "error|warning|success",
-          "title": "Issue name",
-          "description": "Detailed explanation of what's wrong and how to fix it",
-          "impact": "high|medium|low"
-        }
-      ],
-      "checks": {
-        "ats_parse_rate": {
-          "status": "pass|warning|fail",
-          "value": <number 0-100>,
-          "message": "Explain the parse rate. If low, explain what formatting issues prevent ATS from reading it."
-        },
-        "quantifying_impact": {
-          "status": "pass|warning|fail",
-          "found": <number of quantified achievements>,
-          "missing": <number of bullets that should be quantified>,
-          "examples": [
-            "BAD: Managed social media accounts",
-            "GOOD: Managed 5 social media accounts, increasing engagement by 45% over 6 months"
-          ]
-        },
-        "repetition": {
-          "status": "pass|warning|fail",
-          "repeated_phrases": [
-            "Phrase that's repeated too much - appears 5 times, use synonyms instead"
-          ]
-        },
-        "spelling_grammar": {
-          "status": "pass|warning|fail",
-          "errors": [
-            "Line 5: 'recieve' should be 'receive'",
-            "Line 12: Missing comma after 'Additionally'"
-          ]
-        }
-      }
-    },
-    
-    "section": {
-      "score": <number 0-100>,
-      "issues": [
-        {
-          "type": "error|warning",
-          "title": "Issue name",
-          "description": "Specific problem and how to fix it",
-          "impact": "high|medium|low"
-        }
-      ],
-      "checks": {
-        "essential_sections": {
-          "status": "pass|warning|fail",
-          "present": ["Work Experience", "Education"],
-          "missing": ["Professional Summary", "Skills"],
-          "message": "Add a Skills section listing 8-12 relevant technical and soft skills"
-        },
-        "contact_information": {
-          "status": "pass|warning|fail",
-          "present": ["email", "phone"],
-          "missing": ["LinkedIn URL", "City/State"],
-          "message": "Add LinkedIn URL and location (City, State) to header"
-        }
-      }
-    },
-    
-    "ats_essentials": {
-      "score": <number 0-100>,
-      "issues": [],
-      "checks": {
-        "file_format_size": {
-          "status": "pass|warning|fail",
-          "message": "Specific assessment - e.g., 'Resume should be saved as .docx or PDF. Avoid images and tables.'"
-        },
-        "design": {
-          "status": "pass|warning|fail",
-          "message": "Specific design issues - e.g., 'Remove text boxes and columns. Use single-column layout with standard fonts (Arial, Calibri, Times New Roman).'"
-        },
-        "email_address": {
-          "status": "pass|warning|fail",
-          "found": true|false,
-          "message": "Specific feedback - e.g., 'No email found in header. Add professional email (firstname.lastname@email.com)'"
-        },
-        "hyperlink_in_header": {
-          "status": "pass|warning|fail",
-          "message": "Specific feedback about hyperlinks"
-        }
-      }
-    },
-    
-    "tailoring": {
-      "score": <number 0-100>,
-      "issues": [],
-      "checks": {
-        "hard_skills": {
-          "status": "pass|warning|fail",
-          "matched": ["Python", "SQL", "AWS"],
-          "missing": ["Docker", "Kubernetes", "CI/CD"],
-          "match_percentage": <number 0-100>,
-          "message": "Add these missing skills: Docker (container management), Kubernetes (orchestration), CI/CD (Jenkins/GitHub Actions)"
-        },
-        "soft_skills": {
-          "status": "pass|warning|fail",
-          "matched": ["Leadership", "Communication"],
-          "missing": ["Problem-solving", "Collaboration"],
-          "match_percentage": <number 0-100>,
-          "message": "Job requires 'problem-solving' and 'collaboration' - add examples demonstrating these"
-        },
-        "action_verbs": {
-          "status": "pass|warning|fail",
-          "count": <number>,
-          "examples": ["Managed", "Developed", "Led"],
-          "suggestions": [
-            "Replace 'Responsible for managing' with 'Managed'",
-            "Replace 'Helped with' with 'Facilitated' or 'Coordinated'",
-            "Replace 'Worked on' with 'Developed' or 'Implemented'"
-          ]
-        },
-        "tailored_title": {
-          "status": "pass|warning|fail",
-          "current": "Software Developer",
-          "suggestion": "Senior Full-Stack Engineer",
-          "message": "Your title should match the job posting. Change resume title to 'Senior Full-Stack Engineer' to match the role."
-        }
-      }
-    }
-  },
-  
-  "detailed_feedback": {
-    "strengths": [
-      "Specific strength 1",
-      "Specific strength 2"
-    ],
-    "critical_issues": [
-      "Critical issue 1 with specific correction needed",
-      "Critical issue 2 with specific correction needed"
-    ],
-    "improvements": [
-      {
-        "category": "Experience Descriptions",
-        "priority": "high",
-        "recommendation": "Replace vague bullet points with quantified achievements",
-        "example": "Change 'Improved system performance' to 'Optimized database queries, reducing page load time by 40% and improving user satisfaction scores from 3.2 to 4.5/5'"
-      },
-      {
-        "category": "Skills Section",
-        "priority": "high",
-        "recommendation": "Add missing technical skills from job description",
-        "example": "Add: Docker, Kubernetes, GraphQL, TypeScript, Jest, Redis"
-      },
-      {
-        "category": "Formatting",
-        "priority": "medium",
-        "recommendation": "Use consistent date format throughout resume",
-        "example": "Change all dates to 'MM/YYYY - MM/YYYY' format (e.g., '01/2020 - Present')"
-      }
+  "ats_score": <0-100>,
+  "parse_rate": <0-100>,
+  "total_issues": <number>,
+  "identified_role": "<detected role from resume, e.g., Frontend Developer>",
+  "content": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar", "severity": "error|warning|info", "message": "specific issue found", "suggestion": "how to fix it"}
     ]
   },
-  
-  "keyword_analysis": {
-    "total_keywords": <number>,
-    "matched_keywords": <number>,
-    "match_percentage": <number 0-100>,
-    "missing_critical": [
-      "Keyword 1 - appears 5 times in job description, add to Skills and Experience sections",
-      "Keyword 2 - required skill, add 2-3 examples of using it"
-    ],
-    "missing_important": [
-      "Keyword 3 - mentioned in 'nice-to-have', add if you have experience"
-    ],
-    "keyword_density": "low|optimal|high",
-    "specific_additions": [
-      "Add 'Agile methodology' to project descriptions",
-      "Include 'stakeholder management' in leadership examples",
-      "Mention 'cross-functional teams' when describing collaboration"
+  "section": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "essential_sections|contact_info", "severity": "error|warning", "message": "missing or incorrect section", "suggestion": "what to add/fix"}
     ]
-  }
-}
+  },
+  "ats_essentials": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "file_format|design|email|hyperlinks", "severity": "error|warning", "message": "ATS compatibility issue", "suggestion": "how to make ATS-friendly"}
+    ]
+  },
+  "tailoring": {
+    "score": <0-100>,
+    "issues": [
+      {"type": "hard_skills|soft_skills|action_verbs|title", "severity": "warning|info", "message": "area for improvement", "suggestion": "specific improvement for the identified role"}
+    ]
+  },
+  "present_skills": ["list only skills actually found in resume"],
+  "missing_skills": {
+    "critical": ["skills critical for identified_role that are missing"],
+    "important": ["important skills for identified_role that are missing"],
+    "nice_to_have": ["beneficial skills for identified_role"]
+  },
+  "overall_assessment": "Brief assessment mentioning the identified role and overall quality",
+  "top_recommendations": ["3-5 actionable recommendations specific to the identified role"]
+}`;
 
-CRITICAL INSTRUCTIONS:
-1. Be EXTREMELY specific - don't just say "improve this", tell them EXACTLY what words to change
-2. For every issue, provide a BEFORE and AFTER example when possible
-3. Calculate parse rate based on: formatting complexity, use of tables/text boxes, font choices, section headers
-4. Check EVERY bullet point - are there numbers/metrics? If not, flag it
-5. List the EXACT repeated phrases (word-for-word)
-6. List the EXACT spelling/grammar errors with line numbers if possible
-7. Compare skills against job description keyword by keyword
-8. Provide specific action verbs to replace weak phrases
-9. ${hasJobDesc ? 'Match resume content DIRECTLY to job requirements' : 'Suggest industry-standard improvements'}
-10. Give a parse rate explanation: "Your resume is X% parseable because..."`;
-
-    // Call Groq API
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -279,8 +120,8 @@ CRITICAL INSTRUCTIONS:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.2, // Lower temperature for more consistent output
-        max_tokens: 8000  // Increased for detailed responses
+        temperature: 0.2,
+        max_tokens: 3000
       })
     });
 
@@ -294,34 +135,16 @@ CRITICAL INSTRUCTIONS:
 
     const data = await response.json();
     const content = data.choices[0].message.content.trim();
+    const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const analysisResults = JSON.parse(cleanContent);
     
-    // Clean markdown formatting if present
-    const cleanContent = content
-      .replace(/```json\n?/g, '')
-      .replace(/```\n?/g, '')
-      .trim();
-    
-    try {
-      // Parse and return JSON
-      const analysisResults = JSON.parse(cleanContent);
-      
-      console.log('✅ Enhanced resume analysis completed successfully');
-      console.log(`   - Overall Score: ${analysisResults.overall_score}`);
-      console.log(`   - Total Issues: ${analysisResults.total_issues}`);
-      console.log(`   - Parse Rate: ${analysisResults.parse_rate}%`);
-      
-      res.json(analysisResults);
-    } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError);
-      console.error('Raw content:', cleanContent);
-      throw new Error('Failed to parse analysis results. Please try again.');
-    }
+    console.log('✅ Resume analysis completed successfully');
+    res.json(analysisResults);
 
   } catch (error) {
     console.error('❌ Error analyzing resume:', error);
     res.status(500).json({ 
-      error: error.message || 'Analysis failed',
-      details: process.env.NODE_ENV === 'development' ? error.toString() : undefined
+      error: error.message || 'Analysis failed' 
     });
   }
 });
