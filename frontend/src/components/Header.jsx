@@ -718,6 +718,10 @@ export default function Header({ user }) {
               About
             </Link>
             <Link 
+             to="/score"
+             className={isActiveLink("/score") ? "active" : ""}
+            >ATS</Link>
+            <Link 
               to="/contact" 
               className={isActiveLink("/contact") ? "active" : ""}
             >

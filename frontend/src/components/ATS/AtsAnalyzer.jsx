@@ -191,13 +191,13 @@ const EnhancedATSAnalyzer = () => {
   const getSeverityIcon = (severity) => {
     switch (severity) {
       case 'error':
-        return <XCircle size={16} className="severity-icon error" />;
+        return <XCircle size={16} className="atsSeverityIcon atsError" />;
       case 'warning':
-        return <AlertTriangle size={16} className="severity-icon warning" />;
+        return <AlertTriangle size={16} className="atsSeverityIcon atsWarning" />;
       case 'info':
-        return <Info size={16} className="severity-icon info" />;
+        return <Info size={16} className="atsSeverityIcon atsInfo" />;
       default:
-        return <CheckCircle size={16} className="severity-icon success" />;
+        return <CheckCircle size={16} className="atsSeverityIcon atsSuccess" />;
     }
   };
 
@@ -208,136 +208,136 @@ const EnhancedATSAnalyzer = () => {
   };
 
   return (
-    <div className="enhanced-ats-container">
-      <div className="enhanced-ats-wrapper">
-        <div className="enhanced-ats-header">
-          <h1 className="enhanced-ats-title">ATS Resume Analyzer</h1>
-          <p className="enhanced-ats-subtitle">Get instant AI-powered feedback on your resume</p>
+    <div className="atsEnhancedContainer">
+      <div className="atsEnhancedWrapper">
+        <div className="atsEnhancedHeader">
+          <h1 className="atsEnhancedTitle">ATS Resume Analyzer</h1>
+          <p className="atsEnhancedSubtitle">Get instant AI-powered feedback on your resume</p>
         </div>
 
-        <div className="enhanced-ats-card">
-          <div className="enhanced-ats-content">
-            <div className="enhanced-ats-upload-grid">
+        <div className="atsEnhancedCard">
+          <div className="atsEnhancedContent">
+            <div className="atsEnhancedUploadGrid">
               <div>
-                <label className="enhanced-ats-label">
+                <label className="atsEnhancedLabel">
                   <FileText size={20} />
                   Resume *
                 </label>
                 <div 
-                  className="enhanced-ats-upload-area"
+                  className="atsEnhancedUploadArea"
                   onClick={() => document.getElementById('resume-input').click()}
                 >
                   <input
                     id="resume-input"
                     type="file"
                     accept=".txt,.pdf"
-                    className="enhanced-ats-file-input"
+                    className="atsEnhancedFileInput"
                     onChange={(e) => handleFileUpload(e.target.files[0], 'resume')}
                   />
-                  <Upload size={32} className="enhanced-ats-upload-icon" />
+                  <Upload size={32} className="atsEnhancedUploadIcon" />
                   {resumeFile ? (
                     <div>
-                      <p className="enhanced-ats-file-success">✓ {resumeFile.name}</p>
+                      <p className="atsEnhancedFileSuccess">✓ {resumeFile.name}</p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setResumeFile(null);
                           setResumeText('');
                         }}
-                        className="enhanced-ats-remove-btn"
+                        className="atsEnhancedRemoveBtn"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p className="enhanced-ats-upload-text">Click to upload</p>
-                      <p className="enhanced-ats-upload-hint">PDF or TXT files</p>
+                      <p className="atsEnhancedUploadText">Click to upload</p>
+                      <p className="atsEnhancedUploadHint">PDF or TXT files</p>
                     </div>
                   )}
                 </div>
               </div>
 
               <div>
-                <label className="enhanced-ats-label">
+                <label className="atsEnhancedLabel">
                   <Briefcase size={20} />
                   Job Description (Optional)
                 </label>
                 <div 
-                  className="enhanced-ats-upload-area"
+                  className="atsEnhancedUploadArea"
                   onClick={() => document.getElementById('jobdesc-input').click()}
                 >
                   <input
                     id="jobdesc-input"
                     type="file"
                     accept=".txt,.pdf"
-                    className="enhanced-ats-file-input"
+                    className="atsEnhancedFileInput"
                     onChange={(e) => handleFileUpload(e.target.files[0], 'jobdesc')}
                   />
-                  <Upload size={32} className="enhanced-ats-upload-icon" />
+                  <Upload size={32} className="atsEnhancedUploadIcon" />
                   {jobDescFile ? (
                     <div>
-                      <p className="enhanced-ats-file-success">✓ {jobDescFile.name}</p>
+                      <p className="atsEnhancedFileSuccess">✓ {jobDescFile.name}</p>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setJobDescFile(null);
                           setJobDescText('');
                         }}
-                        className="enhanced-ats-remove-btn"
+                        className="atsEnhancedRemoveBtn"
                       >
                         Remove
                       </button>
                     </div>
                   ) : (
                     <div>
-                      <p className="enhanced-ats-upload-text">Click to upload</p>
-                      <p className="enhanced-ats-upload-hint">For better matching</p>
+                      <p className="atsEnhancedUploadText">Click to upload</p>
+                      <p className="atsEnhancedUploadHint">For better matching</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            <details className="enhanced-ats-details">
-              <summary className="enhanced-ats-details-summary">Or paste text directly</summary>
-              <div className="enhanced-ats-textarea-grid">
+            <details className="atsEnhancedDetails">
+              <summary className="atsEnhancedDetailsSummary">Or paste text directly</summary>
+              <div className="atsEnhancedTextareaGrid">
                 <div>
-                  <label className="enhanced-ats-textarea-label">Resume Text</label>
+                  <label className="atsEnhancedTextareaLabel">Resume Text</label>
                   <textarea
                     value={resumeText}
                     onChange={(e) => setResumeText(e.target.value)}
                     placeholder="Paste your resume text here..."
-                    className="enhanced-ats-textarea"
+                    className="atsEnhancedTextarea"
                   />
                 </div>
                 <div>
-                  <label className="enhanced-ats-textarea-label">Job Description Text</label>
+                  <label className="atsEnhancedTextareaLabel">Job Description Text</label>
                   <textarea
                     value={jobDescText}
                     onChange={(e) => setJobDescText(e.target.value)}
                     placeholder="Paste job description here (optional)..."
-                    className="enhanced-ats-textarea"
+                    className="atsEnhancedTextarea"
                   />
                 </div>
               </div>
             </details>
 
             {error && (
-              <div className="enhanced-ats-error">
-                <AlertCircle size={20} className="enhanced-ats-error-icon" />
-                <p className="enhanced-ats-error-text">{error}</p>
+              <div className="atsEnhancedError">
+                <AlertCircle size={20} className="atsEnhancedErrorIcon" />
+                <p className="atsEnhancedErrorText">{error}</p>
               </div>
             )}
 
             {analyzing && analysisStage && (
-              <div className="enhanced-ats-progress">
+              <div className="atsEnhancedProgress">
                 {stages.map((stage, idx) => (
                   <div 
                     key={idx} 
-                    className={`progress-stage ${stage === analysisStage ? 'active' : stages.indexOf(analysisStage) > idx ? 'completed' : ''}`}
+                    className={`atsProgressStage ${stage === analysisStage ? 'atsActive' : stages.indexOf(analysisStage) > idx ? 'atsCompleted' : ''}`}
                   >
-                    <CheckCircle size={20} className="stage-icon" />
+                    <CheckCircle size={20} className="atsStageIcon" />
                     <span>{stage}</span>
                   </div>
                 ))}
@@ -347,11 +347,11 @@ const EnhancedATSAnalyzer = () => {
             <button
               onClick={analyzeResume}
               disabled={analyzing || !resumeText.trim()}
-              className="enhanced-ats-analyze-btn"
+              className="atsEnhancedAnalyzeBtn"
             >
               {analyzing ? (
                 <>
-                  <Loader2 size={20} className="enhanced-ats-spinner" />
+                  <Loader2 size={20} className="atsEnhancedSpinner" />
                   Analyzing...
                 </>
               ) : (
@@ -361,29 +361,29 @@ const EnhancedATSAnalyzer = () => {
           </div>
 
           {results && (
-            <div className="enhanced-ats-results">
+            <div className="atsEnhancedResults">
               {/* Score Overview */}
-              <div className="score-overview">
-                <div className="main-score">
-                  <div className="score-circle" style={{ borderColor: getScoreColor(results.ats_score) }}>
-                    <div className="score-value" style={{ color: getScoreColor(results.ats_score) }}>
+              <div className="atsScoreOverview">
+                <div className="atsMainScore">
+                  <div className="atsScoreCircle" style={{ borderColor: getScoreColor(results.ats_score) }}>
+                    <div className="atsScoreValue" style={{ color: getScoreColor(results.ats_score) }}>
                       {results.ats_score}/100
                     </div>
-                    <div className="score-issues">{results.total_issues} Issues</div>
+                    <div className="atsScoreIssues">{results.total_issues} Issues</div>
                   </div>
                 </div>
 
-                <div className="score-sidebar">
+                <div className="atsScoreSidebar">
                   {/* Content Section */}
-                  <div className="score-section">
+                  <div className="atsScoreSection">
                     <div 
-                      className="section-header" 
+                      className="atsSectionHeader" 
                       onClick={() => toggleSection('content')}
                     >
-                      <span className="section-title">CONTENT</span>
-                      <div className="section-meta">
+                      <span className="atsSectionTitle">CONTENT</span>
+                      <div className="atsSectionMeta">
                         <span 
-                          className="section-score"
+                          className="atsSectionScore"
                           style={{ 
                             background: results.content.score >= 70 ? '#dcfce7' : results.content.score >= 40 ? '#fef3c7' : '#fee2e2',
                             color: results.content.score >= 70 ? '#166534' : results.content.score >= 40 ? '#92400e' : '#991b1b'
@@ -395,13 +395,13 @@ const EnhancedATSAnalyzer = () => {
                       </div>
                     </div>
                     {expandedSections.content && (
-                      <div className="section-content">
+                      <div className="atsSectionContent">
                         {results.content.issues.map((issue, idx) => (
-                          <div key={idx} className="issue-item">
+                          <div key={idx} className="atsIssueItem">
                             {getSeverityIcon(issue.severity)}
-                            <div className="issue-details">
-                              <div className="issue-type">{issue.type.replace(/_/g, ' ')}</div>
-                              {issue.message && <div className="issue-message">{issue.message}</div>}
+                            <div className="atsIssueDetails">
+                              <div className="atsIssueType">{issue.type.replace(/_/g, ' ')}</div>
+                              {issue.message && <div className="atsIssueMessage">{issue.message}</div>}
                             </div>
                           </div>
                         ))}
@@ -410,15 +410,15 @@ const EnhancedATSAnalyzer = () => {
                   </div>
 
                   {/* Section Analysis */}
-                  <div className="score-section">
+                  <div className="atsScoreSection">
                     <div 
-                      className="section-header" 
+                      className="atsSectionHeader" 
                       onClick={() => toggleSection('section')}
                     >
-                      <span className="section-title">SECTION</span>
-                      <div className="section-meta">
+                      <span className="atsSectionTitle">SECTION</span>
+                      <div className="atsSectionMeta">
                         <span 
-                          className="section-score"
+                          className="atsSectionScore"
                           style={{ 
                             background: results.section.score >= 70 ? '#dcfce7' : results.section.score >= 40 ? '#fef3c7' : '#fee2e2',
                             color: results.section.score >= 70 ? '#166534' : results.section.score >= 40 ? '#92400e' : '#991b1b'
@@ -430,13 +430,13 @@ const EnhancedATSAnalyzer = () => {
                       </div>
                     </div>
                     {expandedSections.section && (
-                      <div className="section-content">
+                      <div className="atsSectionContent">
                         {results.section.issues.map((issue, idx) => (
-                          <div key={idx} className="issue-item">
+                          <div key={idx} className="atsIssueItem">
                             {getSeverityIcon(issue.severity)}
-                            <div className="issue-details">
-                              <div className="issue-type">{issue.type.replace(/_/g, ' ')}</div>
-                              {issue.message && <div className="issue-message">{issue.message}</div>}
+                            <div className="atsIssueDetails">
+                              <div className="atsIssueType">{issue.type.replace(/_/g, ' ')}</div>
+                              {issue.message && <div className="atsIssueMessage">{issue.message}</div>}
                             </div>
                           </div>
                         ))}
@@ -445,15 +445,15 @@ const EnhancedATSAnalyzer = () => {
                   </div>
 
                   {/* ATS Essentials */}
-                  <div className="score-section">
+                  <div className="atsScoreSection">
                     <div 
-                      className="section-header" 
+                      className="atsSectionHeader" 
                       onClick={() => toggleSection('ats_essentials')}
                     >
-                      <span className="section-title">ATS ESSENTIALS</span>
-                      <div className="section-meta">
+                      <span className="atsSectionTitle">ATS ESSENTIALS</span>
+                      <div className="atsSectionMeta">
                         <span 
-                          className="section-score"
+                          className="atsSectionScore"
                           style={{ 
                             background: results.ats_essentials.score >= 70 ? '#dcfce7' : results.ats_essentials.score >= 40 ? '#fef3c7' : '#fee2e2',
                             color: results.ats_essentials.score >= 70 ? '#166534' : results.ats_essentials.score >= 40 ? '#92400e' : '#991b1b'
@@ -465,13 +465,13 @@ const EnhancedATSAnalyzer = () => {
                       </div>
                     </div>
                     {expandedSections.ats_essentials && (
-                      <div className="section-content">
+                      <div className="atsSectionContent">
                         {results.ats_essentials.issues.map((issue, idx) => (
-                          <div key={idx} className="issue-item">
+                          <div key={idx} className="atsIssueItem">
                             {getSeverityIcon(issue.severity)}
-                            <div className="issue-details">
-                              <div className="issue-type">{issue.type.replace(/_/g, ' ')}</div>
-                              {issue.message && <div className="issue-message">{issue.message}</div>}
+                            <div className="atsIssueDetails">
+                              <div className="atsIssueType">{issue.type.replace(/_/g, ' ')}</div>
+                              {issue.message && <div className="atsIssueMessage">{issue.message}</div>}
                             </div>
                           </div>
                         ))}
@@ -480,15 +480,15 @@ const EnhancedATSAnalyzer = () => {
                   </div>
 
                   {/* Tailoring */}
-                  <div className="score-section">
+                  <div className="atsScoreSection">
                     <div 
-                      className="section-header" 
+                      className="atsSectionHeader" 
                       onClick={() => toggleSection('tailoring')}
                     >
-                      <span className="section-title">TAILORING</span>
-                      <div className="section-meta">
+                      <span className="atsSectionTitle">TAILORING</span>
+                      <div className="atsSectionMeta">
                         <span 
-                          className="section-score"
+                          className="atsSectionScore"
                           style={{ 
                             background: results.tailoring.score >= 70 ? '#dcfce7' : results.tailoring.score >= 40 ? '#fef3c7' : '#fee2e2',
                             color: results.tailoring.score >= 70 ? '#166534' : results.tailoring.score >= 40 ? '#92400e' : '#991b1b'
@@ -500,13 +500,13 @@ const EnhancedATSAnalyzer = () => {
                       </div>
                     </div>
                     {expandedSections.tailoring && (
-                      <div className="section-content">
+                      <div className="atsSectionContent">
                         {results.tailoring.issues.map((issue, idx) => (
-                          <div key={idx} className="issue-item">
+                          <div key={idx} className="atsIssueItem">
                             {getSeverityIcon(issue.severity)}
-                            <div className="issue-details">
-                              <div className="issue-type">{issue.type.replace(/_/g, ' ')}</div>
-                              {issue.message && <div className="issue-message">{issue.message}</div>}
+                            <div className="atsIssueDetails">
+                              <div className="atsIssueType">{issue.type.replace(/_/g, ' ')}</div>
+                              {issue.message && <div className="atsIssueMessage">{issue.message}</div>}
                             </div>
                           </div>
                         ))}
@@ -514,7 +514,7 @@ const EnhancedATSAnalyzer = () => {
                     )}
                   </div>
 
-                  <button className="unlock-report-btn">
+                  <button className="atsUnlockReportBtn">
                     Unlock Full Report
                   </button>
                 </div>
@@ -522,24 +522,24 @@ const EnhancedATSAnalyzer = () => {
 
               {/* Parse Rate Section */}
               {results.parse_rate && (
-                <div className="parse-rate-section">
-                  <h3 className="section-heading">ATS PARSE RATE</h3>
-                  <div className="parse-rate-content">
-                    <div className="parse-rate-bar">
+                <div className="atsParseRateSection">
+                  <h3 className="atsSectionHeading">ATS PARSE RATE</h3>
+                  <div className="atsParseRateContent">
+                    <div className="atsParseRateBar">
                       <div 
-                        className="parse-rate-fill"
+                        className="atsParseRateFill"
                         style={{ 
                           width: `${results.parse_rate}%`,
                           background: getScoreColor(results.parse_rate)
                         }}
                       >
-                        <span className="parse-rate-marker"></span>
+                        <span className="atsParseRateMarker"></span>
                       </div>
                     </div>
-                    <p className="parse-rate-text">
+                    <p className="atsParseRateText">
                       We've parsed <strong>{results.parse_rate}%</strong> of your resume successfully using an industry-leading ATS.
                     </p>
-                    <p className="parse-rate-description">
+                    <p className="atsParseRateDescription">
                       {results.overall_assessment}
                     </p>
                   </div>
@@ -547,33 +547,33 @@ const EnhancedATSAnalyzer = () => {
               )}
 
               {/* Skills Grid */}
-              <div className="enhanced-ats-skills-grid">
-                <div className="enhanced-ats-skills-present">
-                  <h3 className="enhanced-ats-skills-title">
+              <div className="atsEnhancedSkillsGrid">
+                <div className="atsEnhancedSkillsPresent">
+                  <h3 className="atsEnhancedSkillsTitle">
                     <CheckCircle size={18} />
                     Present Skills ({results.present_skills?.length || 0})
                   </h3>
-                  <div className="enhanced-ats-skills-tags">
+                  <div className="atsEnhancedSkillsTags">
                     {results.present_skills?.map((skill, idx) => (
-                      <span key={idx} className="enhanced-ats-skill-tag enhanced-ats-skill-present">
+                      <span key={idx} className="atsEnhancedSkillTag atsEnhancedSkillPresent">
                         {skill}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="enhanced-ats-skills-missing">
-                  <h3 className="enhanced-ats-skills-title">
+                <div className="atsEnhancedSkillsMissing">
+                  <h3 className="atsEnhancedSkillsTitle">
                     <AlertCircle size={18} />
                     Missing Skills
                   </h3>
-                  <div className="enhanced-ats-missing-skills-list">
+                  <div className="atsEnhancedMissingSkillsList">
                     {results.missing_skills?.critical?.length > 0 && (
                       <div>
-                        <strong className="enhanced-ats-missing-critical">Critical:</strong>
-                        <div className="enhanced-ats-skills-tags">
+                        <strong className="atsEnhancedMissingCritical">Critical:</strong>
+                        <div className="atsEnhancedSkillsTags">
                           {results.missing_skills.critical.map((skill, idx) => (
-                            <span key={idx} className="enhanced-ats-skill-tag enhanced-ats-skill-critical">
+                            <span key={idx} className="atsEnhancedSkillTag atsEnhancedSkillCritical">
                               {skill}
                             </span>
                           ))}
@@ -582,10 +582,10 @@ const EnhancedATSAnalyzer = () => {
                     )}
                     {results.missing_skills?.important?.length > 0 && (
                       <div>
-                        <strong className="enhanced-ats-missing-important">Important:</strong>
-                        <div className="enhanced-ats-skills-tags">
+                        <strong className="atsEnhancedMissingImportant">Important:</strong>
+                        <div className="atsEnhancedSkillsTags">
                           {results.missing_skills.important.map((skill, idx) => (
-                            <span key={idx} className="enhanced-ats-skill-tag enhanced-ats-skill-important">
+                            <span key={idx} className="atsEnhancedSkillTag atsEnhancedSkillImportant">
                               {skill}
                             </span>
                           ))}
@@ -598,15 +598,15 @@ const EnhancedATSAnalyzer = () => {
 
               {/* Top Recommendations */}
               {results.top_recommendations && (
-                <div className="top-recommendations">
-                  <h3 className="section-heading">
+                <div className="atsTopRecommendations">
+                  <h3 className="atsSectionHeading">
                     <Target size={20} />
                     Top Recommendations
                   </h3>
-                  <div className="recommendations-list">
+                  <div className="atsRecommendationsList">
                     {results.top_recommendations.map((rec, idx) => (
-                      <div key={idx} className="recommendation-item">
-                        <span className="rec-number">{idx + 1}</span>
+                      <div key={idx} className="atsRecommendationItem">
+                        <span className="atsRecNumber">{idx + 1}</span>
                         <p>{rec}</p>
                       </div>
                     ))}
@@ -617,7 +617,7 @@ const EnhancedATSAnalyzer = () => {
           )}
         </div>
 
-        <div className="enhanced-ats-footer">
+        <div className="atsEnhancedFooter">
           <p>Powered by Groq AI & Llama 3.3 70B</p>
         </div>
       </div>

@@ -27,7 +27,7 @@ function Main() {
       </section> */}
       <Categories3DRing/>
        <QuickFilters />
-       <ATSResumeAnalyzer/>
+       {/* <ATSResumeAnalyzer/> */}
 {/*       
       <section className="recommended">
         <h2>Recommended Jobs</h2>

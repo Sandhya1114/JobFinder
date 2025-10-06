@@ -250,7 +250,7 @@ function App() {
             path="/dashboard"
             element={<Dashboard user={user} onSignOut={handleSignOut} />}
           />
-          <Route path="/score" element={<ATSResumeAnalyzer/>}/>
+          <Route path="/score" element={<> <Header user={user} /><ATSResumeAnalyzer/><Footer /></>}/>
           <Route path="/footer" element={<Footer />} />
         </Routes>
       </div>
