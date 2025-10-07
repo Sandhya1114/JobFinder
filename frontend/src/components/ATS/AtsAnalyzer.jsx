@@ -128,7 +128,7 @@ const ATSAnalyzer = () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+      const response = await fetch(`${API_BASE_URL}/analyze-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -465,10 +465,9 @@ const ATSAnalyzer = () => {
       <div className="atsWrapper">
         <div className="atsHero">
           <div className="atsHeroContent">
-            <div className="atsLogo">
-              <span className="atsLogoIcon">RES</span>
-              UME CHECKER
-            </div>
+            {/* <div className="atsLogo">
+              <span className="atsLogoIcon">RES</span>UME CHECKER
+            </div> */}
             <h1 className="atsHeroTitle">Is your resume good enough?</h1>
             <p className="atsHeroSubtitle">
               A free and fast AI resume checker doing 16 crucial checks to ensure your resume is ready to perform and get you interview callbacks.
@@ -573,10 +572,10 @@ const ATSAnalyzer = () => {
             {analyzing ? 'Analyzing...' : 'Upload Your Resume'}
           </button>
 
-          <div className="atsPrivacy">
+          {/* <div className="atsPrivacy">
             <Lock size={16} />
             Privacy guaranteed
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
