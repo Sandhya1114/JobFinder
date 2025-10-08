@@ -763,7 +763,7 @@
 .atsHeroContent {
   color: white;
 }
-
+/* 
 .atsLogo {
   display: flex;
   align-items: center;
@@ -771,7 +771,7 @@
   margin-bottom: 2rem;
   font-weight: 700;
   font-size: 1.125rem;
-}
+} */
 
 .atsLogoIcon {
   background: white;
