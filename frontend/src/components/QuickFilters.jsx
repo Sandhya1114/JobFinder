@@ -10,6 +10,7 @@ const QuickFilters = () => {
   const [allLocations, setAllLocations] = useState([]);
   const [allExperience, setAllExperience] = useState([]);
   const [allTypes, setAllTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Initial items to show for each section
   const INITIAL_ITEMS = {
@@ -83,37 +84,54 @@ const QuickFilters = () => {
     return iconMap.default;
   };
 
-  // Fetch all unique values from backend on initial load
+  // Fetch ALL unique filter options from backend (without any filters applied)
   useEffect(() => {
     const fetchAllFilterOptions = async () => {
+      setIsLoading(true);
       try {
-        // Fetch all locations from backend
-        const locationResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs/filters/locations`);
-        if (locationResponse.ok) {
-          const locations = await locationResponse.json();
-          setAllLocations(locations);
-        }
+        // Fetch all jobs without any filters to get complete filter options
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs?limit=10000`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          const allJobs = data.jobs || [];
 
-        // Fetch all experience levels from backend
-        const experienceResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs/filters/experience`);
-        if (experienceResponse.ok) {
-          const experience = await experienceResponse.json();
-          setAllExperience(experience);
-        }
+          // Extract unique locations
+          const locationsSet = new Set();
+          const experienceSet = new Set();
+          const typesSet = new Set();
 
-        // Fetch all job types from backend
-        const typesResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/jobs/filters/types`);
-        if (typesResponse.ok) {
-          const types = await typesResponse.json();
-          setAllTypes(types);
+          allJobs.forEach(job => {
+            if (job.location && job.location.trim()) {
+              locationsSet.add(job.location.trim());
+            }
+            if (job.experience && job.experience.trim()) {
+              experienceSet.add(job.experience.trim());
+            }
+            if (job.type && job.type.trim()) {
+              typesSet.add(job.type.trim());
+            }
+          });
+
+          setAllLocations(Array.from(locationsSet).sort());
+          setAllExperience(Array.from(experienceSet).sort());
+          setAllTypes(Array.from(typesSet).sort());
+          
+          console.log('Loaded filter options:', {
+            locations: locationsSet.size,
+            experience: experienceSet.size,
+            types: typesSet.size
+          });
         }
       } catch (error) {
         console.error('Error fetching filter options:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchAllFilterOptions();
-  }, []);
+  }, []); // Only run once on mount
 
   // Build filter options - these never change based on current filters
   useEffect(() => {
@@ -293,7 +311,7 @@ const QuickFilters = () => {
     );
   };
 
-  if (quickFilterOptions.length === 0) {
+  if (isLoading || quickFilterOptions.length === 0) {
     return (
       <div className="homeQuickFiltersContainer">
         <div className="homeQuickFiltersHeader">
