@@ -186,10 +186,14 @@ const ATSAnalyzer = () => {
       </div>
     );
   }
+if (results) {
+    const allIssues = [
+      ...(results.content?.issues || []),
+      ...(results.section?.issues || []),
+      ...(results.ats_essentials?.issues || []),
+      ...(results.tailoring?.issues || [])
+    ];
 
-  if (results) {
-    const contentIssues = results.content?.issues || [];
-    const spellingIssues = contentIssues.filter(i => i.type === 'spelling_grammar');
     return (
       <div className="atsContainer">
         <div className="atsWrapper">
@@ -254,20 +258,108 @@ const ATSAnalyzer = () => {
                     <p className="atsParseRateDescription">{results.overall_assessment}</p>
                   </div>
                 )}
-                {spellingIssues.length > 0 && (
-                  <div className="atsSpellingCard">
-                    <div className="atsSpellingIcon">abc<sub style={{ fontSize: '0.6em' }}>2</sub></div>
-                    <h3 className="atsSpellingTitle">Oh, no!</h3>
-                    <p className="atsSpellingSubtitle">We found the following spelling mistakes in your resume:</p>
-                    <div className="atsSpellingList">
-                      {spellingIssues.slice(0, 3).map((issue, idx) => (
-                        <div key={idx} className="atsSpellingItem">
-                          <XCircle size={20} style={{ color: '#ef4444' }} />
-                          <span style={{ flex: 1, color: '#6b7280' }}>{issue.message}</span>
+                
+                {/* Display ALL Issues with Details */}
+                {allIssues.map((issue, idx) => (
+                  <div key={idx} className="atsDetailsSection">
+                    <div className="atsDetailHeader">
+                      <div className="atsDetailTitle">
+                        <div className="atsDetailIcon">
+                          {issue.severity === 'error' ? <XCircle size={24} style={{ color: '#ef4444' }} /> :
+                           issue.severity === 'warning' ? <AlertTriangle size={24} style={{ color: '#f59e0b' }} /> :
+                           <Info size={24} style={{ color: '#3b82f6' }} />}
+                        </div>
+                        <span>{issue.type.replace(/_/g, ' ').toUpperCase()}</span>
+                      </div>
+                      <span className={`atsSeverityBadge atsSeverity${issue.severity}`}>
+                        {issue.severity}
+                      </span>
+                    </div>
+                    <div className="atsDetailContent">
+                      <div className="atsIssueProblem">
+                        <p><strong>⚠️ Problem:</strong> {issue.message}</p>
+                        {issue.found_in_resume && (
+                          <p><strong>✗ Found in your resume:</strong><br/>"{issue.found_in_resume}"</p>
+                        )}
+                      </div>
+                      {issue.suggestion && (
+                        <div className="atsIssueSolution">
+                          <p><strong>✓ How to fix it:</strong><br/>{issue.suggestion}</p>
+                        </div>
+                      )}
+                      {issue.example && (
+                        <div className="atsIssueExample">
+                          <p><strong>💡 Example:</strong></p>
+                          <div className="atsExampleCode">{issue.example}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Missing Skills Section */}
+                {results.missing_skills && (Object.keys(results.missing_skills.critical || {}).length > 0 || 
+                 Object.keys(results.missing_skills.important || {}).length > 0 ||
+                 Object.keys(results.missing_skills.nice_to_have || {}).length > 0) && (
+                  <div className="atsMissingSkillsCard">
+                    <h3 className="atsMissingSkillsTitle">
+                      <Target size={24} style={{ color: '#667eea' }} />
+                      Skills You Should Add for {results.identified_role || 'Your Role'}
+                    </h3>
+                    
+                    {results.missing_skills.critical?.length > 0 && (
+                      <div className="atsSkillCategory">
+                        <h4 className="atsSkillCategoryTitle atsCritical">Critical Skills:</h4>
+                        <p className="atsSkillCategoryDesc">Essential skills that employers expect for this role</p>
+                        <div className="atsSkillTags">
+                          {results.missing_skills.critical.map((skill, idx) => (
+                            <span key={idx} className="atsSkillTag atsSkillCritical">{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {results.missing_skills.important?.length > 0 && (
+                      <div className="atsSkillCategory">
+                        <h4 className="atsSkillCategoryTitle atsImportant">Important Skills:</h4>
+                        <p className="atsSkillCategoryDesc">Skills that strengthen your candidacy</p>
+                        <div className="atsSkillTags">
+                          {results.missing_skills.important.map((skill, idx) => (
+                            <span key={idx} className="atsSkillTag atsSkillImportant">{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {results.missing_skills.nice_to_have?.length > 0 && (
+                      <div className="atsSkillCategory">
+                        <h4 className="atsSkillCategoryTitle atsNiceToHave">Nice to Have:</h4>
+                        <p className="atsSkillCategoryDesc">Bonus skills that can give you an edge</p>
+                        <div className="atsSkillTags">
+                          {results.missing_skills.nice_to_have.map((skill, idx) => (
+                            <span key={idx} className="atsSkillTag atsSkillNiceToHave">{skill}</span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Top Recommendations */}
+                {results.top_recommendations && results.top_recommendations.length > 0 && (
+                  <div className="atsRecommendationsCard">
+                    <h3 className="atsRecommendationsTitle">
+                      <Zap size={24} />
+                      Top Priority Actions
+                    </h3>
+                    <div className="atsRecommendationsList">
+                      {results.top_recommendations.map((rec, idx) => (
+                        <div key={idx} className="atsRecommendationItem">
+                          <div className="atsRecommendationNumber">{idx + 1}</div>
+                          <p>{rec}</p>
                         </div>
                       ))}
                     </div>
-                    <button className="atsFixButton">Fix Mistakes</button>
                   </div>
                 )}
               </div>
