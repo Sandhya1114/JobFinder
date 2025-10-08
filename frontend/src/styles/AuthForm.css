@@ -33,7 +33,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #9684C0 0%, rgba(231, 224, 229, 0.6) 50%, #9684C0 100%);
+  background: linear-gradient(90deg, #000 0%, rgba(231, 224, 229, 0.6) 50%, #000 100%);
   animation: gradientShift 3s ease-in-out infinite;
 }
 
@@ -55,7 +55,7 @@
   margin-bottom: 2rem;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #9684C0 0%, rgba(150, 132, 192, 0.8) 100%);
+  background: linear-gradient(135deg, #000 0%, rgba(150, 132, 192, 0.8) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -72,7 +72,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 3px;
-  background: linear-gradient(90deg, #9684C0, rgba(231, 224, 229, 0.8));
+  background: linear-gradient(90deg, #000, rgba(0, 0, 0, 0.8));
   border-radius: 2px;
   animation: underlineExpand 0.8s ease-out 0.3s both;
 }
@@ -113,7 +113,7 @@
 }
 
 .auth-form input::placeholder {
-  color: rgba(150, 132, 192, 0.7);
+  color: #000;
   font-weight: 400;
   transition: all 0.3s ease;
 }
@@ -131,7 +131,7 @@
   transform: translateY(-50%);
   font-family: 'Font Awesome 6 Free';
   font-weight: 900;
-  color: rgba(150, 132, 192, 0.7);
+  color: #000;
   z-index: 1;
   transition: all 0.3s ease;
   animation: iconBounce 0.6s ease-out;
@@ -150,7 +150,7 @@
 }
 
 .input-container:has(input:focus)::before {
-  color: #9684C0;
+  color: #000;
   transform: translateY(-50%) scale(1.1);
 }
 
@@ -202,7 +202,7 @@
   width: 100%;
   padding: 1rem;
   margin: 1.5rem 0 1rem;
-  background: rgba(150, 132, 192, 0.9);
+  background:#000;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   color: white;
@@ -272,7 +272,7 @@
 }
 
 .auth-form p:hover {
-  color: #9684C0 !important;
+  color: #000 !important;
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -307,10 +307,10 @@
 
 @keyframes gradientShift {
   0%, 100% { 
-    background: linear-gradient(90deg, #9684C0 0%, rgba(231, 224, 229, 0.6) 50%, #9684C0 100%); 
+    background: linear-gradient(90deg, #000 0%, rgba(231, 224, 229, 0.6) 50%, #000 100%); 
   }
   50% { 
-    background: linear-gradient(90deg, rgba(231, 224, 229, 0.6) 0%, #9684C0 50%, rgba(231, 224, 229, 0.6) 100%); 
+    background: linear-gradient(90deg, rgba(231, 224, 229, 0.6) 0%, #000 50%, rgba(231, 224, 229, 0.6) 100%); 
   }
 }
 

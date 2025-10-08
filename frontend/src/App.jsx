@@ -211,16 +211,18 @@ function App() {
               </>
             } 
           />
-           <Route path="/filters/:filterType" element={  <> <AllFilters />  <Footer /></>} />
+           <Route path="/filters/:filterType" element={  <> <Header user={user} /><AllFilters />  <Footer /></>} />
           <Route
             path="/auth"
             element={
+              <><Header user={user} />
               <AuthForm
                 onAuthSuccess={async () => {
                   const { data: { session } } = await supabase.auth.getSession();
                   setUser(session?.user || null);
                 }}
               />
+              </>
             }
           />
           

@@ -2925,7 +2925,7 @@ h1 {
 }
 /* Active Filters Container */
 .desktop-active-filters {
-  width: 82vw;
+  width: 77vw;
   margin: auto;
   background: #ffffff32;
   border: 1px solid #ffffff;
@@ -2933,6 +2933,7 @@ h1 {
   padding: 16px;
   margin-bottom: 16px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 5vh;
 }
 
 /* Header Section */
@@ -2975,6 +2976,7 @@ h1 {
 
 .clear-all-desktop i {
   font-size: 12px;
+  display: flex;
 }
 
 /* Filter Chips Container */
@@ -3242,7 +3244,7 @@ h1 {
 .job-description-horizontal p {
   margin: 0;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 2.5;
   color: #6c757d;
 }
 
