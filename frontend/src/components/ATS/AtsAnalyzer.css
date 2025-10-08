@@ -776,7 +776,7 @@
 .atsLogoIcon {
   background: white;
   color: #667eea;
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
   border-radius: 0.5rem;
   font-weight: bold;
 }
@@ -1790,7 +1790,7 @@
 .atsLogoIcon {
   background: white;
   color: #667eea;
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
   border-radius: 0.5rem;
   font-weight: bold;
 }
