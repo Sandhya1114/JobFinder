@@ -114,7 +114,7 @@ const ATSAnalyzer = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/analyze-resume`, {
+      const response = await fetch(`${API_BASE_URL}/analyze-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resumeContent: resumeText, jobDescContent: jobDescText })

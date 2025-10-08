@@ -148,7 +148,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 //     });
 //   }
 // });
-/// Enhanced ATS Resume Analysis Endpoint - Optimized for Token Limits
+/// Enhanced ATS Resume Analysis Endpoint - With Specific Examples
 app.post('/api/analyze-resume', async (req, res) => {
   try {
     console.log('📄 ATS Resume analysis endpoint hit');
@@ -163,44 +163,66 @@ app.post('/api/analyze-resume', async (req, res) => {
 
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    // Aggressive truncation to stay under 12,000 TPM limit
-    // Assuming ~1.3 tokens per character: 
-    // - Max resume: 3000 chars (~3900 tokens)
-    // - Max job desc: 1500 chars (~1950 tokens)  
-    // - Prompt structure: ~2000 tokens
-    // - Response: ~3000 tokens
-    // Total: ~10,850 tokens (safe margin)
-    
+    // Token limit management
     const maxResumeLength = 3000;
     const maxJobDescLength = 1500;
     const truncatedResume = resumeContent.slice(0, maxResumeLength);
     const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
     
-    const systemPrompt = `ATS expert. Detect specific problems, explain why they're issues, and provide exact fixes. Return ONLY valid JSON.`;
+    const systemPrompt = `ATS expert. Find SPECIFIC problems in the resume and provide EXACT corrections with examples. Return ONLY valid JSON.`;
     
-    const userPrompt = `Analyze resume${hasJobDesc ? ' vs job' : ''}. Find SPECIFIC problems with detailed solutions.
+    const userPrompt = `Analyze this resume. Find EVERY problem and show EXACTLY how to fix it with specific examples from the resume.
 
 RESUME:
 ${truncatedResume}
 ${hasJobDesc ? `\nJOB:\n${truncatedJobDesc}` : ''}
 
-CRITICAL: Identify the candidate's role from their resume first.
+INSTRUCTIONS:
+1. First, identify the candidate's role (e.g., "Full Stack Developer", "Frontend Developer", etc.)
+2. Find SPECIFIC problems - quote exact text from resume that's wrong
+3. For EACH problem, provide:
+   - What's wrong (quote the actual text)
+   - Why it's a problem
+   - EXACTLY how to fix it
+   - A before/after example
+4. Suggest missing skills relevant to the identified role
+5. If there are spelling errors, list the EXACT misspelled words
+6. If achievements lack numbers, show EXACT sentences that need metrics
+
+CRITICAL: Do NOT just say "add metrics" - show the ACTUAL sentence from the resume that needs improvement!
 
 JSON format:
 {
   "ats_score": <0-100>,
   "parse_rate": <0-100>,
-  "total_issues": <number>,
-  "identified_role": "<detected role>",
+  "total_issues": <count ALL issues found>,
+  "identified_role": "<exact role from resume>",
   "content": {
     "score": <0-100>,
     "issues": [
       {
-        "type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar",
-        "severity": "error|warning|info",
-        "message": "SPECIFIC problem found (e.g., 'Repeated word X appears 5 times' or 'Missing numbers in achievement Y')",
-        "suggestion": "EXACT fix (e.g., 'Use synonyms: A, B, C' or 'Add metrics: Increased sales by X%')",
-        "example": "Before: [bad example] → After: [good example]"
+        "type": "quantifying_impact",
+        "severity": "error",
+        "message": "Your experience 'Worked as Full Stack Developer' lacks quantifiable achievements",
+        "found_in_resume": "Worked as Full Stack Developer",
+        "suggestion": "Add specific metrics: number of projects, team size, performance improvements, or technologies used",
+        "example": "Before: Worked as Full Stack Developer\\n\\nAfter: Led development of 5+ full-stack applications using React and Node.js, improving page load time by 40% and serving 10,000+ daily users"
+      },
+      {
+        "type": "spelling_grammar",
+        "severity": "error",
+        "message": "Spelling error found",
+        "found_in_resume": "experiance",
+        "suggestion": "Correct spelling",
+        "example": "Before: experiance\\n\\nAfter: experience"
+      },
+      {
+        "type": "repetition",
+        "severity": "warning",
+        "message": "Word 'developed' appears 6 times - makes resume repetitive",
+        "found_in_resume": "developed, developed, developed...",
+        "suggestion": "Use synonyms: created, built, engineered, designed, implemented, architected",
+        "example": "Instead of: developed, developed, developed\\n\\nUse: developed, created, built, engineered"
       }
     ]
   },
@@ -208,11 +230,12 @@ JSON format:
     "score": <0-100>,
     "issues": [
       {
-        "type": "essential_sections|contact_info",
-        "severity": "error|warning",
-        "message": "SPECIFIC missing/incorrect item",
-        "suggestion": "EXACT what to add/fix",
-        "example": "Add: [specific format]"
+        "type": "essential_sections",
+        "severity": "error",
+        "message": "Missing 'Skills' section - ATS systems look for this",
+        "found_in_resume": "N/A - section not found",
+        "suggestion": "Add a Skills section with: Technical Skills, Frameworks, Tools, Languages",
+        "example": "Add section:\\n\\nSKILLS\\n• Languages: JavaScript, Python, Java\\n• Frameworks: React, Node.js, Express\\n• Tools: Git, Docker, AWS"
       }
     ]
   },
@@ -220,11 +243,12 @@ JSON format:
     "score": <0-100>,
     "issues": [
       {
-        "type": "file_format|design|email|hyperlinks",
-        "severity": "error|warning",
-        "message": "SPECIFIC ATS problem",
-        "suggestion": "EXACT solution",
-        "example": "Change to: [format]"
+        "type": "design",
+        "severity": "warning",
+        "message": "Complex formatting may not parse correctly in ATS",
+        "found_in_resume": "tables, columns, or graphics detected",
+        "suggestion": "Use simple formatting: standard fonts, clear headers, bullet points",
+        "example": "Avoid: Tables, text boxes, columns\\n\\nUse: Simple single-column layout with clear section headers"
       }
     ]
   },
@@ -232,30 +256,35 @@ JSON format:
     "score": <0-100>,
     "issues": [
       {
-        "type": "hard_skills|soft_skills|action_verbs|title",
-        "severity": "warning|info",
-        "message": "SPECIFIC weakness for identified_role",
-        "suggestion": "EXACT improvement",
-        "example": "Add: [specific skill/verb]"
+        "type": "hard_skills",
+        "severity": "warning",
+        "message": "Missing key skills for ${hasJobDesc ? 'this job' : 'identified_role'}",
+        "found_in_resume": "Skills listed: React, Node.js",
+        "suggestion": "Add missing technical skills that match the role",
+        "example": "Currently have: React, Node.js\\n\\nShould add: TypeScript, Redux, MongoDB, REST APIs, Git"
       }
     ]
   },
-  "present_skills": ["skills actually in resume"],
+  "present_skills": ["list ONLY skills found in resume"],
   "missing_skills": {
-    "critical": ["critical for identified_role"],
-    "important": ["important for identified_role"],
-    "nice_to_have": ["beneficial for identified_role"]
+    "critical": ["skills absolutely needed for identified_role"],
+    "important": ["skills that strengthen candidacy"],
+    "nice_to_have": ["bonus skills for the role"]
   },
-  "overall_assessment": "2-sentence summary",
-  "top_recommendations": ["specific action 1", "specific action 2", "specific action 3"]
+  "overall_assessment": "Brief summary of resume quality and main areas to improve",
+  "top_recommendations": [
+    "1. Add metrics to all 4 experience bullets (currently none have numbers)",
+    "2. Create a Skills section with technical stack",
+    "3. Fix spelling: 'experiance' → 'experience', 'managment' → 'management'"
+  ]
 }
 
-Rules:
-- Be SPECIFIC: "Section X is missing" not "Missing sections"
-- Give EXACT fixes: "Add: Work Experience (Company, Title, Dates, Bullets)" not "Add work history"
-- Provide EXAMPLES: Show before/after
-- Focus on identified_role: Only suggest relevant skills
-- Keep assessments brief to save tokens`;
+REMEMBER: 
+- Quote ACTUAL text from the resume in "found_in_resume"
+- Show real before/after examples
+- List EXACT spelling errors found
+- Point to SPECIFIC sentences that need metrics
+- Suggest skills relevant to identified_role only`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -269,8 +298,8 @@ Rules:
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.2,
-        max_tokens: 2500  // Reduced to ensure we stay under limit
+        temperature: 0.3,  // Slightly higher for more detailed responses
+        max_tokens: 2800   // Increased for detailed examples
       })
     });
 
@@ -278,7 +307,6 @@ Rules:
       const errorData = await response.json();
       console.error('Groq API error:', errorData);
       
-      // Check if it's a rate limit error
       if (errorData.error?.message?.includes('Rate limit') || errorData.error?.message?.includes('TPM')) {
         return res.status(429).json({ 
           error: 'Resume too long. Please use a shorter resume (max 1 page recommended).' 
@@ -297,6 +325,7 @@ Rules:
     try {
       const analysisResults = JSON.parse(cleanContent);
       console.log('✅ Resume analysis completed successfully');
+      console.log('Total issues found:', analysisResults.total_issues);
       res.json(analysisResults);
     } catch (parseError) {
       console.error('JSON parse error:', parseError);

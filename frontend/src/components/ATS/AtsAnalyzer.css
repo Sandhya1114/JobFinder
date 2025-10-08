@@ -729,7 +729,66 @@
     font-size: 2.5rem;
   }
 }
-/* ATS Resume Analyzer - Complete Styles (camelCase) */
+.atsSkillNiceToHave {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* Present Skills Card */
+.atsPresentSkillsCard {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  border: 2px solid #10b981;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .atsHeroTitle {
+    font-size: 2rem;
+  }
+
+  .atsUploadCard {
+    padding: 2rem;
+  }
+
+  .atsScoreCard {
+    position: static;
+  }
+  
+  .atsScoreCircle {
+    width: 150px;
+    height: 150px;
+  }
+
+  .atsScoreValue {
+    font-size: 2.5rem;
+  }
+  
+  .atsDetailHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .atsIssueProblem,
+  .atsIssueSolution,
+  .atsIssueExample {
+    padding: 1rem;
+  }
+  
+  .atsExampleCode {
+    font-size: 0.75rem;
+  }
+}
+
+/* Present Skills Card */
+.atsPresentSkillsCard {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2/* ATS Resume Analyzer - Complete Styles (camelCase) */
 
 .atsContainer {
   min-height: 100vh;
