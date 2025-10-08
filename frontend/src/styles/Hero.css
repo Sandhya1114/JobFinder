@@ -1,12 +1,5 @@
 /* 
-  HERO SECTION CSS WITH ORANGE THEME
-  
-  To change the color scheme, simply update these CSS variables:
-  - --primary-color: Main brand color
-  - --secondary-color: Darker shade for hover states
-  - --accent-color: Additional accent color
-  - --border-color: Light border color
-  - --background-light: Light background for elements
+  HERO SECTION CSS WITH DYNAMIC SUGGESTIONS
 */
 
 /* Hero Section */
@@ -20,17 +13,16 @@
 }
 
 .hero-container {
-  /* 🎨 COLOR VARIABLES - Change these to update the entire theme */
-  --primary-color: #fea116;        /* Main orange color */
-  --secondary-color: #e8900c;      /* Darker orange for hover */
-  --accent-color: #ff8c00;         /* Additional orange accent */
-  --text-primary: #1f2937;         /* Dark text */
-  --text-secondary: #6b7280;       /* Light text */
-  --border-color: #fed7aa;         /* Light orange border */
-  --background-light: #fff7ed;     /* Light orange background */
-  --background-lighter: #fffbf5;   /* Even lighter background */
+  /* COLOR VARIABLES */
+  --primary-color: #fea116;
+  --secondary-color: #e8900c;
+  --accent-color: #ff8c00;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #fed7aa;
+  --background-light: #fff7ed;
+  --background-lighter: #fffbf5;
   
-  /* Shadow variables with primary color */
   --shadow-light: rgba(254, 161, 22, 0.1);
   --shadow-medium: rgba(254, 161, 22, 0.15);
   --shadow-strong: rgba(254, 161, 22, 0.25);
@@ -84,6 +76,14 @@
   align-items: center;
   padding: 0px 6px;
   gap: 0;
+  position: relative;
+  z-index: 10;
+}
+
+/* Input Field Wrapper for Suggestions */
+.hero-input-wrapper {
+  position: relative;
+  flex: 1;
 }
 
 .input-field {
@@ -164,6 +164,83 @@
   box-shadow: 0 6px 20px var(--shadow-strong);
 }
 
+/* Hero Suggestions Dropdown */
+.hero-suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px var(--shadow-medium);
+  border: 1px solid var(--border-color);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-suggestion-item {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(254, 215, 170, 0.3);
+}
+
+.hero-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.hero-suggestion-item:hover {
+  background: var(--background-lighter);
+  padding-left: 1.5rem;
+}
+
+.hero-suggestion-icon {
+  color: var(--primary-color);
+  margin-right: 0.75rem;
+  font-size: 0.875rem;
+  min-width: 16px;
+}
+
+.hero-suggestion-item span {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Scrollbar Styling for Suggestions */
+.hero-suggestions-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.hero-suggestions-dropdown::-webkit-scrollbar-track {
+  background: var(--background-light);
+  border-radius: 10px;
+}
+
+.hero-suggestions-dropdown::-webkit-scrollbar-thumb {
+  background: var(--primary-color);
+  border-radius: 10px;
+}
+
+.hero-suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color);
+}
+
 /* Right Visual */
 .hero-visual {
   display: flex;
@@ -180,7 +257,7 @@
   margin: auto;
 }
 
-/* Job Cards - Clean Minimal Design */
+/* Job Cards */
 .job-card {
   position: absolute;
   background: white;
@@ -195,8 +272,7 @@
   transition: all 0.3s ease;
   cursor: pointer;
   border-left: 1px solid #625e5e;
-    box-shadow: 8px 8px 10px rgb(0 0 0 / 29%);
-    
+  box-shadow: 8px 8px 10px rgb(0 0 0 / 29%);
 }
 
 .job-card:hover {
@@ -268,7 +344,7 @@
   color: var(--primary-color);
 }
 
-/* Simple Card Positioning - No Rotation */
+/* Card Positioning */
 .card-1 {
   top: 5vh;
   right: 20px;
@@ -311,6 +387,10 @@
   .job-card {
     width: 280px;
   }
+  
+  .hero-content {
+    margin-right: 0;
+  }
 }
 
 @media (max-width: 768px) {
@@ -324,6 +404,7 @@
   
   .hero-subtitle {
     font-size: 1.125rem;
+    margin-bottom: 2rem;
   }
   
   .search-container {
@@ -338,6 +419,17 @@
     width: 100%;
     padding: 1rem;
     background: var(--background-light);
+    border-radius: 12px;
+  }
+  
+  .hero-input-wrapper {
+    width: 100%;
+  }
+  
+  .hero-suggestions-dropdown {
+    top: calc(100% + 5px);
+    left: -1.5rem;
+    right: -1.5rem;
     border-radius: 12px;
   }
   
@@ -407,30 +499,119 @@
     width: 40px;
     height: 40px;
   }
+  
+  .hero-suggestion-item {
+    padding: 0.75rem 1rem;
+  }
+  
+  .hero-suggestion-item:hover {
+    padding-left: 1.25rem;
+  }
+  
+  .hero-suggestion-item span {
+    font-size: 0.875rem;
+  }
 }
 
-/* 
-  🎨 QUICK COLOR CHANGE GUIDE:
+/* Focus States for Accessibility */
+.input-field input:focus {
+  /* outline: 2px solid var(--primary-color); */
+  /* outline-offset: -2px; */
+  /* border-radius: 8px; */
+  outline: none;
+}
+
+.select-field select:focus {
+  /* outline: 2px solid var(--primary-color);
+  outline-offset: -2px;
+  border-radius: 8px; */
+  outline: none;
+}
+
+/* Loading State for Search Button */
+.search-btn:disabled {
+  background: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.search-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Enhanced Suggestion Item Animations */
+.hero-suggestion-item:active {
+  background: var(--background-light);
+  transform: scale(0.98);
+}
+
+/* Empty State for Suggestions */
+.hero-suggestions-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* Suggestion Category Headers (if needed) */
+.hero-suggestion-category {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--background-lighter);
+  border-bottom: 1px solid rgba(254, 215, 170, 0.3);
+}
+
+/* Ensure proper z-index layering */
+.search-wrapper {
+  position: relative;
+  z-index: 10;
+}
+
+/* Prevent text selection on suggestion items */
+.hero-suggestion-item {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .hero-suggestions-dropdown {
+    border: 2px solid var(--text-primary);
+  }
   
-  To change to a different color scheme, update these variables at the top:
+  .hero-suggestion-item:hover {
+    background: var(--primary-color);
+    color: white;
+  }
   
-  For Blue Theme:
-  --primary-color: #3b82f6;
-  --secondary-color: #2563eb;
-  --border-color: #dbeafe;
-  --background-light: #eff6ff;
+  .hero-suggestion-item:hover .hero-suggestion-icon {
+    color: white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
   
-  For Green Theme:
-  --primary-color: #10b981;
-  --secondary-color: #059669;
-  --border-color: #d1fae5;
-  --background-light: #ecfdf5;
-  
-  For Purple Theme:
-  --primary-color: #8b5cf6;
-  --secondary-color: #7c3aed;
-  --border-color: #e9d5ff;
-  --background-light: #f3e8ff;
-  
-  Don't forget to update the SVG dropdown arrow color in the select field!
-*/
+  @keyframes slideDown {
+    from, to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

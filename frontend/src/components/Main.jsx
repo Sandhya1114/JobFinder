@@ -43,7 +43,7 @@ function Main() {
         </div>
       </section> */}
        {/* <JobCards/> */}
-       <AdvancedJobFilter/>
+       {/* <AdvancedJobFilter/> */}
     </main>
  
 

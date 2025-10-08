@@ -683,7 +683,7 @@ export default function Header({ user }) {
 
   return (
     <header
-      className={`${!isJobsPage ? "sticky" : "non-sticky"} ${
+      className={`${!isJobsPage ? "sticky" : "sticky"} ${
         isShrunk ? "shrink" : ""
       } ${isJobsPage ? "jobs-page" : ""}`}
     >
