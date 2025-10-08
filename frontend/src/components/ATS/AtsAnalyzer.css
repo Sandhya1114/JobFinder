@@ -1741,15 +1741,17 @@
 .atsPresentSkillsCard {
   background: white;
   border-radius: 1.5rem;
-  padding: 2/* ATS Resume Analyzer - Complete Styles (camelCase) */
-
+  padding: 2}
+  
+  /* ATS Resume Analyzer - Complete Styles (camelCase) */
+/* 
 .atsContainer {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-}
+} */
 
 .atsWrapper {
   max-width: 1400px;
@@ -1768,7 +1770,7 @@
 
 @media (min-width: 1024px) {
   .atsHero {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.5fr 1fr;
   }
 }
 
@@ -1779,7 +1781,7 @@
 .atsLogo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
   margin-bottom: 2rem;
   font-weight: 700;
   font-size: 1.125rem;
