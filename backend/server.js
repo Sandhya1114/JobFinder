@@ -355,7 +355,55 @@ app.get('/api/groq/health', (req, res) => {
   });
 });
 //n ============ ADVANCED FILTER ROUTES (PLACED FIRST) ============
+// Add these endpoints to your backend API
 
+// Get all unique locations
+router.get('/api/jobs/filters/locations', async (req, res) => {
+  try {
+    const locations = await db.query(
+      `SELECT DISTINCT location 
+       FROM jobs 
+       WHERE location IS NOT NULL AND location != '' 
+       ORDER BY location`
+    );
+    res.json(locations.rows.map(row => row.location));
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    res.status(500).json({ error: 'Failed to fetch locations' });
+  }
+});
+
+// Get all unique experience levels
+router.get('/api/jobs/filters/experience', async (req, res) => {
+  try {
+    const experience = await db.query(
+      `SELECT DISTINCT experience 
+       FROM jobs 
+       WHERE experience IS NOT NULL AND experience != '' 
+       ORDER BY experience`
+    );
+    res.json(experience.rows.map(row => row.experience));
+  } catch (error) {
+    console.error('Error fetching experience levels:', error);
+    res.status(500).json({ error: 'Failed to fetch experience levels' });
+  }
+});
+
+// Get all unique job types
+router.get('/api/jobs/filters/types', async (req, res) => {
+  try {
+    const types = await db.query(
+      `SELECT DISTINCT type 
+       FROM jobs 
+       WHERE type IS NOT NULL AND type != '' 
+       ORDER BY type`
+    );
+    res.json(types.rows.map(row => row.type));
+  } catch (error) {
+    console.error('Error fetching job types:', error);
+    res.status(500).json({ error: 'Failed to fetch job types' });
+  }
+});
 // Get all unique filter values from database
 app.get('/api/advanced-filters/options', async (req, res) => {
   try {
