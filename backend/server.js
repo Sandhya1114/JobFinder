@@ -28,6 +28,127 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 // ============ GROQ AI ANALYSIS ROUTES ============
 /// Enhanced ATS Resume Analysis Endpoint
+// app.post('/api/analyze-resume', async (req, res) => {
+//   try {
+//     console.log('📄 ATS Resume analysis endpoint hit');
+    
+//     const { resumeContent, jobDescContent } = req.body;
+
+//     if (!resumeContent || resumeContent.trim().length < 10) {
+//       return res.status(400).json({ 
+//         error: 'Resume content must be at least 10 characters long' 
+//       });
+//     }
+
+//     const resumeLength = resumeContent.trim().length;
+//     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
+    
+//     // Truncate content if too long to stay within token limits
+//     const maxResumeLength = 6000;
+//     const maxJobDescLength = 3000;
+//     const truncatedResume = resumeContent.slice(0, maxResumeLength);
+//     const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
+    
+//     const systemPrompt = `Expert ATS analyzer. Analyze resumes contextually based on the candidate's field. Return ONLY valid JSON, no markdown.`;
+    
+//     const userPrompt = `Analyze this resume${hasJobDesc ? ' against the job description' : ' and identify the candidate\'s role/field from their experience'}.
+
+// RESUME:
+// ${truncatedResume}
+// ${hasJobDesc ? `\nJOB DESCRIPTION:
+// ${truncatedJobDesc}` : `
+
+// IMPORTANT: First identify what role/field this resume is for (e.g., Frontend Developer, Backend Developer, Data Scientist, etc.) based on skills and experience listed. Then provide relevant suggestions for THAT specific field only.`}
+
+// ${hasJobDesc ? '' : `
+// For missing skills, only suggest skills that are:
+// 1. Directly relevant to the identified role
+// 2. Commonly required in job postings for that role
+// 3. Natural progressions from skills already present
+
+// DO NOT suggest unrelated skills like "Cloud computing" or "Machine learning" for a Frontend Developer.`}
+
+// Return JSON:
+// {
+//   "ats_score": <0-100>,
+//   "parse_rate": <0-100>,
+//   "total_issues": <number>,
+//   "identified_role": "<detected role from resume, e.g., Frontend Developer>",
+//   "content": {
+//     "score": <0-100>,
+//     "issues": [
+//       {"type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar", "severity": "error|warning|info", "message": "specific issue found", "suggestion": "how to fix it"}
+//     ]
+//   },
+//   "section": {
+//     "score": <0-100>,
+//     "issues": [
+//       {"type": "essential_sections|contact_info", "severity": "error|warning", "message": "missing or incorrect section", "suggestion": "what to add/fix"}
+//     ]
+//   },
+//   "ats_essentials": {
+//     "score": <0-100>,
+//     "issues": [
+//       {"type": "file_format|design|email|hyperlinks", "severity": "error|warning", "message": "ATS compatibility issue", "suggestion": "how to make ATS-friendly"}
+//     ]
+//   },
+//   "tailoring": {
+//     "score": <0-100>,
+//     "issues": [
+//       {"type": "hard_skills|soft_skills|action_verbs|title", "severity": "warning|info", "message": "area for improvement", "suggestion": "specific improvement for the identified role"}
+//     ]
+//   },
+//   "present_skills": ["list only skills actually found in resume"],
+//   "missing_skills": {
+//     "critical": ["skills critical for identified_role that are missing"],
+//     "important": ["important skills for identified_role that are missing"],
+//     "nice_to_have": ["beneficial skills for identified_role"]
+//   },
+//   "overall_assessment": "Brief assessment mentioning the identified role and overall quality",
+//   "top_recommendations": ["3-5 actionable recommendations specific to the identified role"]
+// }`;
+
+//     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+//       },
+//       body: JSON.stringify({
+//         model: 'llama-3.3-70b-versatile',
+//         messages: [
+//           { role: 'system', content: systemPrompt },
+//           { role: 'user', content: userPrompt }
+//         ],
+//         temperature: 0.2,
+//         max_tokens: 3000
+//       })
+//     });
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       console.error('Groq API error:', errorData);
+//       return res.status(response.status).json({ 
+//         error: errorData.error?.message || 'API request failed' 
+//       });
+//     }
+
+//     const data = await response.json();
+//     const content = data.choices[0].message.content.trim();
+//     const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+//     const analysisResults = JSON.parse(cleanContent);
+    
+//     console.log('✅ Resume analysis completed successfully');
+//     res.json(analysisResults);
+
+//   } catch (error) {
+//     console.error('❌ Error analyzing resume:', error);
+//     res.status(500).json({ 
+//       error: error.message || 'Analysis failed' 
+//     });
+//   }
+// });
+/// Enhanced ATS Resume Analysis Endpoint - Optimized for Token Limits
 app.post('/api/analyze-resume', async (req, res) => {
   try {
     console.log('📄 ATS Resume analysis endpoint hit');
@@ -40,73 +161,101 @@ app.post('/api/analyze-resume', async (req, res) => {
       });
     }
 
-    const resumeLength = resumeContent.trim().length;
     const hasJobDesc = jobDescContent && jobDescContent.trim().length > 0;
     
-    // Truncate content if too long to stay within token limits
-    const maxResumeLength = 6000;
-    const maxJobDescLength = 3000;
+    // Aggressive truncation to stay under 12,000 TPM limit
+    // Assuming ~1.3 tokens per character: 
+    // - Max resume: 3000 chars (~3900 tokens)
+    // - Max job desc: 1500 chars (~1950 tokens)  
+    // - Prompt structure: ~2000 tokens
+    // - Response: ~3000 tokens
+    // Total: ~10,850 tokens (safe margin)
+    
+    const maxResumeLength = 3000;
+    const maxJobDescLength = 1500;
     const truncatedResume = resumeContent.slice(0, maxResumeLength);
     const truncatedJobDesc = jobDescContent ? jobDescContent.slice(0, maxJobDescLength) : '';
     
-    const systemPrompt = `Expert ATS analyzer. Analyze resumes contextually based on the candidate's field. Return ONLY valid JSON, no markdown.`;
+    const systemPrompt = `ATS expert. Detect specific problems, explain why they're issues, and provide exact fixes. Return ONLY valid JSON.`;
     
-    const userPrompt = `Analyze this resume${hasJobDesc ? ' against the job description' : ' and identify the candidate\'s role/field from their experience'}.
+    const userPrompt = `Analyze resume${hasJobDesc ? ' vs job' : ''}. Find SPECIFIC problems with detailed solutions.
 
 RESUME:
 ${truncatedResume}
-${hasJobDesc ? `\nJOB DESCRIPTION:
-${truncatedJobDesc}` : `
+${hasJobDesc ? `\nJOB:\n${truncatedJobDesc}` : ''}
 
-IMPORTANT: First identify what role/field this resume is for (e.g., Frontend Developer, Backend Developer, Data Scientist, etc.) based on skills and experience listed. Then provide relevant suggestions for THAT specific field only.`}
+CRITICAL: Identify the candidate's role from their resume first.
 
-${hasJobDesc ? '' : `
-For missing skills, only suggest skills that are:
-1. Directly relevant to the identified role
-2. Commonly required in job postings for that role
-3. Natural progressions from skills already present
-
-DO NOT suggest unrelated skills like "Cloud computing" or "Machine learning" for a Frontend Developer.`}
-
-Return JSON:
+JSON format:
 {
   "ats_score": <0-100>,
   "parse_rate": <0-100>,
   "total_issues": <number>,
-  "identified_role": "<detected role from resume, e.g., Frontend Developer>",
+  "identified_role": "<detected role>",
   "content": {
     "score": <0-100>,
     "issues": [
-      {"type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar", "severity": "error|warning|info", "message": "specific issue found", "suggestion": "how to fix it"}
+      {
+        "type": "ats_parse_rate|quantifying_impact|repetition|spelling_grammar",
+        "severity": "error|warning|info",
+        "message": "SPECIFIC problem found (e.g., 'Repeated word X appears 5 times' or 'Missing numbers in achievement Y')",
+        "suggestion": "EXACT fix (e.g., 'Use synonyms: A, B, C' or 'Add metrics: Increased sales by X%')",
+        "example": "Before: [bad example] → After: [good example]"
+      }
     ]
   },
   "section": {
     "score": <0-100>,
     "issues": [
-      {"type": "essential_sections|contact_info", "severity": "error|warning", "message": "missing or incorrect section", "suggestion": "what to add/fix"}
+      {
+        "type": "essential_sections|contact_info",
+        "severity": "error|warning",
+        "message": "SPECIFIC missing/incorrect item",
+        "suggestion": "EXACT what to add/fix",
+        "example": "Add: [specific format]"
+      }
     ]
   },
   "ats_essentials": {
     "score": <0-100>,
     "issues": [
-      {"type": "file_format|design|email|hyperlinks", "severity": "error|warning", "message": "ATS compatibility issue", "suggestion": "how to make ATS-friendly"}
+      {
+        "type": "file_format|design|email|hyperlinks",
+        "severity": "error|warning",
+        "message": "SPECIFIC ATS problem",
+        "suggestion": "EXACT solution",
+        "example": "Change to: [format]"
+      }
     ]
   },
   "tailoring": {
     "score": <0-100>,
     "issues": [
-      {"type": "hard_skills|soft_skills|action_verbs|title", "severity": "warning|info", "message": "area for improvement", "suggestion": "specific improvement for the identified role"}
+      {
+        "type": "hard_skills|soft_skills|action_verbs|title",
+        "severity": "warning|info",
+        "message": "SPECIFIC weakness for identified_role",
+        "suggestion": "EXACT improvement",
+        "example": "Add: [specific skill/verb]"
+      }
     ]
   },
-  "present_skills": ["list only skills actually found in resume"],
+  "present_skills": ["skills actually in resume"],
   "missing_skills": {
-    "critical": ["skills critical for identified_role that are missing"],
-    "important": ["important skills for identified_role that are missing"],
-    "nice_to_have": ["beneficial skills for identified_role"]
+    "critical": ["critical for identified_role"],
+    "important": ["important for identified_role"],
+    "nice_to_have": ["beneficial for identified_role"]
   },
-  "overall_assessment": "Brief assessment mentioning the identified role and overall quality",
-  "top_recommendations": ["3-5 actionable recommendations specific to the identified role"]
-}`;
+  "overall_assessment": "2-sentence summary",
+  "top_recommendations": ["specific action 1", "specific action 2", "specific action 3"]
+}
+
+Rules:
+- Be SPECIFIC: "Section X is missing" not "Missing sections"
+- Give EXACT fixes: "Add: Work Experience (Company, Title, Dates, Bullets)" not "Add work history"
+- Provide EXAMPLES: Show before/after
+- Focus on identified_role: Only suggest relevant skills
+- Keep assessments brief to save tokens`;
 
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -121,13 +270,21 @@ Return JSON:
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.2,
-        max_tokens: 3000
+        max_tokens: 2500  // Reduced to ensure we stay under limit
       })
     });
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error('Groq API error:', errorData);
+      
+      // Check if it's a rate limit error
+      if (errorData.error?.message?.includes('Rate limit') || errorData.error?.message?.includes('TPM')) {
+        return res.status(429).json({ 
+          error: 'Resume too long. Please use a shorter resume (max 1 page recommended).' 
+        });
+      }
+      
       return res.status(response.status).json({ 
         error: errorData.error?.message || 'API request failed' 
       });
@@ -136,10 +293,18 @@ Return JSON:
     const data = await response.json();
     const content = data.choices[0].message.content.trim();
     const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    const analysisResults = JSON.parse(cleanContent);
     
-    console.log('✅ Resume analysis completed successfully');
-    res.json(analysisResults);
+    try {
+      const analysisResults = JSON.parse(cleanContent);
+      console.log('✅ Resume analysis completed successfully');
+      res.json(analysisResults);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Response content:', cleanContent);
+      return res.status(500).json({ 
+        error: 'Failed to parse analysis results. Please try again with a shorter resume.' 
+      });
+    }
 
   } catch (error) {
     console.error('❌ Error analyzing resume:', error);
