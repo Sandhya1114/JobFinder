@@ -358,7 +358,7 @@ app.get('/api/groq/health', (req, res) => {
 // Add these endpoints to your backend API
 
 // Get all unique locations
-router.get('/api/jobs/filters/locations', async (req, res) => {
+app.get('/api/jobs/filters/locations', async (req, res) => {
   try {
     const locations = await db.query(
       `SELECT DISTINCT location 
@@ -374,7 +374,7 @@ router.get('/api/jobs/filters/locations', async (req, res) => {
 });
 
 // Get all unique experience levels
-router.get('/api/jobs/filters/experience', async (req, res) => {
+app.get('/api/jobs/filters/experience', async (req, res) => {
   try {
     const experience = await db.query(
       `SELECT DISTINCT experience 
@@ -390,7 +390,7 @@ router.get('/api/jobs/filters/experience', async (req, res) => {
 });
 
 // Get all unique job types
-router.get('/api/jobs/filters/types', async (req, res) => {
+app.get('/api/jobs/filters/types', async (req, res) => {
   try {
     const types = await db.query(
       `SELECT DISTINCT type 
