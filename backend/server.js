@@ -25,7 +25,185 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 
 // ============ API ROUTES ============
 // Add this to your existing server.js file after your other route definitions
+// Add this endpoint to your server.js file
+// Place it before your other job routes for better organization
 
+// ============ DYNAMIC FILTER OPTIONS ENDPOINT ============
+
+/**
+ * Get all unique filter values from the database
+ * This endpoint provides dynamic filter options based on actual job data
+ * Returns: locations, types, experiences, salary ranges
+ */
+app.get('/api/filter-options', async (req, res) => {
+  try {
+    console.log('📊 Fetching dynamic filter options from database');
+    
+    // Fetch all jobs to extract unique values
+    // Using select with specific columns for better performance
+    const { data: jobs, error } = await supabase
+      .from('jobs')
+      .select('location, type, experience, salary_min, salary_max, salary_currency');
+
+    if (error) {
+      console.error('Error fetching jobs for filter options:', error);
+      throw error;
+    }
+
+    // Process locations - handle comma-separated values
+    const locationsSet = new Set();
+    (jobs || []).forEach(job => {
+      if (job.location) {
+        // Split comma-separated locations and add each one
+        job.location.split(',').forEach(loc => {
+          const trimmed = loc.trim();
+          if (trimmed) locationsSet.add(trimmed);
+        });
+      }
+    });
+
+    // Process job types
+    const typesSet = new Set();
+    (jobs || []).forEach(job => {
+      if (job.type) {
+        typesSet.add(job.type.trim());
+      }
+    });
+
+    // Process experience levels
+    const experienceSet = new Set();
+    (jobs || []).forEach(job => {
+      if (job.experience) {
+        experienceSet.add(job.experience.trim());
+      }
+    });
+
+    // Calculate dynamic salary ranges based on actual data
+    const salaries = (jobs || [])
+      .filter(job => job.salary_min !== null && job.salary_min !== undefined)
+      .map(job => ({
+        min: job.salary_min,
+        max: job.salary_max || job.salary_min,
+        currency: job.salary_currency || 'USD'
+      }));
+
+    let salaryRanges = [];
+    if (salaries.length > 0) {
+      const minSalary = Math.min(...salaries.map(s => s.min));
+      const maxSalary = Math.max(...salaries.map(s => s.max));
+      
+      // Create 5 evenly distributed salary ranges
+      const range = maxSalary - minSalary;
+      const step = Math.ceil(range / 5);
+      
+      for (let i = 0; i < 5; i++) {
+        const rangeMin = minSalary + (step * i);
+        const rangeMax = i === 4 ? null : minSalary + (step * (i + 1));
+        
+        salaryRanges.push({
+          id: `${rangeMin}-${rangeMax || 'plus'}`,
+          label: rangeMax 
+            ? `$${rangeMin.toLocaleString()} - $${rangeMax.toLocaleString()}`
+            : `$${rangeMin.toLocaleString()}+`,
+          value: rangeMax ? `${rangeMin}-${rangeMax}` : `${rangeMin}-`,
+          min: rangeMin,
+          max: rangeMax
+        });
+      }
+    }
+
+    // Prepare response
+    const filterOptions = {
+      locations: Array.from(locationsSet).sort(),
+      types: Array.from(typesSet).sort(),
+      experiences: Array.from(experienceSet).sort(),
+      salaryRanges: salaryRanges,
+      stats: {
+        totalLocations: locationsSet.size,
+        totalTypes: typesSet.size,
+        totalExperiences: experienceSet.size,
+        totalSalaryRanges: salaryRanges.length,
+        jobsAnalyzed: jobs?.length || 0
+      }
+    };
+
+    console.log('✅ Filter options generated:', filterOptions.stats);
+    res.json(filterOptions);
+  } catch (error) {
+    console.error('❌ Error fetching filter options:', error);
+    res.status(500).json({ 
+      error: error.message,
+      filterOptions: {
+        locations: [],
+        types: [],
+        experiences: [],
+        salaryRanges: []
+      }
+    });
+  }
+});
+
+// Optional: Get filter options with job counts for each option
+app.get('/api/filter-options/with-counts', async (req, res) => {
+  try {
+    console.log('📊 Fetching filter options with job counts');
+    
+    const { data: jobs, error } = await supabase
+      .from('jobs')
+      .select('location, type, experience, salary_min, salary_max');
+
+    if (error) throw error;
+
+    // Count jobs for each filter option
+    const locationCounts = {};
+    const typeCounts = {};
+    const experienceCounts = {};
+
+    (jobs || []).forEach(job => {
+      // Count locations
+      if (job.location) {
+        job.location.split(',').forEach(loc => {
+          const trimmed = loc.trim();
+          if (trimmed) {
+            locationCounts[trimmed] = (locationCounts[trimmed] || 0) + 1;
+          }
+        });
+      }
+
+      // Count types
+      if (job.type) {
+        const type = job.type.trim();
+        typeCounts[type] = (typeCounts[type] || 0) + 1;
+      }
+
+      // Count experiences
+      if (job.experience) {
+        const exp = job.experience.trim();
+        experienceCounts[exp] = (experienceCounts[exp] || 0) + 1;
+      }
+    });
+
+    // Format response with counts
+    const response = {
+      locations: Object.entries(locationCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      types: Object.entries(typeCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      experiences: Object.entries(experienceCounts)
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
+      totalJobs: jobs?.length || 0
+    };
+
+    console.log('✅ Filter options with counts generated');
+    res.json(response);
+  } catch (error) {
+    console.error('❌ Error fetching filter options with counts:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 // ============ GROQ AI ANALYSIS ROUTES ============
 /// Enhanced ATS Resume Analysis Endpoint
 // app.post('/api/analyze-resume', async (req, res) => {
@@ -357,53 +535,7 @@ app.get('/api/groq/health', (req, res) => {
 //n ============ ADVANCED FILTER ROUTES (PLACED FIRST) ============
 // Add these endpoints to your backend API
 
-// Get all unique locations
-app.get('/api/jobs/filters/locations', async (req, res) => {
-  try {
-    const locations = await db.query(
-      `SELECT DISTINCT location 
-       FROM jobs 
-       WHERE location IS NOT NULL AND location != '' 
-       ORDER BY location`
-    );
-    res.json(locations.rows.map(row => row.location));
-  } catch (error) {
-    console.error('Error fetching locations:', error);
-    res.status(500).json({ error: 'Failed to fetch locations' });
-  }
-});
 
-// Get all unique experience levels
-app.get('/api/jobs/filters/experience', async (req, res) => {
-  try {
-    const experience = await db.query(
-      `SELECT DISTINCT experience 
-       FROM jobs 
-       WHERE experience IS NOT NULL AND experience != '' 
-       ORDER BY experience`
-    );
-    res.json(experience.rows.map(row => row.experience));
-  } catch (error) {
-    console.error('Error fetching experience levels:', error);
-    res.status(500).json({ error: 'Failed to fetch experience levels' });
-  }
-});
-
-// Get all unique job types
-app.get('/api/jobs/filters/types', async (req, res) => {
-  try {
-    const types = await db.query(
-      `SELECT DISTINCT type 
-       FROM jobs 
-       WHERE type IS NOT NULL AND type != '' 
-       ORDER BY type`
-    );
-    res.json(types.rows.map(row => row.type));
-  } catch (error) {
-    console.error('Error fetching job types:', error);
-    res.status(500).json({ error: 'Failed to fetch job types' });
-  }
-});
 // Get all unique filter values from database
 app.get('/api/advanced-filters/options', async (req, res) => {
   try {

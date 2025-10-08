@@ -696,7 +696,23 @@ const FilterDropdown = React.memo(({
   );
 });
 
-const JobList = () => {
+// const JobList = () => {
+//   const dispatch = useDispatch();
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const [searchParams, setSearchParams] = useSearchParams();
+  
+//   const { 
+//     jobs, 
+//     categories, 
+//     companies, 
+//     loading, 
+//     error, 
+//     filters, 
+//     pagination, 
+//     infiniteScroll 
+//   } = useSelector((state) => state.jobs);
+   const JobList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -712,8 +728,23 @@ const JobList = () => {
     pagination, 
     infiniteScroll 
   } = useSelector((state) => state.jobs);
+  // const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader();
+  // const [toast, setToast] = useState(null);
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  // const [selectedJob, setSelectedJob] = useState(null);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const isJobPage = location.pathname === '/jobs';
+
+  // // Separate state for input fields to avoid losing user input
+  // const [localFilters, setLocalFilters] = useState({
+  //   searchInput: '',
+  //   locationSearchInput: ''
+  // });
+
+    // UPDATED: Get filterOptions from useDataLoader hook
+  const { loadJobs, loadAllData, loadMoreJobs, filterOptions } = useDataLoader();
   
-  const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader();
   const [toast, setToast] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -726,7 +757,16 @@ const JobList = () => {
     searchInput: '',
     locationSearchInput: ''
   });
-
+  // State for pending filters (not applied yet)
+  // const [pendingFilters, setPendingFilters] = useState({
+  //   selectedCategory: [],
+  //   selectedCompany: [],
+  //   selectedExperience: [],
+  //   selectedLocation: [],
+  //   selectedType: [],
+  //   selectedSalary: []
+  // });
+  
   // State for pending filters (not applied yet)
   const [pendingFilters, setPendingFilters] = useState({
     selectedCategory: [],
@@ -736,7 +776,7 @@ const JobList = () => {
     selectedType: [],
     selectedSalary: []
   });
-
+  
   // Track if filters have changed but not applied
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
 
@@ -750,11 +790,24 @@ const JobList = () => {
   const initializationRef = useRef(false);
   const urlSyncRef = useRef(false);
 
-  // Memoize static filter options
-  const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
-  const locationOptions = useMemo(() => ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'], []);
-  const typeOptions = useMemo(() => ['Full-time', 'Part-time', 'Contract'], []);
-  const salaryRangeOptions = useMemo(() => ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'], []);
+  // UPDATED: Use dynamic filter options instead of hardcoded arrays
+  const experienceOptions = useMemo(() => {
+    return filterOptions.isLoaded ? filterOptions.experiences : [];
+  }, [filterOptions.experiences, filterOptions.isLoaded]);
+
+  const locationOptions = useMemo(() => {
+    return filterOptions.isLoaded ? filterOptions.locations : [];
+  }, [filterOptions.locations, filterOptions.isLoaded]);
+
+  const typeOptions = useMemo(() => {
+    return filterOptions.isLoaded ? filterOptions.types : [];
+  }, [filterOptions.types, filterOptions.isLoaded]);
+
+  const salaryRangeOptions = useMemo(() => {
+    return filterOptions.isLoaded 
+      ? filterOptions.salaryRanges.map(range => range.value)
+      : [];
+  }, [filterOptions.salaryRanges, filterOptions.isLoaded]);
 
   // Memoize display jobs
   const displayJobs = useMemo(() => {
@@ -776,11 +829,56 @@ const JobList = () => {
     }));
   }, [companies]);
 
-  // FIXED: Move showToast function definition before it's used
+  // Show loading state while filter options are being loaded
   const showToast = useCallback((message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
   }, []);
+
+  // // Track if filters have changed but not applied
+  // const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
+
+  // // Track initial load and prevent infinite loops
+  // const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  // const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
+  
+  // // Refs to prevent infinite loops and race conditions
+  // const lastFiltersRef = useRef(null);
+  // const isLoadingMoreRef = useRef(false);
+  // const initializationRef = useRef(false);
+  // const urlSyncRef = useRef(false);
+
+  // // Memoize static filter options
+  // const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
+  // const locationOptions = useMemo(() => ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'], []);
+  // const typeOptions = useMemo(() => ['Full-time', 'Part-time', 'Contract'], []);
+  // const salaryRangeOptions = useMemo(() => ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'], []);
+
+  // // Memoize display jobs
+  // const displayJobs = useMemo(() => {
+  //   return isMobile ? infiniteScroll.allJobs : jobs;
+  // }, [isMobile, infiniteScroll.allJobs, jobs]);
+
+  // // Memoize filter options for dropdowns
+  // const categoryOptionsForDropdown = useMemo(() => {
+  //   return categories.map(category => ({
+  //     id: category.id,
+  //     name: category.name
+  //   }));
+  // }, [categories]);
+
+  // const companyOptionsForDropdown = useMemo(() => {
+  //   return companies.map(company => ({
+  //     id: company.id,
+  //     name: company.name
+  //   }));
+  // }, [companies]);
+
+  // // FIXED: Move showToast function definition before it's used
+  // const showToast = useCallback((message) => {
+  //   setToast(message);
+  //   setTimeout(() => setToast(null), 3000);
+  // }, []);
 
   // ENHANCED: Search term to filter mapping helper with better matching
   const getRelatedFiltersFromSearch = useCallback((searchTerm) => {
@@ -1227,13 +1325,29 @@ const JobList = () => {
   }, [isSidebarOpen]);
 
   // Load initial data only once
+  // useEffect(() => {
+  //   if (!initialLoadComplete && !initializationRef.current) {
+  //     initializationRef.current = true;
+  //     console.log('Loading initial data...');
+      
+  //     loadAllData().then(() => {
+  //       console.log('Initial data loaded');
+  //       setInitialLoadComplete(true);
+  //     }).catch(error => {
+  //       console.error('Failed to load initial data:', error);
+  //       initializationRef.current = false;
+  //     });
+  //   }
+  // }, [loadAllData, initialLoadComplete]);
+   // Load initial data only once
   useEffect(() => {
     if (!initialLoadComplete && !initializationRef.current) {
       initializationRef.current = true;
-      console.log('Loading initial data...');
+      console.log('Loading initial data with dynamic filters...');
       
       loadAllData().then(() => {
         console.log('Initial data loaded');
+        console.log('Dynamic filter options:', filterOptions);
         setInitialLoadComplete(true);
       }).catch(error => {
         console.error('Failed to load initial data:', error);
@@ -1241,7 +1355,6 @@ const JobList = () => {
       });
     }
   }, [loadAllData, initialLoadComplete]);
-
   // Reload jobs when filters change
   useEffect(() => {
     if (!initialLoadComplete || !initializationRef.current) return;
@@ -1685,8 +1798,23 @@ const JobList = () => {
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
 
   // Early returns for loading states
-  if (!initialLoadComplete) {
-    return <div className="loading">Loading jobs...</div>;
+  // if (!initialLoadComplete) {
+  //   return <div className="loading">Loading jobs...</div>;
+  // }
+
+  // if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
+  //   return <div className="loading">Loading jobs...</div>;
+  // }
+  
+  // if (error) return <div className="error">Error: {error}</div>;
+  // Early returns for loading states
+  if (!initialLoadComplete || !filterOptions.isLoaded) {
+    return (
+      <div className="loading">
+        <div className="spinner"></div>
+        <p>Loading jobs and filter options...</p>
+      </div>
+    );
   }
 
   if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
@@ -1694,6 +1822,19 @@ const JobList = () => {
   }
   
   if (error) return <div className="error">Error: {error}</div>;
+
+  // Display message if no filter options are available
+  if (!filterOptions.isLoaded || (
+    experienceOptions.length === 0 && 
+    locationOptions.length === 0 && 
+    typeOptions.length === 0
+  )) {
+    return (
+      <div className="loading">
+        <p>⚠️ No filter options available. Please check your database connection.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="job-list-container">
@@ -1707,6 +1848,82 @@ const JobList = () => {
       )}
 
       {/* Desktop horizontal filters */}
+      {/* {!isMobi
+      le && (
+        <div className="horizontal-filters">
+          <div className="filter-dropdown-group">
+            <FilterDropdown
+              id="selectedType"
+              icon="calendar"
+              title="Schedule"
+              options={typeOptions}
+              selectedValues={pendingFilters.selectedType}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedType')}
+              onClear={() => handleDropdownClear('selectedType')}
+            />
+
+            <FilterDropdown
+              id="selectedCategory"
+              icon="industry"
+              title="Industries"
+              options={categoryOptionsForDropdown}
+              selectedValues={pendingFilters.selectedCategory}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedCategory')}
+              onClear={() => handleDropdownClear('selectedCategory')}
+              categories={categories}
+              companies={companies}
+            />
+
+            <FilterDropdown
+              id="selectedExperience"
+              icon="user"
+              title="Experience"
+              options={experienceOptions}
+              selectedValues={pendingFilters.selectedExperience}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedExperience')}
+              onClear={() => handleDropdownClear('selectedExperience')}
+            />
+
+            <FilterDropdown
+              id="selectedLocation"
+              icon="map-marker"
+              title="Distance"
+              options={locationOptions}
+              selectedValues={pendingFilters.selectedLocation}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedLocation')}
+              onClear={() => handleDropdownClear('selectedLocation')}
+            />
+
+            <FilterDropdown
+              id="selectedCompany"
+              icon="building"
+              title="Company"
+              options={companyOptionsForDropdown}
+              selectedValues={pendingFilters.selectedCompany}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedCompany')}
+              onClear={() => handleDropdownClear('selectedCompany')}
+              categories={categories}
+              companies={companies}
+            />
+
+            <FilterDropdown
+              id="selectedSalary"
+              icon="dollar"
+              title="Salary"
+              options={salaryRangeOptions}
+              selectedValues={pendingFilters.selectedSalary}
+              onFilterChange={handlePendingFilterChange}
+              onApply={() => handleDropdownApply('selectedSalary')}
+              onClear={() => handleDropdownClear('selectedSalary')}
+            />
+          </div>
+        </div>
+      )} */}
       {!isMobile && (
         <div className="horizontal-filters">
           <div className="filter-dropdown-group">

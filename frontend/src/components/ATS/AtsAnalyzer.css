@@ -2113,13 +2113,6 @@
     font-size: 2rem;
   }
 }
-  border-radius: 1rem;
-  padding: 3rem 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  background: #f9fafb;
-}
 
 .atsUploadArea:hover {
   border-color: #10b981;
