@@ -116,28 +116,6 @@
   font-weight: 400;
 }
 
-.select-field {
-  padding: 1rem 1.5rem;
-  flex: 0.8;
-}
-
-.select-field select {
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 1rem;
-  color: var(--text-primary);
-  background: transparent;
-  cursor: pointer;
-  appearance: none;
-  font-weight: 500;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23fea116' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right center;
-  background-repeat: no-repeat;
-  background-size: 1em;
-  padding-right: 1.5rem;
-}
-
 .separator {
   width: 1px;
   height: 30px;
@@ -414,8 +392,7 @@
     gap: 1rem;
   }
   
-  .input-field,
-  .select-field {
+  .input-field {
     width: 100%;
     padding: 1rem;
     background: var(--background-light);
@@ -515,16 +492,6 @@
 
 /* Focus States for Accessibility */
 .input-field input:focus {
-  /* outline: 2px solid var(--primary-color); */
-  /* outline-offset: -2px; */
-  /* border-radius: 8px; */
-  outline: none;
-}
-
-.select-field select:focus {
-  /* outline: 2px solid var(--primary-color);
-  outline-offset: -2px;
-  border-radius: 8px; */
   outline: none;
 }
 

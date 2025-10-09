@@ -52,7 +52,7 @@ h1 {
   /* background-color: #f9f9f985; */
   margin: 0 auto;
   padding: 20px;
-  width: 100vw;
+  /* width: 100vw; */
 }
 
 /* Filters Section */
@@ -901,6 +901,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 15px;
 }
 
@@ -1506,6 +1507,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 15px;
   color: #666;
 }
@@ -1563,7 +1565,7 @@ h1 {
 }
 
 /* Toast notification styles */
-.toast-popup {
+ .toast-popup {
   position: fixed;
   bottom: 5vh;
   right: 10px;
@@ -1579,8 +1581,21 @@ h1 {
   margin: auto;
   text-align: center;
   border: 1px solid #fff;
+  margin-right: 10px;
 }
-
+.toast-popup .toast-content .fa {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  margin: auto;
+  color: #080808;
+  /* counter-reset: ; */
+}
+.toast-content{
+  display: flex;
+  flex-direction: row;
+}
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -3312,11 +3327,11 @@ h1 {
   border: 1px solid #dee2e6;
 }
 
-.save-btn-horizontal:hover {
+/* .save-btn-horizontal:hover {
   background: #f8f9fa;
   border-color: var(--primary-color);
   color: var(--primary-color);
-}
+} */
 
 .save-btn-horizontal i {
   font-size: 14px;
@@ -3442,4 +3457,28 @@ h1 {
   display: flex;
   justify-content: flex-start;
   gap: 20px;
+}
+.loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh; /* full screen height */
+  width: 100%;   /* full width */
+}
+
+.loading  .spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #ccc;
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.fa .fa-refresh{
+   display: flex;
 }

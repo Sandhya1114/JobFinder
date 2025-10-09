@@ -504,7 +504,7 @@ function Hero() {
               <div className="separator"></div>
               
               {/* Experience Dropdown */}
-              <div className="select-field hero-input-wrapper" ref={experienceRef}>
+              {/* <div className="select-field hero-input-wrapper" ref={experienceRef}>
                 <select
                   value={experienceInput}
                   onChange={(e) => handleInputChange('experience', e.target.value)}
@@ -517,6 +517,41 @@ function Hero() {
                     </option>
                   ))}
                 </select>
+              </div> */}
+              {/* // Replace the Experience Dropdown section (around line 404-418) with this: */}
+
+              {/* Experience Dropdown */}
+              <div className="input-field hero-input-wrapper" ref={experienceRef}>
+                <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Select experience"
+                  value={experienceInput}
+                  onChange={(e) => handleInputChange('experience', e.target.value)}
+                  onFocus={() => handleFocus('experience')}
+                  onKeyPress={handleKeyPress}
+                  readOnly
+                  style={{ cursor: 'pointer' }}
+                />
+                
+                {/* Experience Suggestions Dropdown */}
+                {activeDropdown === 'experience' && suggestions.experience.length > 0 && (
+                  <div className="hero-suggestions-dropdown">
+                    {suggestions.experience.map((exp, index) => (
+                      <div
+                        key={index}
+                        className="hero-suggestion-item"
+                        onClick={() => handleSuggestionClick('experience', exp.label)}
+                      >
+                        <i className="fas fa-briefcase hero-suggestion-icon"></i>
+                        <span>{exp.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               
               <div className="separator"></div>

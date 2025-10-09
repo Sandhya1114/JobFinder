@@ -102,7 +102,7 @@ const AboutUs = () => {
       {/* Hero Section */}
       <div className={`heroSection ${heroVisible ? 'hero-visible' : ''}`}>
         <div className="glass-hero-content">
-          <h1 className="hero-title">About JobFinder</h1>
+          <h1 className="hero-title">About JobPortal</h1>
           <p className="hero-subtitle">Your Ultimate Job Search Companion</p>
           <div className="hero-stats">
             {stats.map((stat, index) => (
@@ -137,7 +137,7 @@ const AboutUs = () => {
         <div className="glass-card mission-card">
           <h2 className="mission-title">Our Mission</h2>
           <p className="mission-text">
-            At JobFinder, we believe that finding the right job shouldn't be a full-time job itself. 
+            At JobPortal, we believe that finding the right job shouldn't be a full-time job itself. 
             Our mission is to democratize access to career opportunities by creating an intelligent, 
             user-friendly platform that connects talented individuals with their dream careers. 
             We're committed to transforming the job search experience through innovative technology, 
@@ -187,7 +187,7 @@ const AboutUs = () => {
 
       {/* How It Works Section */}
       <div className="steps-section glass-card">
-        <h2>How JobFinder Works</h2>
+        <h2>How JobPortal Works</h2>
         {steps.map((item, index) => (
           <div key={index} className="step">
             <div className="step-number">{item.step}</div>
@@ -204,7 +204,7 @@ const AboutUs = () => {
         <div className="glass-card cta-card">
           <h2 className="cta-title">Ready to Find Your Dream Job?</h2>
           <p className="cta-description">
-            Join thousands of professionals who have already found their perfect career match with JobFinder.
+            Join thousands of professionals who have already found their perfect career match with JobPortal.
           </p>
           <button className="cta-button">
             <span>Get Started Today</span>
