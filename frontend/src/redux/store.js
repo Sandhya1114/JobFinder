@@ -105,7 +105,8 @@ const jobSlice = createSlice({
     //   state.loading = false;
     //   state.error = null;
     // },
-    appendJobs(state, action) {
+// ============================================
+appendJobs(state, action) {
   const { jobs: newJobs, pagination, resetList = false } = action.payload;
 
   if (resetList) {
@@ -113,9 +114,16 @@ const jobSlice = createSlice({
     state.infiniteScroll.allJobs = newJobs || [];
     console.log('Reset infinite scroll jobs list with', newJobs?.length || 0, 'jobs');
   } else {
-    // Directly append new jobs without filtering for duplicates
-    state.infiniteScroll.allJobs.push(...newJobs);
-    console.log('Appended', newJobs.length, 'jobs. Total jobs:', state.infiniteScroll.allJobs.length);
+    // FIXED: Re-enable duplicate filtering to prevent issues
+    const existingJobIds = new Set(state.infiniteScroll.allJobs.map(job => job.id));
+    const uniqueNewJobs = (newJobs || []).filter(job => !existingJobIds.has(job.id));
+    
+    if (uniqueNewJobs.length > 0) {
+      state.infiniteScroll.allJobs = [...state.infiniteScroll.allJobs, ...uniqueNewJobs];
+      console.log('Appended', uniqueNewJobs.length, 'new unique jobs. Total:', state.infiniteScroll.allJobs.length);
+    } else {
+      console.log('No new unique jobs to append.');
+    }
   }
 
   if (pagination) {
@@ -125,7 +133,6 @@ const jobSlice = createSlice({
       currentPage: pagination.currentPage || state.pagination.currentPage
     };
     state.infiniteScroll.hasMore = pagination.hasNextPage || false;
-    console.log('Updated pagination - current page:', state.pagination.currentPage, 'hasMore:', state.infiniteScroll.hasMore);
   }
 
   state.infiniteScroll.isLoading = false;

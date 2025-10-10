@@ -1,8 +1,13 @@
 
-import React,{ memo,useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { memo, useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useDataLoader } from '../hooks/useDataLoader';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  useJobsQuery,
+  useFilterOptionsQuery,
+  useCategoriesQuery,
+  useCompaniesQuery,
+} from '../hooks/useJobQueries';
 import {
   setSelectedCategory,
   setSelectedCompany,
@@ -43,7 +48,6 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
     };
   }, [isOpen, onClose]);
 
-  // Memoize salary formatting to avoid recalculation
   const formattedSalary = useMemo(() => {
     if (!job?.salary?.min || !job?.salary?.max) return 'Salary not specified';
     const formatter = new Intl.NumberFormat('en-US', {
@@ -55,7 +59,6 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
     return `${formatter.format(job.salary.min)} - ${formatter.format(job.salary.max)}`;
   }, [job?.salary]);
 
-  // Early return optimization
   if (!isOpen || !job) return null;
 
   return (
@@ -228,7 +231,7 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
   );
 });
 
-// Memoized Pagination Component - Only shown on desktop
+// Memoized Pagination Component
 const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }) => {
   const { 
     currentPage, 
@@ -241,7 +244,6 @@ const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }
     hasPreviousPage
   } = pagination;
 
-  // Don't render pagination on mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -252,7 +254,6 @@ const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Memoize page numbers calculation
   const pageNumbers = useMemo(() => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -386,76 +387,7 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
 });
 
 // Memoized Job Card Component
-// const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
-//   // Memoize truncated description
-//   const truncatedDescription = useMemo(() => {
-//     if (!job.description) return 'No description available';
-//     return job.description.length > 150 
-//       ? job.description.substring(0, 150) + '...' 
-//       : job.description;
-//   }, [job.description]);
-
-//   // Memoize formatted date
-//   const formattedDate = useMemo(() => {
-//     return job.postedDate || job.created_at 
-//       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
-//       : 'Date not available';
-//   }, [job.postedDate, job.created_at]);
-
-//   const handleSaveJob = useCallback(async () => {
-//     try {
-//       await onSave(job.id);
-//     } catch (error) {
-//       console.error('Error saving job:', error);
-//     }
-//   }, [job.id, onSave]);
-
-//   return (
-//     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
-//       <div className="job-header">
-//         <h2 className="job-title">{job.title || 'No Title'}</h2>
-//         <div className="job-meta">
-//           <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-//           <span className="job-location">{job.location || 'Location not specified'}</span>
-//         </div>
-//       </div>
-
-//       <div className="job-details job-details-minimal">
-//         <div className="job-category">
-//           <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
-//         </div>
-
-//         <div className="job-info job-info-minimal">
-//           <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
-//           <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-//         </div>
-
-//         <div className="job-description job-description-minimal">
-//           <p>{truncatedDescription}</p>
-//         </div>
-
-//         <div className="job-footer">
-//           <span className="posted-date">Posted: {formattedDate}</span>
-//           <div className="job-actions">
-//             <button
-//               onClick={() => onViewDetails(job)}
-//               className="view-details-btn"
-//             >
-//               {/* <i className="fa fa-eye"></i> */}
-//               View Details
-//             </button>
-//             <button onClick={handleSaveJob} className="save-btn">
-//               Save Job
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// });
-// Memoized Job Card Component
 const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
-  // Memoize truncated description
   const truncatedDescription = useMemo(() => {
     if (!job.description) return 'No description available';
     return job.description.length > 120 
@@ -463,7 +395,6 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
       : job.description;
   }, [job.description]);
 
-  // Memoize formatted date
   const formattedDate = useMemo(() => {
     return job.postedDate || job.created_at 
       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
@@ -480,41 +411,33 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
 
   return (
     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-horizontal">
-     
-
-      {/* Job Content */}
       <div className="job-content-horizontal">
         <div className='ROWFELXLOGOJOBS'>
-         {/* Company Logo */}
-      <div className="job-logo-container">
-        {job.companies?.logo || job.company?.logo ? (
-          <img 
-            src={job.companies?.logo || job.company?.logo} 
-            alt={job.companies?.name || job.company?.name || 'Company'}
-            className="job-company-logo"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
-          />
-        ) : null}
-        <div className="job-logo-placeholder" style={{ display: (job.companies?.logo || job.company?.logo) ? 'none' : 'flex' }}>
-          <i className="fa fa-building"></i>
-        </div>
-      </div>
-        <div className="job-header-horizontal">
-          <div className="job-title-section">
-            <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
-            <div className="job-company-info">
-              <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-              {/* <span className="company-rating">
-                <i className="fa fa-star"></i> {job.companies?.rating || job.company?.rating || '4.0'}
-              </span>
-              <span className="company-reviews">{job.companies?.reviews || job.company?.reviews || '0'} Reviews</span> */}
+          <div className="job-logo-container">
+            {job.companies?.logo || job.company?.logo ? (
+              <img 
+                src={job.companies?.logo || job.company?.logo} 
+                alt={job.companies?.name || job.company?.name || 'Company'}
+                className="job-company-logo"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div className="job-logo-placeholder" style={{ display: (job.companies?.logo || job.company?.logo) ? 'none' : 'flex' }}>
+              <i className="fa fa-building"></i>
+            </div>
+          </div>
+          <div className="job-header-horizontal">
+            <div className="job-title-section">
+              <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
+              <div className="job-company-info">
+                <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+              </div>
             </div>
           </div>
         </div>
-         </div>
         
         <div className="job-meta-horizontal">
           <div className="job-meta-item">
@@ -566,8 +489,36 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
     </div>
   );
 });
-// FIXED: Filter Option Component with proper display names
-const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
+
+// Filter Option Component
+// const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
+//   const getDisplayName = () => {
+//     if (filterType === 'selectedCategory' && categories) {
+//       const category = categories.find(cat => cat.id === option);
+//       return category ? category.name : option;
+//     } else if (filterType === 'selectedCompany' && companies) {
+//       const company = companies.find(comp => comp.id === option);
+//       return company ? company.name : option;
+//     } else if (filterType === 'selectedSalary') {
+//       return `$${option.replace('-', ' - ')}`;
+//     }
+//     return option;
+//   };
+
+//   return (
+//     <label className="filter-option">
+//       <input
+//         type="checkbox"
+//         checked={isChecked}
+//         onChange={(e) => onChange(filterType, option, e.target.checked)}
+//       />
+//       <span className="checkmark-mini"></span>
+//       {getDisplayName()}
+//     </label>
+//   );
+// });
+// Filter Option Component - WITHOUT React.memo (this is the key fix!)
+const FilterOption = ({ option, isChecked, onChange, filterType, categories, companies }) => {
   const getDisplayName = () => {
     if (filterType === 'selectedCategory' && categories) {
       const category = categories.find(cat => cat.id === option);
@@ -581,21 +532,132 @@ const FilterOption = React.memo(({ option, isChecked, onChange, filterType, cate
     return option;
   };
 
+  const handleChange = (e) => {
+    e.stopPropagation();
+    console.log('Checkbox clicked:', option, 'New state:', e.target.checked);
+    onChange(filterType, option, e.target.checked);
+  };
+
+  const handleLabelClick = (e) => {
+    e.stopPropagation();
+  };
+
   return (
-    <label className="filter-option">
+    <label className="filter-option" onClick={handleLabelClick}>
       <input
         type="checkbox"
         checked={isChecked}
-        onChange={(e) => onChange(filterType, option, e.target.checked)}
+        onChange={handleChange}
+        onClick={(e) => e.stopPropagation()}
+        style={{ pointerEvents: 'auto', cursor: 'pointer' }}
       />
-      <span className="checkmark-mini"></span>
+      <span className="checkmark-mini" style={{ pointerEvents: 'auto', cursor: 'pointer' }}></span>
       {getDisplayName()}
     </label>
   );
-});
+};
 
-// FIXED: Filter Dropdown Component with improved filter handling
-const FilterDropdown = React.memo(({ 
+
+// Filter Dropdown Component
+// const FilterDropdown = React.memo(({ 
+//   id, 
+//   icon, 
+//   title, 
+//   options, 
+//   selectedValues, 
+//   onFilterChange, 
+//   onApply, 
+//   onClear,
+//   categories,
+//   companies  
+// }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const dropdownRef = useRef(null);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event) => {
+//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+//         setIsOpen(false);
+//       }
+//     };
+
+//     document.addEventListener('mousedown', handleClickOutside);
+//     return () => {
+//       document.removeEventListener('mousedown', handleClickOutside);
+//     };
+//   }, []);
+
+//   const handleButtonClick = useCallback((e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     setIsOpen(prev => !prev);
+//   }, []);
+
+//   const handleOptionChange = useCallback((filterType, option, isChecked) => {
+//     onFilterChange(filterType, option, isChecked);
+//   }, [onFilterChange]);
+
+//   const handleApply = useCallback((e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     onApply();
+//     setIsOpen(false);
+//   }, [onApply]);
+
+//   const handleClear = useCallback((e) => {
+//     e.preventDefault();
+//     e.stopPropagation();
+//     onClear();
+//   }, [onClear]);
+
+//   const hasActiveFilters = selectedValues && selectedValues.length > 0;
+
+//   return (
+//     <div ref={dropdownRef} className={`filter-dropdown ${isOpen ? 'active' : ''}`}>
+//       <button 
+//         className={`filter-dropdown-btn ${hasActiveFilters ? 'has-active-filters' : ''}`}
+//         onClick={handleButtonClick}
+//         type="button"
+//       >
+//         <i className={`fa fa-${icon}`}></i>
+//         {title}
+//         {hasActiveFilters && <span className="filter-count">({selectedValues.length})</span>}
+//         <i className={`fa ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+//       </button>
+      
+//       {isOpen && (
+//         <div className="filter-dropdown-content">
+//           <div className="filter-dropdown-header">
+//             <h4>{title}</h4>
+//           </div>
+//           <div className="filter-options">
+//             {options.map((option) => {
+//               const optionValue = option.id || option.name || option;
+              
+//               return (
+//                 <FilterOption
+//                   key={optionValue}
+//                   option={optionValue}
+//                   isChecked={selectedValues?.includes(optionValue)}
+//                   onChange={handleOptionChange}
+//                   filterType={id}
+//                   categories={categories}
+//                   companies={companies}
+//                 />
+//               );
+//             })}
+//           </div>
+//           <div className="filter-dropdown-actions">
+//             <button onClick={handleApply} className="apply-btn-mini" type="button">Apply</button>
+//             <button onClick={handleClear} className="clear-btn-mini" type="button">Clear</button>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// });
+// Filter Dropdown Component - WITHOUT React.memo (this is the key fix!)
+const FilterDropdown = ({ 
   id, 
   icon, 
   title, 
@@ -604,15 +666,17 @@ const FilterDropdown = React.memo(({
   onFilterChange, 
   onApply, 
   onClear,
-  isActive,
-  onClick,
   categories,
   companies  
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Close dropdown when clicking outside
+  // Log when selectedValues changes
+  useEffect(() => {
+    console.log(`FilterDropdown ${id} - selectedValues changed:`, selectedValues);
+  }, [selectedValues, id]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -633,6 +697,7 @@ const FilterDropdown = React.memo(({
   }, []);
 
   const handleOptionChange = useCallback((filterType, option, isChecked) => {
+    // Don't close dropdown when selecting options
     onFilterChange(filterType, option, isChecked);
   }, [onFilterChange]);
 
@@ -640,13 +705,14 @@ const FilterDropdown = React.memo(({
     e.preventDefault();
     e.stopPropagation();
     onApply();
-    setIsOpen(false);
+    setIsOpen(false); // Close on Apply
   }, [onApply]);
 
   const handleClear = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     onClear();
+    // Don't close dropdown on clear
   }, [onClear]);
 
   const hasActiveFilters = selectedValues && selectedValues.length > 0;
@@ -665,19 +731,22 @@ const FilterDropdown = React.memo(({
       </button>
       
       {isOpen && (
-        <div className="filter-dropdown-content">
+        <div className="filter-dropdown-content" onClick={(e) => e.stopPropagation()}>
           <div className="filter-dropdown-header">
             <h4>{title}</h4>
           </div>
           <div className="filter-options">
             {options.map((option) => {
               const optionValue = option.id || option.name || option;
+              const isChecked = selectedValues?.includes(optionValue) || false;
+              
+              console.log('Rendering option:', optionValue, 'isChecked:', isChecked, 'selectedValues:', selectedValues);
               
               return (
                 <FilterOption
                   key={optionValue}
                   option={optionValue}
-                  isChecked={selectedValues?.includes(optionValue)}
+                  isChecked={isChecked}
                   onChange={handleOptionChange}
                   filterType={id}
                   categories={categories}
@@ -694,57 +763,59 @@ const FilterDropdown = React.memo(({
       )}
     </div>
   );
-});
+};
 
-// const JobList = () => {
-//   const dispatch = useDispatch();
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const [searchParams, setSearchParams] = useSearchParams();
-  
-//   const { 
-//     jobs, 
-//     categories, 
-//     companies, 
-//     loading, 
-//     error, 
-//     filters, 
-//     pagination, 
-//     infiniteScroll 
-//   } = useSelector((state) => state.jobs);
-   const JobList = () => {
+// Display name for debugging
+FilterDropdown.displayName = 'FilterDropdown';
+FilterOption.displayName = 'FilterOption';
+
+const JobList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   
   const { 
-    jobs, 
-    categories, 
-    companies, 
-    loading, 
-    error, 
     filters, 
     pagination, 
+    sorting,
     infiniteScroll 
   } = useSelector((state) => state.jobs);
-  // const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader();
-  // const [toast, setToast] = useState(null);
-  // const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // const [selectedJob, setSelectedJob] = useState(null);
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const isJobPage = location.pathname === '/jobs';
 
-  // // Separate state for input fields to avoid losing user input
-  // const [localFilters, setLocalFilters] = useState({
-  //   searchInput: '',
-  //   locationSearchInput: ''
-  // });
+  // ========================================
+  // REACT QUERY HOOKS
+  // ========================================
+  const jobsQuery = useJobsQuery(filters, pagination, sorting);
+  const filterOptionsQuery = useFilterOptionsQuery();
+  const categoriesQuery = useCategoriesQuery();
+  const companiesQuery = useCompaniesQuery();
 
-    // UPDATED: Get filterOptions from useDataLoader hook
-  const { loadJobs, loadAllData, loadMoreJobs, filterOptions } = useDataLoader();
+  // Extract data from queries
+  const { 
+    data: jobsData, 
+    isLoading: jobsLoading, 
+    error: jobsError,
+    isFetching: jobsFetching,
+    refetch: refetchJobs,
+    isPreviousData
+  } = jobsQuery;
+
+  const jobs = jobsData?.jobs || [];
+  const jobsPagination = jobsData?.pagination || pagination;
   
+  const filterOptions = useMemo(() => {
+    const data = filterOptionsQuery.data;
+    if (!data) return { isLoaded: false, experiences: [], locations: [], types: [], salaryRanges: [] };
+    return {
+      ...data,
+      isLoaded: true
+    };
+  }, [filterOptionsQuery.data]);
+  
+  const categories = categoriesQuery.data?.categories || [];
+  const companies = companiesQuery.data?.companies || [];
+
+  // Local state
   const [toast, setToast] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -752,22 +823,11 @@ const FilterDropdown = React.memo(({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isJobPage = location.pathname === '/jobs';
 
-  // Separate state for input fields to avoid losing user input
   const [localFilters, setLocalFilters] = useState({
     searchInput: '',
     locationSearchInput: ''
   });
-  // State for pending filters (not applied yet)
-  // const [pendingFilters, setPendingFilters] = useState({
-  //   selectedCategory: [],
-  //   selectedCompany: [],
-  //   selectedExperience: [],
-  //   selectedLocation: [],
-  //   selectedType: [],
-  //   selectedSalary: []
-  // });
-  
-  // State for pending filters (not applied yet)
+
   const [pendingFilters, setPendingFilters] = useState({
     selectedCategory: [],
     selectedCompany: [],
@@ -776,21 +836,17 @@ const FilterDropdown = React.memo(({
     selectedType: [],
     selectedSalary: []
   });
-  
-  // Track if filters have changed but not applied
+
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
-
-  // Track initial load and prevent infinite loops
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
-  
-  // Refs to prevent infinite loops and race conditions
-  const lastFiltersRef = useRef(null);
-  const isLoadingMoreRef = useRef(false);
-  const initializationRef = useRef(false);
-  const urlSyncRef = useRef(false);
 
-  // UPDATED: Use dynamic filter options instead of hardcoded arrays
+  // Refs
+  const urlSyncRef = useRef(false);
+  const isLoadingMoreRef = useRef(false);
+
+  // ========================================
+  // MEMOIZED VALUES
+  // ========================================
   const experienceOptions = useMemo(() => {
     return filterOptions.isLoaded ? filterOptions.experiences : [];
   }, [filterOptions.experiences, filterOptions.isLoaded]);
@@ -809,12 +865,10 @@ const FilterDropdown = React.memo(({
       : [];
   }, [filterOptions.salaryRanges, filterOptions.isLoaded]);
 
-  // Memoize display jobs
   const displayJobs = useMemo(() => {
     return isMobile ? infiniteScroll.allJobs : jobs;
   }, [isMobile, infiniteScroll.allJobs, jobs]);
 
-  // Memoize filter options for dropdowns
   const categoryOptionsForDropdown = useMemo(() => {
     return categories.map(category => ({
       id: category.id,
@@ -829,58 +883,14 @@ const FilterDropdown = React.memo(({
     }));
   }, [companies]);
 
-  // Show loading state while filter options are being loaded
   const showToast = useCallback((message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // // Track if filters have changed but not applied
-  // const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
-
-  // // Track initial load and prevent infinite loops
-  // const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  // const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
-  
-  // // Refs to prevent infinite loops and race conditions
-  // const lastFiltersRef = useRef(null);
-  // const isLoadingMoreRef = useRef(false);
-  // const initializationRef = useRef(false);
-  // const urlSyncRef = useRef(false);
-
-  // // Memoize static filter options
-  // const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
-  // const locationOptions = useMemo(() => ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'], []);
-  // const typeOptions = useMemo(() => ['Full-time', 'Part-time', 'Contract'], []);
-  // const salaryRangeOptions = useMemo(() => ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'], []);
-
-  // // Memoize display jobs
-  // const displayJobs = useMemo(() => {
-  //   return isMobile ? infiniteScroll.allJobs : jobs;
-  // }, [isMobile, infiniteScroll.allJobs, jobs]);
-
-  // // Memoize filter options for dropdowns
-  // const categoryOptionsForDropdown = useMemo(() => {
-  //   return categories.map(category => ({
-  //     id: category.id,
-  //     name: category.name
-  //   }));
-  // }, [categories]);
-
-  // const companyOptionsForDropdown = useMemo(() => {
-  //   return companies.map(company => ({
-  //     id: company.id,
-  //     name: company.name
-  //   }));
-  // }, [companies]);
-
-  // // FIXED: Move showToast function definition before it's used
-  // const showToast = useCallback((message) => {
-  //   setToast(message);
-  //   setTimeout(() => setToast(null), 3000);
-  // }, []);
-
-  // ENHANCED: Search term to filter mapping helper with better matching
+  // ========================================
+  // HELPER FUNCTIONS
+  // ========================================
   const getRelatedFiltersFromSearch = useCallback((searchTerm) => {
     if (!searchTerm || !searchTerm.trim()) return { categories: [], companies: [] };
     
@@ -888,9 +898,6 @@ const FilterDropdown = React.memo(({
     const relatedCategories = [];
     const relatedCompanies = [];
     
-    console.log('Analyzing search term:', term);
-    
-    // Enhanced category matching logic
     categories.forEach(category => {
       const categoryName = category.name.toLowerCase();
       const categoryWords = categoryName.split(' ').filter(word => word.length > 2);
@@ -898,43 +905,18 @@ const FilterDropdown = React.memo(({
       
       let isMatch = false;
       
-      // Exact match
       if (categoryName === term) {
         isMatch = true;
-        console.log('Exact category match:', category.name);
-      }
-      // Contains search term
-      else if (categoryName.includes(term)) {
+      } else if (categoryName.includes(term)) {
         isMatch = true;
-        console.log('Category contains search:', category.name);
-      }
-      // Search term contains category name
-      else if (term.includes(categoryName)) {
+      } else if (term.includes(categoryName)) {
         isMatch = true;
-        console.log('Search contains category:', category.name);
-      }
-      // Word-level matching
-      else if (categoryWords.some(catWord => 
+      } else if (categoryWords.some(catWord => 
         searchWords.some(searchWord => 
           catWord.includes(searchWord) || searchWord.includes(catWord)
         )
       )) {
         isMatch = true;
-        console.log('Word-level category match:', category.name);
-      }
-      // Special keyword mappings for common search terms
-      else if (
-        (term.includes('software') && (categoryName.includes('technology') || categoryName.includes('engineering') || categoryName.includes('development'))) ||
-        (term.includes('engineer') && (categoryName.includes('engineering') || categoryName.includes('technical'))) ||
-        (term.includes('developer') && (categoryName.includes('development') || categoryName.includes('software'))) ||
-        (term.includes('data') && categoryName.includes('analytics')) ||
-        (term.includes('designer') && categoryName.includes('design')) ||
-        (term.includes('marketing') && categoryName.includes('marketing')) ||
-        (term.includes('sales') && categoryName.includes('sales')) ||
-        (term.includes('manager') && categoryName.includes('management'))
-      ) {
-        isMatch = true;
-        console.log('Semantic category match:', category.name);
       }
       
       if (isMatch) {
@@ -942,7 +924,6 @@ const FilterDropdown = React.memo(({
       }
     });
     
-    // Enhanced company matching logic
     companies.forEach(company => {
       const companyName = company.name.toLowerCase();
       const companyWords = companyName.split(' ').filter(word => word.length > 2);
@@ -950,29 +931,18 @@ const FilterDropdown = React.memo(({
       
       let isMatch = false;
       
-      // Exact match
       if (companyName === term) {
         isMatch = true;
-        console.log('Exact company match:', company.name);
-      }
-      // Contains search term
-      else if (companyName.includes(term)) {
+      } else if (companyName.includes(term)) {
         isMatch = true;
-        console.log('Company contains search:', company.name);
-      }
-      // Search term contains company name
-      else if (term.includes(companyName)) {
+      } else if (term.includes(companyName)) {
         isMatch = true;
-        console.log('Search contains company:', company.name);
-      }
-      // Word-level matching (useful for companies like "Microsoft Corporation" vs "Microsoft")
-      else if (companyWords.some(compWord => 
+      } else if (companyWords.some(compWord => 
         searchWords.some(searchWord => 
           compWord.includes(searchWord) || searchWord.includes(compWord)
         )
       )) {
         isMatch = true;
-        console.log('Word-level company match:', company.name);
       }
       
       if (isMatch) {
@@ -980,12 +950,9 @@ const FilterDropdown = React.memo(({
       }
     });
     
-    console.log('Final matches - Categories:', relatedCategories.length, 'Companies:', relatedCompanies.length);
-    
     return { categories: relatedCategories, companies: relatedCompanies };
   }, [categories, companies]);
 
-  // FIXED: Check if search term matches any filter values
   const isSearchRelatedToFilters = useCallback((searchTerm, filterValues, filterType) => {
     if (!searchTerm || !filterValues || filterValues.length === 0) return false;
     
@@ -1016,43 +983,45 @@ const FilterDropdown = React.memo(({
     return false;
   }, [categories, companies]);
 
-  // URL Parameter Management Functions
-  const updateURL = useCallback(() => {
-    if (urlSyncRef.current) return;
-    
-    const params = new URLSearchParams();
-    
-    if (filters.searchQuery && filters.searchQuery.trim()) {
-      params.set('search', filters.searchQuery.trim());
-    }
-    if (filters.selectedCategory && filters.selectedCategory.length > 0) {
-      params.set('categories', filters.selectedCategory.join(','));
-    }
-    if (filters.selectedCompany && filters.selectedCompany.length > 0) {
-      params.set('companies', filters.selectedCompany.join(','));
-    }
-    if (filters.selectedExperience && filters.selectedExperience.length > 0) {
-      params.set('experience', filters.selectedExperience.join(','));
-    }
-    if (filters.selectedLocation && filters.selectedLocation.length > 0) {
-      params.set('location', filters.selectedLocation.join(','));
-    }
-    if (filters.selectedType && filters.selectedType.length > 0) {
-      params.set('type', filters.selectedType.join(','));
-    }
-    if (filters.selectedSalary && filters.selectedSalary.length > 0) {
-      params.set('salary', filters.selectedSalary.join(','));
-    }
-    if (pagination.currentPage > 1) {
-      params.set('page', pagination.currentPage.toString());
-    }
-    if (pagination.jobsPerPage !== 20) {
-      params.set('limit', pagination.jobsPerPage.toString());
-    }
+  // ========================================
+  // URL MANAGEMENT
+  // ========================================
+ const updateURL = useCallback(() => {
+  if (urlSyncRef.current) return;
+  
+  const params = new URLSearchParams();
+  
+  if (filters.searchQuery && filters.searchQuery.trim()) {
+    params.set('search', filters.searchQuery.trim());
+  }
+  if (filters.selectedCategory && filters.selectedCategory.length > 0) {
+    params.set('categories', filters.selectedCategory.join(','));
+  }
+  if (filters.selectedCompany && filters.selectedCompany.length > 0) {
+    params.set('companies', filters.selectedCompany.join(','));
+  }
+  if (filters.selectedExperience && filters.selectedExperience.length > 0) {
+    params.set('experience', filters.selectedExperience.join(','));
+  }
+  if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+    params.set('location', filters.selectedLocation.join(','));
+  }
+  if (filters.selectedType && filters.selectedType.length > 0) {
+    params.set('type', filters.selectedType.join(','));
+  }
+  if (filters.selectedSalary && filters.selectedSalary.length > 0) {
+    params.set('salary', filters.selectedSalary.join(','));
+  }
+  if (pagination.currentPage > 1) {
+    params.set('page', pagination.currentPage.toString());
+  }
+  if (pagination.jobsPerPage !== 20) {
+    params.set('limit', pagination.jobsPerPage.toString());
+  }
 
-    const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
-    navigate(newURL, { replace: true });
-  }, [filters, pagination, location.pathname, navigate]);
+  const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
+  navigate(newURL, { replace: true });
+}, [filters, pagination, location.pathname, navigate]);
 
   const parseURLAndSetFilters = useCallback(() => {
     urlSyncRef.current = true;
@@ -1114,21 +1083,25 @@ const FilterDropdown = React.memo(({
     }, 100);
   }, [searchParams, dispatch, filters, pagination]);
 
-  // Parse URL on component mount and when search params change
+  // ========================================
+  // EFFECTS
+  // ========================================
+
+  // Parse URL on mount
   useEffect(() => {
-    if (isJobPage && !initializationRef.current) {
+    if (isJobPage) {
       parseURLAndSetFilters();
     }
   }, [parseURLAndSetFilters, isJobPage]);
 
   // Update URL when filters change
   useEffect(() => {
-    if (initialLoadComplete && !urlSyncRef.current) {
+    if (!urlSyncRef.current) {
       updateURL();
     }
-  }, [filters, pagination.currentPage, pagination.jobsPerPage, updateURL, initialLoadComplete]);
+  }, [filters, pagination.currentPage, pagination.jobsPerPage, updateURL]);
 
-  // Check if device is mobile
+  // Mobile detection
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -1148,48 +1121,47 @@ const FilterDropdown = React.memo(({
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, isMobile, isSidebarOpen]);
 
-  // FIXED: Improved synchronization between Redux filters and pending filters
-  useEffect(() => {
-    // Only update pending filters if they significantly differ from Redux filters
-    // This prevents constant re-synchronization conflicts
-    const shouldUpdate = (pendingArray, reduxArray) => {
-      if (!pendingArray || !reduxArray) return true;
-      if (pendingArray.length !== reduxArray.length) return true;
-      return !pendingArray.every(item => reduxArray.includes(item));
-    };
+  // Sync pending filters with Redux
+  // useEffect(() => {
+  //   const shouldUpdate = (pendingArray, reduxArray) => {
+  //     if (!pendingArray || !reduxArray) return true;
+  //     if (pendingArray.length !== reduxArray.length) return true;
+  //     return !pendingArray.every(item => reduxArray.includes(item));
+  //   };
 
-    const needsUpdate = {
-      categories: shouldUpdate(pendingFilters.selectedCategory, filters.selectedCategory),
-      companies: shouldUpdate(pendingFilters.selectedCompany, filters.selectedCompany),
-      experience: shouldUpdate(pendingFilters.selectedExperience, filters.selectedExperience),
-      location: shouldUpdate(pendingFilters.selectedLocation, filters.selectedLocation),
-      type: shouldUpdate(pendingFilters.selectedType, filters.selectedType),
-      salary: shouldUpdate(pendingFilters.selectedSalary, filters.selectedSalary)
-    };
+  //   const needsUpdate = {
+  //     categories: shouldUpdate(pendingFilters.selectedCategory, filters.selectedCategory),
+  //     companies: shouldUpdate(pendingFilters.selectedCompany, filters.selectedCompany),
+  //     experience: shouldUpdate(pendingFilters.selectedExperience, filters.selectedExperience),
+  //     location: shouldUpdate(pendingFilters.selectedLocation, filters.selectedLocation),
+  //     type: shouldUpdate(pendingFilters.selectedType, filters.selectedType),
+  //     salary: shouldUpdate(pendingFilters.selectedSalary, filters.selectedSalary)
+  //   };
 
-    // Only update if there are significant differences
-    if (Object.values(needsUpdate).some(Boolean)) {
-      console.log('Syncing pending filters with Redux state');
-      setPendingFilters({
-        selectedCategory: filters.selectedCategory || [],
-        selectedCompany: filters.selectedCompany || [],
-        selectedExperience: filters.selectedExperience || [],
-        selectedLocation: filters.selectedLocation || [],
-        selectedType: filters.selectedType || [],
-        selectedSalary: filters.selectedSalary || []
-      });
-    }
-  }, [
-    filters.selectedCategory,
-    filters.selectedCompany,
-    filters.selectedExperience,
-    filters.selectedLocation,
-    filters.selectedType,
-    filters.selectedSalary,
-    pendingFilters
-  ]);
-
-  // Check if pending filters differ from applied filters
+  //   if (Object.values(needsUpdate).some(Boolean)) {
+  //     setPendingFilters({
+  //       selectedCategory: filters.selectedCategory || [],
+  //       selectedCompany: filters.selectedCompany || [],
+  //       selectedExperience: filters.selectedExperience || [],
+  //       selectedLocation: filters.selectedLocation || [],
+  //       selectedType: filters.selectedType || [],
+  //       selectedSalary: filters.selectedSalary || []
+  //     });
+  //   }
+  // }, [filters, pendingFilters]);
+  // Initialize pendingFilters only once on mount
+useEffect(() => {
+  console.log('Initializing pendingFilters on mount');
+  setPendingFilters({
+    selectedCategory: filters.selectedCategory || [],
+    selectedCompany: filters.selectedCompany || [],
+    selectedExperience: filters.selectedExperience || [],
+    selectedLocation: filters.selectedLocation || [],
+    selectedType: filters.selectedType || [],
+    selectedSalary: filters.selectedSalary || []
+  });
+}, []); // ✅ Empty dependency array - runs only once on mount
+  // Check for unapplied filters
   useEffect(() => {
     const currentFiltersStr = JSON.stringify({
       selectedCategory: filters.selectedCategory || [],
@@ -1205,84 +1177,58 @@ const FilterDropdown = React.memo(({
     setHasUnappliedFilters(currentFiltersStr !== pendingFiltersStr);
   }, [filters, pendingFilters]);
 
-  // FIXED: Enhanced debounce search input with smart filter mapping AND modal auto-close
+  // Debounced search with auto-filter mapping
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (localFilters.searchInput !== filters.searchQuery) {
         const oldQuery = filters.searchQuery;
         const newQuery = localFilters.searchInput;
         
-        // Update search query
         dispatch(setSearchQuery(newQuery));
         
-        // Reset page to 1 when search changes
         if (newQuery !== oldQuery) {
           dispatch(setCurrentPage(1));
         }
         
-        // ENHANCED: Smart filter mapping - automatically add related filters when searching
         if (newQuery && newQuery.trim()) {
-          console.log('🔍 Searching for:', newQuery.trim());
           const relatedFilters = getRelatedFiltersFromSearch(newQuery.trim());
-          console.log('📋 Found related filters:', relatedFilters);
           
-          // Add related categories to pending filters AND apply immediately
           if (relatedFilters.categories.length > 0) {
-            console.log('🏷️ Adding categories:', relatedFilters.categories.map(id => 
-              categories.find(cat => cat.id === id)?.name || id
-            ));
-            
             setPendingFilters(prev => {
               const currentCategories = prev.selectedCategory || [];
               const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
-              console.log('📝 Updated pending categories:', newCategories);
               return { ...prev, selectedCategory: newCategories };
             });
             
-            // Auto-apply related category filters immediately
             const currentCategories = filters.selectedCategory || [];
             const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
             if (newCategories.length > currentCategories.length) {
-              console.log('✅ Applying category filters immediately:', newCategories);
               dispatch(setSelectedCategory(newCategories));
             }
           }
           
-          // Add related companies to pending filters AND apply immediately
           if (relatedFilters.companies.length > 0) {
-            console.log('🏢 Adding companies:', relatedFilters.companies.map(id => 
-              companies.find(comp => comp.id === id)?.name || id
-            ));
-            
             setPendingFilters(prev => {
               const currentCompanies = prev.selectedCompany || [];
               const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
-              console.log('📝 Updated pending companies:', newCompanies);
               return { ...prev, selectedCompany: newCompanies };
             });
             
-            // Auto-apply related company filters immediately
             const currentCompanies = filters.selectedCompany || [];
             const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
             if (newCompanies.length > currentCompanies.length) {
-              console.log('✅ Applying company filters immediately:', newCompanies);
               dispatch(setSelectedCompany(newCompanies));
             }
           }
           
-          // Show toast notification when filters are auto-added
           if (relatedFilters.categories.length > 0 || relatedFilters.companies.length > 0) {
             const totalAdded = relatedFilters.categories.length + relatedFilters.companies.length;
             showToast(`Auto-added ${totalAdded} matching filter${totalAdded !== 1 ? 's' : ''} for "${newQuery.trim()}"`);
           }
           
-          // ADDED: Auto-close search modal/sidebar when search is performed
           if (isMobile && isSidebarOpen) {
             setIsSidebarOpen(false);
           }
-        } else {
-          // When search is cleared, optionally clear auto-added filters
-          console.log('🧹 Search cleared');
         }
       }
     }, 800);
@@ -1290,176 +1236,66 @@ const FilterDropdown = React.memo(({
     return () => clearTimeout(debounceTimer);
   }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, categories, companies, showToast, isMobile, isSidebarOpen]);
 
-  // Update local state when Redux filters change (prevent override during typing)
-  useEffect(() => {
-    if (!urlSyncRef.current) {
-      setLocalFilters(prev => ({
-        ...prev,
-        searchInput: prev.searchInput === '' ? (filters.searchQuery || '') : prev.searchInput,
-        locationSearchInput: prev.locationSearchInput === '' ? 
-          (filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '') : 
-          prev.locationSearchInput
-      }));
-    }
-  }, [filters.selectedLocation, filters.searchQuery]);
-
-  // Sidebar management effects
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    if (isSidebarOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.body.classList.add('body-no-scroll');
-    } else {
-      document.body.classList.remove('body-no-scroll');
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.body.classList.remove('body-no-scroll');
-    };
-  }, [isSidebarOpen]);
-
-  // Load initial data only once
-  // useEffect(() => {
-  //   if (!initialLoadComplete && !initializationRef.current) {
-  //     initializationRef.current = true;
-  //     console.log('Loading initial data...');
-      
-  //     loadAllData().then(() => {
-  //       console.log('Initial data loaded');
-  //       setInitialLoadComplete(true);
-  //     }).catch(error => {
-  //       console.error('Failed to load initial data:', error);
-  //       initializationRef.current = false;
-  //     });
-  //   }
-  // }, [loadAllData, initialLoadComplete]);
-   // Load initial data only once
-  useEffect(() => {
-    if (!initialLoadComplete && !initializationRef.current) {
-      initializationRef.current = true;
-      console.log('Loading initial data with dynamic filters...');
-      
-      loadAllData().then(() => {
-        console.log('Initial data loaded');
-        console.log('Dynamic filter options:', filterOptions);
-        setInitialLoadComplete(true);
-      }).catch(error => {
-        console.error('Failed to load initial data:', error);
-        initializationRef.current = false;
-      });
-    }
-  }, [loadAllData, initialLoadComplete]);
-  // Reload jobs when filters change
-  useEffect(() => {
-    if (!initialLoadComplete || !initializationRef.current) return;
-
-    const currentFilters = JSON.stringify(filters);
-    const lastFilters = lastFiltersRef.current;
-
-    if (currentFilters !== lastFilters) {
-      console.log('Filters changed, reloading jobs');
-      lastFiltersRef.current = currentFilters;
-      
-      setInfiniteScrollInitialized(false);
-      isLoadingMoreRef.current = false;
-      dispatch(resetInfiniteScroll());
-      
-      loadJobs().catch(error => {
-        console.error('Failed to reload jobs:', error);
-      });
-    }
-  }, [filters, loadJobs, initialLoadComplete, dispatch]);
-
-  // Initialize mobile infinite scroll data when jobs are loaded
+  // Initialize mobile infinite scroll when jobs load
   useEffect(() => {
     if (
       isMobile && 
       jobs.length > 0 && 
-      initialLoadComplete && 
+      filterOptions.isLoaded &&
       !infiniteScrollInitialized &&
       infiniteScroll.allJobs.length === 0
     ) {
       console.log('Initializing infinite scroll with jobs:', jobs.length);
       dispatch(appendJobs({ 
         jobs: jobs, 
-        pagination: pagination, 
+        pagination: jobsPagination, 
         resetList: true 
       }));
       setInfiniteScrollInitialized(true);
       isLoadingMoreRef.current = false;
     }
-  }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
+  }, [jobs, isMobile, jobsPagination, dispatch, filterOptions.isLoaded, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
 
-  // Scroll to top when page changes (desktop only)
+  // Scroll to top on page change (desktop)
   useEffect(() => {
     if (!isMobile && pagination.currentPage > 1) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pagination.currentPage, isMobile]);
 
-  // Memoized handlers
+  // ========================================
+  // HANDLERS
+  // ========================================
+
   const handlePageChange = useCallback((newPage) => {
     if (!isMobile && newPage !== pagination.currentPage) {
-      console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
       dispatch(setCurrentPage(newPage));
-      
-      loadJobs({ page: newPage }).catch(error => {
-        console.error('Failed to load jobs for page:', newPage, error);
-      });
+      // React Query will automatically refetch with new page
     }
-  }, [dispatch, isMobile, pagination.currentPage, loadJobs]);
+  }, [dispatch, isMobile, pagination.currentPage]);
 
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
     if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
-      console.log('Jobs per page change requested:', newJobsPerPage);
       dispatch(setJobsPerPage(newJobsPerPage));
-      
-      loadJobs({ limit: newJobsPerPage, page: 1 }).catch(error => {
-        console.error('Failed to load jobs with new page size:', newJobsPerPage, error);
-      });
+      // React Query will automatically refetch
     }
-  }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
+  }, [dispatch, isMobile, pagination.jobsPerPage]);
 
   const handleLoadMore = useCallback(async () => {
-    if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current) {
-      console.log('Cannot load more:', { 
-        hasMore: infiniteScroll.hasMore, 
-        isLoading: infiniteScroll.isLoading,
-        isLoadingMoreRef: isLoadingMoreRef.current
-      });
+    if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current || jobsFetching) {
       return;
     }
 
     try {
       isLoadingMoreRef.current = true;
       dispatch(setInfiniteScrollLoading(true));
-      console.log('Loading more jobs... Current page:', pagination.currentPage);
       
-      const result = await loadMoreJobs();
+      const nextPage = pagination.currentPage + 1;
+      dispatch(setCurrentPage(nextPage));
       
-      if (result && result.newJobs && result.newJobs.length > 0) {
-        console.log('Successfully loaded page:', result.pagination?.currentPage || 'unknown');
-        console.log('New jobs count:', result.newJobs.length);
-        console.log('Has more pages:', result.hasMore);
-        
-        dispatch(appendJobs({ 
-          jobs: result.newJobs, 
-          pagination: result.pagination || {
-            ...pagination, 
-            hasNextPage: result.hasMore,
-            totalJobs: result.totalJobs,
-            currentPage: result.pagination?.currentPage || pagination.currentPage + 1
-          }
-        }));
-      } else {
-        console.log('No more jobs to load or empty result');
-      }
+      // Wait for React Query to fetch with updated page
+      // The component will re-render with new data
+      
     } catch (error) {
       console.error('Error loading more jobs:', error);
       showToast('Error loading more jobs');
@@ -1467,13 +1303,10 @@ const FilterDropdown = React.memo(({
       dispatch(setInfiniteScrollLoading(false));
       isLoadingMoreRef.current = false;
     }
-  }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
+  }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, pagination.currentPage, jobsFetching, showToast]);
 
-  // SIMPLIFIED: Enhanced filter handlers that work reliably after search
+  // Apply filters
   const handleApplyFilters = useCallback(() => {
-    console.log('Applying all pending filters:', pendingFilters);
-    
-    // Apply filters one by one to ensure they all take effect
     const filterActions = [
       () => dispatch(setSelectedCategory(pendingFilters.selectedCategory || [])),
       () => dispatch(setSelectedCompany(pendingFilters.selectedCompany || [])),
@@ -1483,26 +1316,20 @@ const FilterDropdown = React.memo(({
       () => dispatch(setSelectedSalary(pendingFilters.selectedSalary || []))
     ];
 
-    // Execute all filter actions
     filterActions.forEach(action => action());
-    
-    // Reset pagination to first page
     dispatch(setCurrentPage(1));
-    
-    // Reset infinite scroll state
     setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
     const totalFiltersApplied = Object.values(pendingFilters).reduce((acc, arr) => acc + (arr?.length || 0), 0);
     showToast(`${totalFiltersApplied} filter${totalFiltersApplied !== 1 ? 's' : ''} applied successfully!`);
     setIsSidebarOpen(false);
+    
+    // React Query will automatically refetch
   }, [dispatch, pendingFilters, showToast]);
 
-  // FIXED: Enhanced clear filters with proper search term handling
+  // Clear filters
   const handleClearFilters = useCallback(() => {
-    console.log('Clearing all filters and search');
-    
-    // Clear all pending filters
     setPendingFilters({
       selectedCategory: [],
       selectedCompany: [],
@@ -1512,11 +1339,9 @@ const FilterDropdown = React.memo(({
       selectedSalary: []
     });
     
-    // Clear all Redux filters AND search query
     dispatch(clearFilters());
     dispatch(setSearchQuery(''));
     
-    // Clear local input states
     setLocalFilters({
       searchInput: '',
       locationSearchInput: ''
@@ -1527,8 +1352,6 @@ const FilterDropdown = React.memo(({
     
     showToast('All filters and search cleared!');
     setIsSidebarOpen(false);
-    
-    // Navigate to clean URL
     navigate(location.pathname, { replace: true });
   }, [dispatch, showToast, navigate, location.pathname]);
 
@@ -1536,7 +1359,6 @@ const FilterDropdown = React.memo(({
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  // Handle search input changes without affecting filters
   const handleSearchInputChange = useCallback((value) => {
     setLocalFilters(prev => ({
       ...prev,
@@ -1557,119 +1379,162 @@ const FilterDropdown = React.memo(({
     }
   }, [dispatch]);
 
-  // ENHANCED: Enhanced pending filter change handler with proper multiple selection support
-  const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
-    console.log('Filter change:', filterType, value, isChecked);
-    
-    setPendingFilters(prev => {
-      const current = prev[filterType] || [];
-      let updated;
+  // const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+  //   setPendingFilters(prev => {
+  //     const current = prev[filterType] || [];
+  //     let updated;
       
-      if (isChecked) {
-        // Add the value if it's not already present - SUPPORTS MULTIPLE SELECTIONS
-        updated = current.includes(value) ? current : [...current, value];
-      } else {
-        // Remove the value - ALLOWS REMOVING INDIVIDUAL SELECTIONS
-        updated = current.filter(item => item !== value);
-      }
+  //     if (isChecked) {
+  //       updated = current.includes(value) ? current : [...current, value];
+  //     } else {
+  //       updated = current.filter(item => item !== value);
+  //     }
       
-      console.log('Updated pending filters for', filterType, ':', updated);
-      return {
-        ...prev,
-        [filterType]: updated
-      };
-    });
+  //     return {
+  //       ...prev,
+  //       [filterType]: updated
+  //     };
+  //   });
     
-    // ADDED: Immediately sync with Redux state for better responsiveness
-    const currentReduxFilters = filters[filterType] || [];
-    let newReduxFilters;
+  //   const currentReduxFilters = filters[filterType] || [];
+  //   let newReduxFilters;
+    
+  //   if (isChecked) {
+  //     newReduxFilters = currentReduxFilters.includes(value) ? currentReduxFilters : [...currentReduxFilters, value];
+  //   } else {
+  //     newReduxFilters = currentReduxFilters.filter(item => item !== value);
+  //   }
+    
+  //   switch (filterType) {
+  //     case 'selectedCategory':
+  //       dispatch(setSelectedCategory(newReduxFilters));
+  //       break;
+  //     case 'selectedCompany':
+  //       dispatch(setSelectedCompany(newReduxFilters));
+  //       break;
+  //     case 'selectedExperience':
+  //       dispatch(setSelectedExperience(newReduxFilters));
+  //       break;
+  //     case 'selectedLocation':
+  //       dispatch(setSelectedLocation(newReduxFilters));
+  //       break;
+  //     case 'selectedType':
+  //       dispatch(setSelectedType(newReduxFilters));
+  //       break;
+  //     case 'selectedSalary':
+  //       dispatch(setSelectedSalary(newReduxFilters));
+  //       break;
+  //     default:
+  //       console.warn('Unknown filter type:', filterType);
+  //   }
+    
+  //   dispatch(setCurrentPage(1));
+  // }, [dispatch, filters]);
+// 3. FIX: Update handlePendingFilterChange to ensure state updates correctly
+
+// CORRECT VERSION - Only update pendingFilters, NOT Redux
+const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+  console.log('Filter change:', filterType, value, isChecked);
+  
+  // ONLY UPDATE PENDING FILTERS - Don't dispatch to Redux yet
+  setPendingFilters(prev => {
+    const current = Array.isArray(prev[filterType]) ? prev[filterType] : [];
+    let updated;
     
     if (isChecked) {
-      newReduxFilters = currentReduxFilters.includes(value) ? currentReduxFilters : [...currentReduxFilters, value];
+      updated = current.includes(value) ? current : [...current, value];
     } else {
-      newReduxFilters = currentReduxFilters.filter(item => item !== value);
+      updated = current.filter(item => item !== value);
     }
     
-    // Apply filter change immediately to Redux for instant UI feedback
-    switch (filterType) {
-      case 'selectedCategory':
-        dispatch(setSelectedCategory(newReduxFilters));
-        break;
-      case 'selectedCompany':
-        dispatch(setSelectedCompany(newReduxFilters));
-        break;
-      case 'selectedExperience':
-        dispatch(setSelectedExperience(newReduxFilters));
-        break;
-      case 'selectedLocation':
-        dispatch(setSelectedLocation(newReduxFilters));
-        break;
-      case 'selectedType':
-        dispatch(setSelectedType(newReduxFilters));
-        break;
-      case 'selectedSalary':
-        dispatch(setSelectedSalary(newReduxFilters));
-        break;
-      default:
-        console.warn('Unknown filter type:', filterType);
-    }
+    console.log('Updated pending filters:', filterType, updated);
     
-    // Reset to first page when filters change
-    dispatch(setCurrentPage(1));
-  }, [dispatch, filters]);
+    return {
+      ...prev,
+      [filterType]: updated
+    };
+  });
+}, []); // ✅ Empty dependencies - only uses setPendingFilters
+ const handleDropdownApply = useCallback((filterType) => {
+  const newValues = pendingFilters[filterType];
+  
+  console.log('=== APPLY CLICKED ===');
+  console.log(`Filter Type: ${filterType}`);
+  console.log('New Values:', newValues);
+  console.log('Current Redux Filters BEFORE dispatch:', {
+    selectedCategory: filters.selectedCategory,
+    selectedCompany: filters.selectedCompany,
+    selectedExperience: filters.selectedExperience,
+    selectedLocation: filters.selectedLocation,
+    selectedType: filters.selectedType,
+    selectedSalary: filters.selectedSalary
+  });
+  
+  switch (filterType) {
+    case 'selectedCategory':
+      dispatch(setSelectedCategory(newValues));
+      console.log('Dispatched setSelectedCategory with:', newValues);
+      break;
+    case 'selectedCompany':
+      dispatch(setSelectedCompany(newValues));
+      console.log('Dispatched setSelectedCompany with:', newValues);
+      break;
+    case 'selectedExperience':
+      dispatch(setSelectedExperience(newValues));
+      console.log('Dispatched setSelectedExperience with:', newValues);
+      break;
+    case 'selectedLocation':
+      dispatch(setSelectedLocation(newValues));
+      console.log('Dispatched setSelectedLocation with:', newValues);
+      break;
+    case 'selectedType':
+      dispatch(setSelectedType(newValues));
+      console.log('Dispatched setSelectedType with:', newValues);
+      break;
+    case 'selectedSalary':
+      dispatch(setSelectedSalary(newValues));
+      console.log('Dispatched setSelectedSalary with:', newValues);
+      break;
+    default:
+      console.warn('Unknown filter type:', filterType);
+  }
+  
+  dispatch(setCurrentPage(1));
+  
+  // Reset infinite scroll for mobile
+  if (isMobile) {
+    dispatch(resetInfiniteScroll());
+    setInfiniteScrollInitialized(false);
+  }
+  
+  // Log after a small delay to see if Redux state updated
+  setTimeout(() => {
+    console.log('Redux Filters AFTER dispatch (should be updated):', {
+      selectedCategory: filters.selectedCategory,
+      selectedCompany: filters.selectedCompany,
+      selectedExperience: filters.selectedExperience,
+      selectedLocation: filters.selectedLocation,
+      selectedType: filters.selectedType,
+      selectedSalary: filters.selectedSalary
+    });
+  }, 100);
+  
+  const filterName = filterType.replace('selected', '');
+  const count = newValues.length;
+  showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
+}, [dispatch, pendingFilters, showToast, isMobile, filters]);
 
-  // Handle individual filter dropdown actions
-  const handleDropdownApply = useCallback((filterType) => {
-    console.log('Applying single filter:', filterType, pendingFilters[filterType]);
-    
-    const newValues = pendingFilters[filterType];
-    
-    switch (filterType) {
-      case 'selectedCategory':
-        dispatch(setSelectedCategory(newValues));
-        break;
-      case 'selectedCompany':
-        dispatch(setSelectedCompany(newValues));
-        break;
-      case 'selectedExperience':
-        dispatch(setSelectedExperience(newValues));
-        break;
-      case 'selectedLocation':
-        dispatch(setSelectedLocation(newValues));
-        break;
-      case 'selectedType':
-        dispatch(setSelectedType(newValues));
-        break;
-      case 'selectedSalary':
-        dispatch(setSelectedSalary(newValues));
-        break;
-      default:
-        console.warn('Unknown filter type:', filterType);
-    }
-    
-    dispatch(setCurrentPage(1));
-    const filterName = filterType.replace('selected', '');
-    const count = newValues.length;
-    showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
-  }, [dispatch, pendingFilters, showToast]);
-
-  // FIXED: Enhanced dropdown clear with intelligent search term clearing
   const handleDropdownClear = useCallback((filterType) => {
-    console.log('Clearing single filter:', filterType);
-    
     const clearedValues = pendingFilters[filterType] || [];
     
-    // Clear pending filters
     setPendingFilters(prev => ({
       ...prev,
       [filterType]: []
     }));
     
-    // Clear the actual Redux filter immediately
     switch (filterType) {
       case 'selectedCategory':
         dispatch(setSelectedCategory([]));
-        // FIXED: Clear search if it matches cleared categories
         if (clearedValues.length > 0 && localFilters.searchInput) {
           const shouldClearSearch = isSearchRelatedToFilters(
             localFilters.searchInput, 
@@ -1686,7 +1551,6 @@ const FilterDropdown = React.memo(({
         
       case 'selectedCompany':
         dispatch(setSelectedCompany([]));
-        // FIXED: Clear search if it matches cleared companies
         if (clearedValues.length > 0 && localFilters.searchInput) {
           const shouldClearSearch = isSearchRelatedToFilters(
             localFilters.searchInput, 
@@ -1768,7 +1632,6 @@ const FilterDropdown = React.memo(({
     }
   }, [selectedJob]);
 
-  // Optimized save job handler for cards
   const handleSaveJob = useCallback(async (jobId) => {
     try {
       const result = await dispatch(saveJob({ 
@@ -1797,47 +1660,55 @@ const FilterDropdown = React.memo(({
     }
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
 
-  // Early returns for loading states
-  // if (!initialLoadComplete) {
-  //   return <div className="loading">Loading jobs...</div>;
-  // }
+  // ========================================
+  // LOADING & ERROR STATES
+  // ========================================
 
-  // if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
-  //   return <div className="loading">Loading jobs...</div>;
-  // }
-  
-  // if (error) return <div className="error">Error: {error}</div>;
-  // Early returns for loading states
-  if (!initialLoadComplete || !filterOptions.isLoaded) {
+  // Show loading only on initial load (not when refetching with cached data)
+  if (jobsLoading && !jobsData) {
     return (
       <div className="loading">
         <div className="spinner"></div>
-        <p>Loading jobs and filter options...</p>
+        <p>Loading jobs...</p>
       </div>
     );
   }
 
-  if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
-    return <div className="loading">Loading jobs...</div>;
-  }
-  
-  if (error) return <div className="error">Error: {error}</div>;
-
-  // Display message if no filter options are available
-  if (!filterOptions.isLoaded || (
-    experienceOptions.length === 0 && 
-    locationOptions.length === 0 && 
-    typeOptions.length === 0
-  )) {
+  // Show loading for filter options
+  if (filterOptionsQuery.isLoading || categoriesQuery.isLoading || companiesQuery.isLoading) {
     return (
       <div className="loading">
-        <p>⚠️ No filter options available. Please check your database connection.</p>
+        <div className="spinner"></div>
+        <p>Loading filters...</p>
       </div>
     );
   }
+
+  if (jobsError) {
+    return (
+      <div className="error">
+        <p>Error loading jobs: {jobsError.message}</p>
+        <button onClick={() => refetchJobs()} className="retry-button">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // ========================================
+  // RENDER
+  // ========================================
 
   return (
     <div className="job-list-container">
+      {/* Show background loading indicator when fetching new data */}
+      {jobsFetching && !isPreviousData && (
+        <div className="background-loading-indicator">
+          <div className="spinner-small"></div>
+          <span>Updating jobs...</span>
+        </div>
+      )}
+
       {/* Mobile Filter toggle button */}
       {isMobile && (
         <button className="filter-toggle" onClick={toggleSidebar}>
@@ -1848,82 +1719,6 @@ const FilterDropdown = React.memo(({
       )}
 
       {/* Desktop horizontal filters */}
-      {/* {!isMobi
-      le && (
-        <div className="horizontal-filters">
-          <div className="filter-dropdown-group">
-            <FilterDropdown
-              id="selectedType"
-              icon="calendar"
-              title="Schedule"
-              options={typeOptions}
-              selectedValues={pendingFilters.selectedType}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedType')}
-              onClear={() => handleDropdownClear('selectedType')}
-            />
-
-            <FilterDropdown
-              id="selectedCategory"
-              icon="industry"
-              title="Industries"
-              options={categoryOptionsForDropdown}
-              selectedValues={pendingFilters.selectedCategory}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedCategory')}
-              onClear={() => handleDropdownClear('selectedCategory')}
-              categories={categories}
-              companies={companies}
-            />
-
-            <FilterDropdown
-              id="selectedExperience"
-              icon="user"
-              title="Experience"
-              options={experienceOptions}
-              selectedValues={pendingFilters.selectedExperience}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedExperience')}
-              onClear={() => handleDropdownClear('selectedExperience')}
-            />
-
-            <FilterDropdown
-              id="selectedLocation"
-              icon="map-marker"
-              title="Distance"
-              options={locationOptions}
-              selectedValues={pendingFilters.selectedLocation}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedLocation')}
-              onClear={() => handleDropdownClear('selectedLocation')}
-            />
-
-            <FilterDropdown
-              id="selectedCompany"
-              icon="building"
-              title="Company"
-              options={companyOptionsForDropdown}
-              selectedValues={pendingFilters.selectedCompany}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedCompany')}
-              onClear={() => handleDropdownClear('selectedCompany')}
-              categories={categories}
-              companies={companies}
-            />
-
-            <FilterDropdown
-              id="selectedSalary"
-              icon="dollar"
-              title="Salary"
-              options={salaryRangeOptions}
-              selectedValues={pendingFilters.selectedSalary}
-              onFilterChange={handlePendingFilterChange}
-              onApply={() => handleDropdownApply('selectedSalary')}
-              onClear={() => handleDropdownClear('selectedSalary')}
-            />
-          </div>
-        </div>
-      )} */}
       {!isMobile && (
         <div className="horizontal-filters">
           <div className="filter-dropdown-group">
@@ -2000,8 +1795,7 @@ const FilterDropdown = React.memo(({
         </div>
       )}
 
-      {/* Sidebar overlay */}
-      <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
 
       <div className="job-list-layout">
         {/* Mobile Sidebar */}
@@ -2370,7 +2164,7 @@ const FilterDropdown = React.memo(({
                   <i className="fa fa-search fa-3x"></i>
                   <h3>No Jobs Found</h3>
                   <p>
-                    {pagination.totalJobs === 0 
+                    {jobsPagination.totalJobs === 0 
                       ? 'No jobs are currently available.' 
                       : 'No jobs match your current search and filter criteria.'
                     }
@@ -2400,19 +2194,19 @@ const FilterDropdown = React.memo(({
             )}
           </div>
 
-          {/* Mobile Infinite Scroll Loader */}
+          {/* Mobile Infinite Scroll */}
           {isMobile && (
             <MobileInfiniteScroll
               jobs={displayJobs}
               hasMore={infiniteScroll.hasMore}
               loadMore={handleLoadMore}
-              loading={infiniteScroll.isLoading}
+              loading={infiniteScroll.isLoading || jobsFetching}
             />
           )}
 
-          {/* Pagination - Bottom (Desktop only) */}
+          {/* Pagination - Desktop only */}
           <Pagination
-            pagination={pagination}
+            pagination={jobsPagination}
             onPageChange={handlePageChange}
             onJobsPerPageChange={handleJobsPerPageChange}
           />
@@ -2428,7 +2222,7 @@ const FilterDropdown = React.memo(({
         onApply={handleApplyFromModal}
       />
       
-      {/* Enhanced Toast Notification */}
+      {/* Toast Notification */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
