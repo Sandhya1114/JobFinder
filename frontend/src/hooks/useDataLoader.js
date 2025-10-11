@@ -1,124 +1,6 @@
-// import { useCallback } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import { api } from '../services/api';
-// import {
-//   setJobsWithPagination,
-//   setCategories,
-//   setCompanies,
-//   setLoading,
-//   setError
-// } from '../redux/store';
-
-// export const useDataLoader = () => {
-//   const dispatch = useDispatch();
-//   const { filters, pagination, sorting } = useSelector((state) => state.jobs);
-
-//   const loadJobs = useCallback(async (customParams = {}) => {
-//     try {
-//       dispatch(setLoading(true));
-//       dispatch(setError(null));
-
-//       // Combine current state with custom parameters
-//       const params = {
-//         page: pagination.currentPage,
-//         limit: pagination.jobsPerPage,
-//         sortBy: sorting.sortBy,
-//         sortOrder: sorting.sortOrder,
-//         ...customParams // Override with any custom parameters first
-//       };
-
-//       // Add filters only if they have values
-//       if (filters.selectedCategory && filters.selectedCategory.length > 0) {
-//         params.category = filters.selectedCategory.join(',');
-//       }
-      
-//       if (filters.selectedCompany && filters.selectedCompany.length > 0) {
-//         params.company = filters.selectedCompany.join(',');
-//       }
-      
-//       if (filters.selectedExperience && filters.selectedExperience.length > 0) {
-//         params.experience = filters.selectedExperience.join(',');
-//       }
-      
-//       if (filters.selectedLocation && filters.selectedLocation.length > 0) {
-//         params.location = filters.selectedLocation.join(',');
-//       }
-      
-//       if (filters.selectedType && filters.selectedType.length > 0) {
-//         params.type = filters.selectedType.join(',');
-//       }
-      
-//       if (filters.selectedSalary && filters.selectedSalary.length > 0) {
-//         params.salary = filters.selectedSalary.join(',');
-//       }
-
-//       // Handle search query - ensure it's properly trimmed and not empty
-//       const searchQuery = filters.searchQuery?.trim();
-//       if (searchQuery && searchQuery.length > 0) {
-//         params.search = searchQuery;
-//       }
-
-//       console.log('Loading jobs with params:', params); // Debug log
-
-//       const response = await api.fetchJobs(params);
-      
-//       if (response.jobs && response.pagination) {
-//         dispatch(setJobsWithPagination({
-//           jobs: response.jobs,
-//           pagination: response.pagination
-//         }));
-//       } else {
-//         throw new Error('Invalid response structure');
-//       }
-//     } catch (error) {
-//       console.error('Failed to load jobs:', error);
-//       dispatch(setError(error.message));
-//     } finally {
-//       dispatch(setLoading(false));
-//     }
-//   }, [dispatch, filters, pagination.currentPage, pagination.jobsPerPage, sorting]);
-
-//   const loadCategories = useCallback(async () => {
-//     try {
-//       const response = await api.fetchCategories();
-//       dispatch(setCategories(response.categories || []));
-//     } catch (error) {
-//       console.error('Failed to load categories:', error);
-//     }
-//   }, [dispatch]);
-
-//   const loadCompanies = useCallback(async () => {
-//     try {
-//       const response = await api.fetchCompanies();
-//       dispatch(setCompanies(response.companies || []));
-//     } catch (error) {
-//       console.error('Failed to load companies:', error);
-//     }
-//   }, [dispatch]);
-
-//   const loadAllData = useCallback(async () => {
-//     await Promise.all([
-//       loadCategories(),
-//       loadCompanies()
-//     ]);
-//     // Load jobs after categories and companies are loaded
-//     await loadJobs();
-//   }, [loadJobs, loadCategories, loadCompanies]);
-
-//   const refreshJobs = useCallback(() => {
-//     return loadJobs();
-//   }, [loadJobs]);
-
-//   return {
-//     loadJobs,
-//     loadCategories,
-//     loadCompanies,
-//     loadAllData,
-//     refreshJobs
-//   };
-// };
 import { useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
 import {
   setJobsWithPagination,
@@ -132,6 +14,7 @@ import {
 
 export const useDataLoader = () => {
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { filters, pagination, sorting } = useSelector((state) => state.jobs);
   
   // Use refs to avoid stale closure issues
@@ -152,51 +35,58 @@ export const useDataLoader = () => {
     const currentPagination = paginationRef.current;
     const currentSorting = sortingRef.current;
 
-    // Combine current state with custom parameters
     const params = {
       page: currentPagination.currentPage,
       limit: currentPagination.jobsPerPage,
       sortBy: currentSorting.sortBy,
       sortOrder: currentSorting.sortOrder,
-      ...customParams // Override with any custom parameters
+      ...customParams
     };
 
-    // Add filters only if they have values
-    if (currentFilters.selectedCategory && currentFilters.selectedCategory.length > 0) {
+    if (currentFilters.selectedCategory?.length > 0) {
       params.category = currentFilters.selectedCategory.join(',');
     }
     
-    if (currentFilters.selectedCompany && currentFilters.selectedCompany.length > 0) {
+    if (currentFilters.selectedCompany?.length > 0) {
       params.company = currentFilters.selectedCompany.join(',');
     }
     
-    if (currentFilters.selectedExperience && currentFilters.selectedExperience.length > 0) {
+    if (currentFilters.selectedExperience?.length > 0) {
       params.experience = currentFilters.selectedExperience.join(',');
     }
     
-    if (currentFilters.selectedLocation && currentFilters.selectedLocation.length > 0) {
+    if (currentFilters.selectedLocation?.length > 0) {
       params.location = currentFilters.selectedLocation.join(',');
     }
     
-    if (currentFilters.selectedType && currentFilters.selectedType.length > 0) {
+    if (currentFilters.selectedType?.length > 0) {
       params.type = currentFilters.selectedType.join(',');
     }
     
-    if (currentFilters.selectedSalary && currentFilters.selectedSalary.length > 0) {
+    if (currentFilters.selectedSalary?.length > 0) {
       params.salary = currentFilters.selectedSalary.join(',');
     }
 
-    // Handle search query - ensure it's properly trimmed and not empty
     const searchQuery = currentFilters.searchQuery?.trim();
     if (searchQuery && searchQuery.length > 0) {
       params.search = searchQuery;
     }
 
     return params;
-  }, []); // Empty dependency array since we use refs
+  }, []);
+
+  // Create a stable cache key based on current filters
+  const createCacheKey = useCallback((params) => {
+    const sortedParams = Object.keys(params)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = params[key];
+        return acc;
+      }, {});
+    return ['jobs', sortedParams];
+  }, []);
 
   const loadJobs = useCallback(async (customParams = {}) => {
-    // Prevent multiple simultaneous calls for initial load
     if (isLoadingRef.current) {
       console.log('Load jobs already in progress, skipping...');
       return;
@@ -208,11 +98,32 @@ export const useDataLoader = () => {
       dispatch(setError(null));
 
       const params = buildParams(customParams);
+      const cacheKey = createCacheKey(params);
+      
       console.log('Loading jobs with params:', params);
 
+      // Check if data exists in React Query cache
+      const cachedData = queryClient.getQueryData(cacheKey);
+      
+      if (cachedData && !customParams.forceRefresh) {
+        console.log('Using cached jobs data');
+        dispatch(setJobsWithPagination({
+          jobs: cachedData.jobs,
+          pagination: cachedData.pagination
+        }));
+        dispatch(setLoading(false));
+        isLoadingRef.current = false;
+        return cachedData;
+      }
+
+      // Fetch fresh data if not in cache
       const response = await api.fetchJobs(params);
       
       if (response.jobs && response.pagination) {
+        // Store in React Query cache
+        queryClient.setQueryData(cacheKey, response);
+        
+        // Update Redux store
         dispatch(setJobsWithPagination({
           jobs: response.jobs,
           pagination: response.pagination
@@ -220,6 +131,8 @@ export const useDataLoader = () => {
       } else {
         throw new Error('Invalid response structure');
       }
+      
+      return response;
     } catch (error) {
       console.error('Failed to load jobs:', error);
       dispatch(setError(error.message));
@@ -227,46 +140,41 @@ export const useDataLoader = () => {
       dispatch(setLoading(false));
       isLoadingRef.current = false;
     }
-  }, [dispatch, buildParams]);
+  }, [dispatch, buildParams, createCacheKey, queryClient]);
 
-  // FIXED: Improved loadMoreJobs with better error handling and duplicate prevention
   const loadMoreJobs = useCallback(async () => {
     const currentPagination = paginationRef.current;
     
-    // Don't load if already loading or no more pages
     if (!currentPagination.hasNextPage) {
       console.log('No more pages to load');
       return { hasMore: false, newJobs: [], pagination: currentPagination };
     }
 
     const nextPage = currentPagination.currentPage + 1;
-    console.log(`Loading more jobs - page ${nextPage} (current: ${currentPagination.currentPage})`);
+    console.log(`Loading more jobs - page ${nextPage}`);
 
     try {
-      // Build params for the next page
       const params = buildParams({
         page: nextPage,
         limit: currentPagination.jobsPerPage
       });
 
-      console.log('Load more jobs params:', params);
       const response = await api.fetchJobs(params);
       
       if (response.jobs && response.pagination) {
-        // Update the current page in Redux immediately
         dispatch(setCurrentPage(nextPage));
 
-        console.log(`Successfully loaded page ${nextPage} with ${response.jobs.length} jobs`);
-        console.log('API returned pagination:', response.pagination);
+        // Cache the new page
+        const cacheKey = createCacheKey(params);
+        queryClient.setQueryData(cacheKey, response);
 
-        // FIXED: Ensure we return the correct structure
         return {
           hasMore: response.pagination.hasNextPage,
           newJobs: response.jobs,
           totalJobs: response.pagination.totalJobs,
           pagination: {
             ...response.pagination,
-            currentPage: nextPage // Ensure we return the correct current page
+            currentPage: nextPage
           }
         };
       } else {
@@ -274,11 +182,8 @@ export const useDataLoader = () => {
       }
     } catch (error) {
       console.error('Failed to load more jobs:', error);
-      
-      // Reset the page number on error
       dispatch(setCurrentPage(currentPagination.currentPage));
       
-      // Return error state
       return {
         hasMore: false,
         newJobs: [],
@@ -286,51 +191,96 @@ export const useDataLoader = () => {
         error: error.message
       };
     }
-  }, [dispatch, buildParams]);
+  }, [dispatch, buildParams, createCacheKey, queryClient]);
 
   const loadCategories = useCallback(async () => {
     try {
+      // Check cache first
+      const cachedCategories = queryClient.getQueryData(['categories']);
+      
+      if (cachedCategories) {
+        dispatch(setCategories(cachedCategories));
+        return;
+      }
+
       const response = await api.fetchCategories();
-      dispatch(setCategories(response.categories || []));
+      const categories = response.categories || [];
+      
+      // Cache categories
+      queryClient.setQueryData(['categories'], categories);
+      dispatch(setCategories(categories));
     } catch (error) {
       console.error('Failed to load categories:', error);
     }
-  }, [dispatch]);
+  }, [dispatch, queryClient]);
 
   const loadCompanies = useCallback(async () => {
     try {
+      // Check cache first
+      const cachedCompanies = queryClient.getQueryData(['companies']);
+      
+      if (cachedCompanies) {
+        dispatch(setCompanies(cachedCompanies));
+        return;
+      }
+
       const response = await api.fetchCompanies();
-      dispatch(setCompanies(response.companies || []));
+      const companies = response.companies || [];
+      
+      // Cache companies
+      queryClient.setQueryData(['companies'], companies);
+      dispatch(setCompanies(companies));
     } catch (error) {
       console.error('Failed to load companies:', error);
     }
-  }, [dispatch]);
+  }, [dispatch, queryClient]);
 
   const loadAllData = useCallback(async () => {
     try {
-      // Load categories and companies first
+      // Load categories and companies (they'll use cache if available)
       await Promise.all([
         loadCategories(),
         loadCompanies()
       ]);
       
-      // Then load jobs
-      await loadJobs();
+      // Don't auto-load jobs here - let JobList component handle it
     } catch (error) {
       console.error('Failed to load all data:', error);
       dispatch(setError('Failed to load initial data'));
     }
-  }, [loadJobs, loadCategories, loadCompanies, dispatch]);
+  }, [loadCategories, loadCompanies, dispatch]);
 
   const refreshJobs = useCallback(() => {
-    return loadJobs();
-  }, [loadJobs]);
+    // Force refresh by invalidating cache
+    const params = buildParams();
+    const cacheKey = createCacheKey(params);
+    queryClient.invalidateQueries(cacheKey);
+    return loadJobs({ forceRefresh: true });
+  }, [loadJobs, buildParams, createCacheKey, queryClient]);
 
-  // Helper function to reset for mobile infinite scroll
   const resetInfiniteScroll = useCallback(() => {
     dispatch(setCurrentPage(1));
     isLoadingRef.current = false;
   }, [dispatch]);
+
+  // Prefetch next page for better UX
+  const prefetchNextPage = useCallback(() => {
+    const currentPagination = paginationRef.current;
+    
+    if (currentPagination.hasNextPage) {
+      const nextPage = currentPagination.currentPage + 1;
+      const params = buildParams({
+        page: nextPage,
+        limit: currentPagination.jobsPerPage
+      });
+      const cacheKey = createCacheKey(params);
+      
+      queryClient.prefetchQuery({
+        queryKey: cacheKey,
+        queryFn: () => api.fetchJobs(params),
+      });
+    }
+  }, [buildParams, createCacheKey, queryClient]);
 
   return {
     loadJobs,
@@ -339,6 +289,7 @@ export const useDataLoader = () => {
     loadCompanies,
     loadAllData,
     refreshJobs,
-    resetInfiniteScroll
+    resetInfiniteScroll,
+    prefetchNextPage
   };
 };

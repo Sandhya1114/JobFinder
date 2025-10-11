@@ -4,29 +4,12 @@ import { QueryClient } from '@tanstack/react-query';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Reduce refetch behavior to prevent conflicts with Redux
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-      refetchOnMount: false,
-      
-      // Keep data fresh for reasonable time
-      staleTime: 30000, // 30 seconds
-      gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
-      
-      // Retry configuration
-      retry: 1,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      
-      // Error handling
-      onError: (error) => {
-        console.error('React Query Error:', error);
-      },
-    },
-    mutations: {
-      retry: 0,
-      onError: (error) => {
-        console.error('Mutation Error:', error);
-      },
+      staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+      cacheTime: 10 * 60 * 1000, // Cache persists for 10 minutes
+      refetchOnWindowFocus: false, // Don't refetch when window regains focus
+      refetchOnMount: false, // Don't refetch on component mount if data exists
+      refetchOnReconnect: false, // Don't refetch on internet reconnect
+      retry: 1, // Only retry failed requests once
     },
   },
 });
