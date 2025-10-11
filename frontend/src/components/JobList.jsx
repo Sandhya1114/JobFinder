@@ -1,13 +1,8 @@
-import React, { memo, useEffect, useState, useCallback, useRef, useMemo } from 'react';
+
+import React,{ memo,useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useDataLoader } from '../hooks/useDataLoader';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import {
-  useJobsQuery,
-  useFilterOptionsQuery,
-  useCategoriesQuery,
-  useCompaniesQuery,
-} from '../hooks/useJobQueries';
-import DebugPanel from './DebugPanel';
 import {
   setSelectedCategory,
   setSelectedCompany,
@@ -19,7 +14,9 @@ import {
   setCurrentPage,
   setJobsPerPage,
   clearFilters,
+  appendJobs,
   resetInfiniteScroll,
+  setInfiniteScrollLoading
 } from '../redux/store';
 import './Joblist.css';
 import { saveJob } from '../redux/savedJobsSlice';
@@ -46,6 +43,7 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
     };
   }, [isOpen, onClose]);
 
+  // Memoize salary formatting to avoid recalculation
   const formattedSalary = useMemo(() => {
     if (!job?.salary?.min || !job?.salary?.max) return 'Salary not specified';
     const formatter = new Intl.NumberFormat('en-US', {
@@ -57,6 +55,7 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
     return `${formatter.format(job.salary.min)} - ${formatter.format(job.salary.max)}`;
   }, [job?.salary]);
 
+  // Early return optimization
   if (!isOpen || !job) return null;
 
   return (
@@ -229,7 +228,7 @@ const JobDetailsModal = memo(({ job, isOpen, onClose, onSave, onApply }) => {
   );
 });
 
-// Memoized Pagination Component
+// Memoized Pagination Component - Only shown on desktop
 const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }) => {
   const { 
     currentPage, 
@@ -242,6 +241,7 @@ const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }
     hasPreviousPage
   } = pagination;
 
+  // Don't render pagination on mobile
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -252,6 +252,7 @@ const Pagination = React.memo(({ pagination, onPageChange, onJobsPerPageChange }
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Memoize page numbers calculation
   const pageNumbers = useMemo(() => {
     const pages = [];
     const maxVisiblePages = 5;
@@ -340,7 +341,7 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting && hasMore && !loading) {
-          console.log('📱 Intersection observer triggered - loading more jobs');
+          console.log('Intersection observer triggered - loading more jobs');
           loadMore();
         }
       },
@@ -385,7 +386,76 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
 });
 
 // Memoized Job Card Component
+// const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
+//   // Memoize truncated description
+//   const truncatedDescription = useMemo(() => {
+//     if (!job.description) return 'No description available';
+//     return job.description.length > 150 
+//       ? job.description.substring(0, 150) + '...' 
+//       : job.description;
+//   }, [job.description]);
+
+//   // Memoize formatted date
+//   const formattedDate = useMemo(() => {
+//     return job.postedDate || job.created_at 
+//       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
+//       : 'Date not available';
+//   }, [job.postedDate, job.created_at]);
+
+//   const handleSaveJob = useCallback(async () => {
+//     try {
+//       await onSave(job.id);
+//     } catch (error) {
+//       console.error('Error saving job:', error);
+//     }
+//   }, [job.id, onSave]);
+
+//   return (
+//     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
+//       <div className="job-header">
+//         <h2 className="job-title">{job.title || 'No Title'}</h2>
+//         <div className="job-meta">
+//           <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+//           <span className="job-location">{job.location || 'Location not specified'}</span>
+//         </div>
+//       </div>
+
+//       <div className="job-details job-details-minimal">
+//         <div className="job-category">
+//           <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
+//         </div>
+
+//         <div className="job-info job-info-minimal">
+//           <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
+//           <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
+//         </div>
+
+//         <div className="job-description job-description-minimal">
+//           <p>{truncatedDescription}</p>
+//         </div>
+
+//         <div className="job-footer">
+//           <span className="posted-date">Posted: {formattedDate}</span>
+//           <div className="job-actions">
+//             <button
+//               onClick={() => onViewDetails(job)}
+//               className="view-details-btn"
+//             >
+//               {/* <i className="fa fa-eye"></i> */}
+//               View Details
+//             </button>
+//             <button onClick={handleSaveJob} className="save-btn">
+//               Save Job
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
+// Memoized Job Card Component
 const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
+  // Memoize truncated description
   const truncatedDescription = useMemo(() => {
     if (!job.description) return 'No description available';
     return job.description.length > 120 
@@ -393,6 +463,7 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
       : job.description;
   }, [job.description]);
 
+  // Memoize formatted date
   const formattedDate = useMemo(() => {
     return job.postedDate || job.created_at 
       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
@@ -409,33 +480,41 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
 
   return (
     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-horizontal">
+     
+
+      {/* Job Content */}
       <div className="job-content-horizontal">
         <div className='ROWFELXLOGOJOBS'>
-          <div className="job-logo-container">
-            {job.companies?.logo || job.company?.logo ? (
-              <img 
-                src={job.companies?.logo || job.company?.logo} 
-                alt={job.companies?.name || job.company?.name || 'Company'}
-                className="job-company-logo"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-            ) : null}
-            <div className="job-logo-placeholder" style={{ display: (job.companies?.logo || job.company?.logo) ? 'none' : 'flex' }}>
-              <i className="fa fa-building"></i>
-            </div>
-          </div>
-          <div className="job-header-horizontal">
-            <div className="job-title-section">
-              <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
-              <div className="job-company-info">
-                <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-              </div>
+         {/* Company Logo */}
+      <div className="job-logo-container">
+        {job.companies?.logo || job.company?.logo ? (
+          <img 
+            src={job.companies?.logo || job.company?.logo} 
+            alt={job.companies?.name || job.company?.name || 'Company'}
+            className="job-company-logo"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+        ) : null}
+        <div className="job-logo-placeholder" style={{ display: (job.companies?.logo || job.company?.logo) ? 'none' : 'flex' }}>
+          <i className="fa fa-building"></i>
+        </div>
+      </div>
+        <div className="job-header-horizontal">
+          <div className="job-title-section">
+            <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
+            <div className="job-company-info">
+              <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
+              {/* <span className="company-rating">
+                <i className="fa fa-star"></i> {job.companies?.rating || job.company?.rating || '4.0'}
+              </span>
+              <span className="company-reviews">{job.companies?.reviews || job.company?.reviews || '0'} Reviews</span> */}
             </div>
           </div>
         </div>
+         </div>
         
         <div className="job-meta-horizontal">
           <div className="job-meta-item">
@@ -487,9 +566,8 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
     </div>
   );
 });
-
-// Filter Option Component
-const FilterOption = ({ option, isChecked, onChange, filterType, categories, companies }) => {
+// FIXED: Filter Option Component with proper display names
+const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
   const getDisplayName = () => {
     if (filterType === 'selectedCategory' && categories) {
       const category = categories.find(cat => cat.id === option);
@@ -503,32 +581,21 @@ const FilterOption = ({ option, isChecked, onChange, filterType, categories, com
     return option;
   };
 
-  const handleChange = (e) => {
-    e.stopPropagation();
-    onChange(filterType, option, e.target.checked);
-  };
-
-  const handleLabelClick = (e) => {
-    e.stopPropagation();
-  };
-
   return (
-    <label className="filter-option" onClick={handleLabelClick}>
+    <label className="filter-option">
       <input
         type="checkbox"
         checked={isChecked}
-        onChange={handleChange}
-        onClick={(e) => e.stopPropagation()}
-        style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+        onChange={(e) => onChange(filterType, option, e.target.checked)}
       />
-      <span className="checkmark-mini" style={{ pointerEvents: 'auto', cursor: 'pointer' }}></span>
+      <span className="checkmark-mini"></span>
       {getDisplayName()}
     </label>
   );
-};
+});
 
-// Filter Dropdown Component
-const FilterDropdown = ({ 
+// FIXED: Filter Dropdown Component with improved filter handling
+const FilterDropdown = React.memo(({ 
   id, 
   icon, 
   title, 
@@ -537,12 +604,15 @@ const FilterDropdown = ({
   onFilterChange, 
   onApply, 
   onClear,
+  isActive,
+  onClick,
   categories,
   companies  
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -595,20 +665,19 @@ const FilterDropdown = ({
       </button>
       
       {isOpen && (
-        <div className="filter-dropdown-content" onClick={(e) => e.stopPropagation()}>
+        <div className="filter-dropdown-content">
           <div className="filter-dropdown-header">
             <h4>{title}</h4>
           </div>
           <div className="filter-options">
             {options.map((option) => {
               const optionValue = option.id || option.name || option;
-              const isChecked = selectedValues?.includes(optionValue) || false;
               
               return (
                 <FilterOption
                   key={optionValue}
                   option={optionValue}
-                  isChecked={isChecked}
+                  isChecked={selectedValues?.includes(optionValue)}
                   onChange={handleOptionChange}
                   filterType={id}
                   categories={categories}
@@ -625,50 +694,26 @@ const FilterDropdown = ({
       )}
     </div>
   );
-};
+});
 
 const JobList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   
-  // ✅ Get state from Redux
   const { 
+    jobs, 
+    categories, 
+    companies, 
+    loading, 
+    error, 
     filters, 
     pagination, 
-    sorting,
-    infiniteScroll,
-    jobs: reduxJobs // Get jobs from Redux
+    infiniteScroll 
   } = useSelector((state) => state.jobs);
-
-  // ✅ React Query hooks - they sync to Redux automatically
-  const jobsQuery = useJobsQuery(filters, pagination, sorting);
-  const filterOptionsQuery = useFilterOptionsQuery();
-  const categoriesQuery = useCategoriesQuery();
-  const companiesQuery = useCompaniesQuery();
-
-  const { 
-    isLoading: jobsLoading, 
-    error: jobsError,
-    isFetching: jobsFetching,
-    refetch: refetchJobs,
-  } = jobsQuery;
-
-  // ✅ Use Redux data for display (React Query updates it automatically)
-  const filterOptions = useMemo(() => {
-    const data = filterOptionsQuery.data;
-    if (!data) return { isLoaded: false, experiences: [], locations: [], types: [], salaryRanges: [] };
-    return {
-      ...data,
-      isLoaded: true
-    };
-  }, [filterOptionsQuery.data]);
   
-  const categories = categoriesQuery.data?.categories || [];
-  const companies = companiesQuery.data?.companies || [];
-
-  // Local state
+  const { loadJobs, loadAllData, loadMoreJobs } = useDataLoader();
   const [toast, setToast] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -676,11 +721,13 @@ const JobList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isJobPage = location.pathname === '/jobs';
 
+  // Separate state for input fields to avoid losing user input
   const [localFilters, setLocalFilters] = useState({
     searchInput: '',
     locationSearchInput: ''
   });
 
+  // State for pending filters (not applied yet)
   const [pendingFilters, setPendingFilters] = useState({
     selectedCategory: [],
     selectedCompany: [],
@@ -690,42 +737,31 @@ const JobList = () => {
     selectedSalary: []
   });
 
+  // Track if filters have changed but not applied
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
-  const isLoadingMoreRef = useRef(false);
 
-  // Refs
+  // Track initial load and prevent infinite loops
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
+  
+  // Refs to prevent infinite loops and race conditions
+  const lastFiltersRef = useRef(null);
+  const isLoadingMoreRef = useRef(false);
+  const initializationRef = useRef(false);
   const urlSyncRef = useRef(false);
 
-  // ✅ CRITICAL: Display jobs based on mobile/desktop
+  // Memoize static filter options
+  const experienceOptions = useMemo(() => ['Fresher', 'Mid-level', 'Senior', '1 yr', '2 yrs', '3 yrs', '4 yrs', '5 yrs'], []);
+  const locationOptions = useMemo(() => ['Remote', 'Seattle, WA', 'Cupertino, CA', 'New Delhi, India', 'Boston, MA', 'San Francisco, CA'], []);
+  const typeOptions = useMemo(() => ['Full-time', 'Part-time', 'Contract'], []);
+  const salaryRangeOptions = useMemo(() => ['0-50000', '50001-100000', '100001-150000', '150001-200000', '200001-300000'], []);
+
+  // Memoize display jobs
   const displayJobs = useMemo(() => {
-    if (isMobile) {
-      // Mobile: use infinite scroll jobs from Redux
-      return infiniteScroll.allJobs;
-    } else {
-      // Desktop: use current page jobs from Redux
-      return reduxJobs;
-    }
-  }, [isMobile, infiniteScroll.allJobs, reduxJobs]);
+    return isMobile ? infiniteScroll.allJobs : jobs;
+  }, [isMobile, infiniteScroll.allJobs, jobs]);
 
-  // Memoized values
-  const experienceOptions = useMemo(() => {
-    return filterOptions.isLoaded ? filterOptions.experiences : [];
-  }, [filterOptions.experiences, filterOptions.isLoaded]);
-
-  const locationOptions = useMemo(() => {
-    return filterOptions.isLoaded ? filterOptions.locations : [];
-  }, [filterOptions.locations, filterOptions.isLoaded]);
-
-  const typeOptions = useMemo(() => {
-    return filterOptions.isLoaded ? filterOptions.types : [];
-  }, [filterOptions.types, filterOptions.isLoaded]);
-
-  const salaryRangeOptions = useMemo(() => {
-    return filterOptions.isLoaded 
-      ? filterOptions.salaryRanges.map(range => range.value)
-      : [];
-  }, [filterOptions.salaryRanges, filterOptions.isLoaded]);
-
+  // Memoize filter options for dropdowns
   const categoryOptionsForDropdown = useMemo(() => {
     return categories.map(category => ({
       id: category.id,
@@ -740,12 +776,13 @@ const JobList = () => {
     }));
   }, [companies]);
 
+  // FIXED: Move showToast function definition before it's used
   const showToast = useCallback((message) => {
     setToast(message);
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // Helper functions
+  // ENHANCED: Search term to filter mapping helper with better matching
   const getRelatedFiltersFromSearch = useCallback((searchTerm) => {
     if (!searchTerm || !searchTerm.trim()) return { categories: [], companies: [] };
     
@@ -753,6 +790,9 @@ const JobList = () => {
     const relatedCategories = [];
     const relatedCompanies = [];
     
+    console.log('Analyzing search term:', term);
+    
+    // Enhanced category matching logic
     categories.forEach(category => {
       const categoryName = category.name.toLowerCase();
       const categoryWords = categoryName.split(' ').filter(word => word.length > 2);
@@ -760,18 +800,43 @@ const JobList = () => {
       
       let isMatch = false;
       
+      // Exact match
       if (categoryName === term) {
         isMatch = true;
-      } else if (categoryName.includes(term)) {
+        console.log('Exact category match:', category.name);
+      }
+      // Contains search term
+      else if (categoryName.includes(term)) {
         isMatch = true;
-      } else if (term.includes(categoryName)) {
+        console.log('Category contains search:', category.name);
+      }
+      // Search term contains category name
+      else if (term.includes(categoryName)) {
         isMatch = true;
-      } else if (categoryWords.some(catWord => 
+        console.log('Search contains category:', category.name);
+      }
+      // Word-level matching
+      else if (categoryWords.some(catWord => 
         searchWords.some(searchWord => 
           catWord.includes(searchWord) || searchWord.includes(catWord)
         )
       )) {
         isMatch = true;
+        console.log('Word-level category match:', category.name);
+      }
+      // Special keyword mappings for common search terms
+      else if (
+        (term.includes('software') && (categoryName.includes('technology') || categoryName.includes('engineering') || categoryName.includes('development'))) ||
+        (term.includes('engineer') && (categoryName.includes('engineering') || categoryName.includes('technical'))) ||
+        (term.includes('developer') && (categoryName.includes('development') || categoryName.includes('software'))) ||
+        (term.includes('data') && categoryName.includes('analytics')) ||
+        (term.includes('designer') && categoryName.includes('design')) ||
+        (term.includes('marketing') && categoryName.includes('marketing')) ||
+        (term.includes('sales') && categoryName.includes('sales')) ||
+        (term.includes('manager') && categoryName.includes('management'))
+      ) {
+        isMatch = true;
+        console.log('Semantic category match:', category.name);
       }
       
       if (isMatch) {
@@ -779,6 +844,7 @@ const JobList = () => {
       }
     });
     
+    // Enhanced company matching logic
     companies.forEach(company => {
       const companyName = company.name.toLowerCase();
       const companyWords = companyName.split(' ').filter(word => word.length > 2);
@@ -786,18 +852,29 @@ const JobList = () => {
       
       let isMatch = false;
       
+      // Exact match
       if (companyName === term) {
         isMatch = true;
-      } else if (companyName.includes(term)) {
+        console.log('Exact company match:', company.name);
+      }
+      // Contains search term
+      else if (companyName.includes(term)) {
         isMatch = true;
-      } else if (term.includes(companyName)) {
+        console.log('Company contains search:', company.name);
+      }
+      // Search term contains company name
+      else if (term.includes(companyName)) {
         isMatch = true;
-      } else if (companyWords.some(compWord => 
+        console.log('Search contains company:', company.name);
+      }
+      // Word-level matching (useful for companies like "Microsoft Corporation" vs "Microsoft")
+      else if (companyWords.some(compWord => 
         searchWords.some(searchWord => 
           compWord.includes(searchWord) || searchWord.includes(compWord)
         )
       )) {
         isMatch = true;
+        console.log('Word-level company match:', company.name);
       }
       
       if (isMatch) {
@@ -805,46 +882,80 @@ const JobList = () => {
       }
     });
     
+    console.log('Final matches - Categories:', relatedCategories.length, 'Companies:', relatedCompanies.length);
+    
     return { categories: relatedCategories, companies: relatedCompanies };
   }, [categories, companies]);
 
-  // ✅ FIX 1: Remove urlSyncRef blocking in updateURL
-const updateURL = useCallback(() => {
-  // REMOVED: if (urlSyncRef.current) return; // This was blocking URL updates
-  
-  const params = new URLSearchParams();
-  
-  if (filters.searchQuery && filters.searchQuery.trim()) {
-    params.set('search', filters.searchQuery.trim());
-  }
-  if (filters.selectedCategory && filters.selectedCategory.length > 0) {
-    params.set('categories', filters.selectedCategory.join(','));
-  }
-  if (filters.selectedCompany && filters.selectedCompany.length > 0) {
-    params.set('companies', filters.selectedCompany.join(','));
-  }
-  if (filters.selectedExperience && filters.selectedExperience.length > 0) {
-    params.set('experience', filters.selectedExperience.join(','));
-  }
-  if (filters.selectedLocation && filters.selectedLocation.length > 0) {
-    params.set('location', filters.selectedLocation.join(','));
-  }
-  if (filters.selectedType && filters.selectedType.length > 0) {
-    params.set('type', filters.selectedType.join(','));
-  }
-  if (filters.selectedSalary && filters.selectedSalary.length > 0) {
-    params.set('salary', filters.selectedSalary.join(','));
-  }
-  if (pagination.currentPage > 1) {
-    params.set('page', pagination.currentPage.toString());
-  }
-  if (pagination.jobsPerPage !== 20) {
-    params.set('limit', pagination.jobsPerPage.toString());
-  }
+  // FIXED: Check if search term matches any filter values
+  const isSearchRelatedToFilters = useCallback((searchTerm, filterValues, filterType) => {
+    if (!searchTerm || !filterValues || filterValues.length === 0) return false;
+    
+    const term = searchTerm.toLowerCase().trim();
+    
+    if (filterType === 'selectedCategory') {
+      return categories.some(cat => {
+        if (filterValues.includes(cat.id)) {
+          const catName = cat.name.toLowerCase();
+          return catName.includes(term) || 
+                 term.includes(catName) ||
+                 catName.split(' ').some(word => term.includes(word) && word.length > 2);
+        }
+        return false;
+      });
+    } else if (filterType === 'selectedCompany') {
+      return companies.some(comp => {
+        if (filterValues.includes(comp.id)) {
+          const compName = comp.name.toLowerCase();
+          return compName.includes(term) || 
+                 term.includes(compName) ||
+                 compName.split(' ').some(word => term.includes(word) && word.length > 2);
+        }
+        return false;
+      });
+    }
+    
+    return false;
+  }, [categories, companies]);
 
-  const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
-  navigate(newURL, { replace: true });
-}, [filters, pagination, location.pathname, navigate]);
+  // URL Parameter Management Functions
+  const updateURL = useCallback(() => {
+    if (urlSyncRef.current) return;
+    
+    const params = new URLSearchParams();
+    
+    if (filters.searchQuery && filters.searchQuery.trim()) {
+      params.set('search', filters.searchQuery.trim());
+    }
+    if (filters.selectedCategory && filters.selectedCategory.length > 0) {
+      params.set('categories', filters.selectedCategory.join(','));
+    }
+    if (filters.selectedCompany && filters.selectedCompany.length > 0) {
+      params.set('companies', filters.selectedCompany.join(','));
+    }
+    if (filters.selectedExperience && filters.selectedExperience.length > 0) {
+      params.set('experience', filters.selectedExperience.join(','));
+    }
+    if (filters.selectedLocation && filters.selectedLocation.length > 0) {
+      params.set('location', filters.selectedLocation.join(','));
+    }
+    if (filters.selectedType && filters.selectedType.length > 0) {
+      params.set('type', filters.selectedType.join(','));
+    }
+    if (filters.selectedSalary && filters.selectedSalary.length > 0) {
+      params.set('salary', filters.selectedSalary.join(','));
+    }
+    if (pagination.currentPage > 1) {
+      params.set('page', pagination.currentPage.toString());
+    }
+    if (pagination.jobsPerPage !== 20) {
+      params.set('limit', pagination.jobsPerPage.toString());
+    }
+
+    const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
+    navigate(newURL, { replace: true });
+  }, [filters, pagination, location.pathname, navigate]);
+
   const parseURLAndSetFilters = useCallback(() => {
     urlSyncRef.current = true;
     
@@ -905,23 +1016,21 @@ const updateURL = useCallback(() => {
     }, 100);
   }, [searchParams, dispatch, filters, pagination]);
 
-  // EFFECTS
-
-  // Parse URL on mount
+  // Parse URL on component mount and when search params change
   useEffect(() => {
-    if (isJobPage) {
+    if (isJobPage && !initializationRef.current) {
       parseURLAndSetFilters();
     }
   }, [parseURLAndSetFilters, isJobPage]);
 
   // Update URL when filters change
   useEffect(() => {
-    if (!urlSyncRef.current) {
+    if (initialLoadComplete && !urlSyncRef.current) {
       updateURL();
     }
-  }, [filters, pagination.currentPage, pagination.jobsPerPage, updateURL]);
+  }, [filters, pagination.currentPage, pagination.jobsPerPage, updateURL, initialLoadComplete]);
 
-  // Mobile detection
+  // Check if device is mobile
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth <= 768;
@@ -930,6 +1039,7 @@ const updateURL = useCallback(() => {
       
       if (wasMobile !== mobile) {
         dispatch(resetInfiniteScroll());
+        setInfiniteScrollInitialized(false);
         if (!mobile && isSidebarOpen) {
           setIsSidebarOpen(false);
         }
@@ -940,9 +1050,28 @@ const updateURL = useCallback(() => {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, isMobile, isSidebarOpen]);
 
-  // Sync pendingFilters when Redux filters change
+  // FIXED: Improved synchronization between Redux filters and pending filters
   useEffect(() => {
-    if (urlSyncRef.current) {
+    // Only update pending filters if they significantly differ from Redux filters
+    // This prevents constant re-synchronization conflicts
+    const shouldUpdate = (pendingArray, reduxArray) => {
+      if (!pendingArray || !reduxArray) return true;
+      if (pendingArray.length !== reduxArray.length) return true;
+      return !pendingArray.every(item => reduxArray.includes(item));
+    };
+
+    const needsUpdate = {
+      categories: shouldUpdate(pendingFilters.selectedCategory, filters.selectedCategory),
+      companies: shouldUpdate(pendingFilters.selectedCompany, filters.selectedCompany),
+      experience: shouldUpdate(pendingFilters.selectedExperience, filters.selectedExperience),
+      location: shouldUpdate(pendingFilters.selectedLocation, filters.selectedLocation),
+      type: shouldUpdate(pendingFilters.selectedType, filters.selectedType),
+      salary: shouldUpdate(pendingFilters.selectedSalary, filters.selectedSalary)
+    };
+
+    // Only update if there are significant differences
+    if (Object.values(needsUpdate).some(Boolean)) {
+      console.log('Syncing pending filters with Redux state');
       setPendingFilters({
         selectedCategory: filters.selectedCategory || [],
         selectedCompany: filters.selectedCompany || [],
@@ -952,9 +1081,17 @@ const updateURL = useCallback(() => {
         selectedSalary: filters.selectedSalary || []
       });
     }
-  }, [filters]);
+  }, [
+    filters.selectedCategory,
+    filters.selectedCompany,
+    filters.selectedExperience,
+    filters.selectedLocation,
+    filters.selectedType,
+    filters.selectedSalary,
+    pendingFilters
+  ]);
 
-  // Check for unapplied filters
+  // Check if pending filters differ from applied filters
   useEffect(() => {
     const currentFiltersStr = JSON.stringify({
       selectedCategory: filters.selectedCategory || [],
@@ -970,116 +1107,260 @@ const updateURL = useCallback(() => {
     setHasUnappliedFilters(currentFiltersStr !== pendingFiltersStr);
   }, [filters, pendingFilters]);
 
-  // Debounced search with auto-filter mapping
+  // FIXED: Enhanced debounce search input with smart filter mapping AND modal auto-close
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (localFilters.searchInput !== filters.searchQuery) {
         const oldQuery = filters.searchQuery;
         const newQuery = localFilters.searchInput;
         
+        // Update search query
         dispatch(setSearchQuery(newQuery));
         
+        // Reset page to 1 when search changes
         if (newQuery !== oldQuery) {
           dispatch(setCurrentPage(1));
         }
         
+        // ENHANCED: Smart filter mapping - automatically add related filters when searching
         if (newQuery && newQuery.trim()) {
+          console.log('🔍 Searching for:', newQuery.trim());
           const relatedFilters = getRelatedFiltersFromSearch(newQuery.trim());
+          console.log('📋 Found related filters:', relatedFilters);
           
+          // Add related categories to pending filters AND apply immediately
           if (relatedFilters.categories.length > 0) {
+            console.log('🏷️ Adding categories:', relatedFilters.categories.map(id => 
+              categories.find(cat => cat.id === id)?.name || id
+            ));
+            
             setPendingFilters(prev => {
               const currentCategories = prev.selectedCategory || [];
               const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
+              console.log('📝 Updated pending categories:', newCategories);
               return { ...prev, selectedCategory: newCategories };
             });
             
+            // Auto-apply related category filters immediately
             const currentCategories = filters.selectedCategory || [];
             const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
             if (newCategories.length > currentCategories.length) {
+              console.log('✅ Applying category filters immediately:', newCategories);
               dispatch(setSelectedCategory(newCategories));
             }
           }
           
+          // Add related companies to pending filters AND apply immediately
           if (relatedFilters.companies.length > 0) {
+            console.log('🏢 Adding companies:', relatedFilters.companies.map(id => 
+              companies.find(comp => comp.id === id)?.name || id
+            ));
+            
             setPendingFilters(prev => {
               const currentCompanies = prev.selectedCompany || [];
               const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
+              console.log('📝 Updated pending companies:', newCompanies);
               return { ...prev, selectedCompany: newCompanies };
             });
             
+            // Auto-apply related company filters immediately
             const currentCompanies = filters.selectedCompany || [];
             const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
             if (newCompanies.length > currentCompanies.length) {
+              console.log('✅ Applying company filters immediately:', newCompanies);
               dispatch(setSelectedCompany(newCompanies));
             }
           }
           
+          // Show toast notification when filters are auto-added
           if (relatedFilters.categories.length > 0 || relatedFilters.companies.length > 0) {
             const totalAdded = relatedFilters.categories.length + relatedFilters.companies.length;
             showToast(`Auto-added ${totalAdded} matching filter${totalAdded !== 1 ? 's' : ''} for "${newQuery.trim()}"`);
           }
           
+          // ADDED: Auto-close search modal/sidebar when search is performed
           if (isMobile && isSidebarOpen) {
             setIsSidebarOpen(false);
           }
+        } else {
+          // When search is cleared, optionally clear auto-added filters
+          console.log('🧹 Search cleared');
         }
       }
     }, 800);
 
     return () => clearTimeout(debounceTimer);
-  }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, showToast, isMobile, isSidebarOpen]);
+  }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, categories, companies, showToast, isMobile, isSidebarOpen]);
 
-  // Scroll to top on page change (desktop)
+  // Update local state when Redux filters change (prevent override during typing)
+  useEffect(() => {
+    if (!urlSyncRef.current) {
+      setLocalFilters(prev => ({
+        ...prev,
+        searchInput: prev.searchInput === '' ? (filters.searchQuery || '') : prev.searchInput,
+        locationSearchInput: prev.locationSearchInput === '' ? 
+          (filters.selectedLocation?.length > 0 ? filters.selectedLocation[0] : '') : 
+          prev.locationSearchInput
+      }));
+    }
+  }, [filters.selectedLocation, filters.searchQuery]);
+
+  // Sidebar management effects
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.classList.add('body-no-scroll');
+    } else {
+      document.body.classList.remove('body-no-scroll');
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.classList.remove('body-no-scroll');
+    };
+  }, [isSidebarOpen]);
+
+  // Load initial data only once
+  useEffect(() => {
+    if (!initialLoadComplete && !initializationRef.current) {
+      initializationRef.current = true;
+      console.log('Loading initial data...');
+      
+      loadAllData().then(() => {
+        console.log('Initial data loaded');
+        setInitialLoadComplete(true);
+      }).catch(error => {
+        console.error('Failed to load initial data:', error);
+        initializationRef.current = false;
+      });
+    }
+  }, [loadAllData, initialLoadComplete]);
+
+  // Reload jobs when filters change
+  useEffect(() => {
+    if (!initialLoadComplete || !initializationRef.current) return;
+
+    const currentFilters = JSON.stringify(filters);
+    const lastFilters = lastFiltersRef.current;
+
+    if (currentFilters !== lastFilters) {
+      console.log('Filters changed, reloading jobs');
+      lastFiltersRef.current = currentFilters;
+      
+      setInfiniteScrollInitialized(false);
+      isLoadingMoreRef.current = false;
+      dispatch(resetInfiniteScroll());
+      
+      loadJobs().catch(error => {
+        console.error('Failed to reload jobs:', error);
+      });
+    }
+  }, [filters, loadJobs, initialLoadComplete, dispatch]);
+
+  // Initialize mobile infinite scroll data when jobs are loaded
+  useEffect(() => {
+    if (
+      isMobile && 
+      jobs.length > 0 && 
+      initialLoadComplete && 
+      !infiniteScrollInitialized &&
+      infiniteScroll.allJobs.length === 0
+    ) {
+      console.log('Initializing infinite scroll with jobs:', jobs.length);
+      dispatch(appendJobs({ 
+        jobs: jobs, 
+        pagination: pagination, 
+        resetList: true 
+      }));
+      setInfiniteScrollInitialized(true);
+      isLoadingMoreRef.current = false;
+    }
+  }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
+
+  // Scroll to top when page changes (desktop only)
   useEffect(() => {
     if (!isMobile && pagination.currentPage > 1) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pagination.currentPage, isMobile]);
 
-  // HANDLERS
-
+  // Memoized handlers
   const handlePageChange = useCallback((newPage) => {
     if (!isMobile && newPage !== pagination.currentPage) {
+      console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
       dispatch(setCurrentPage(newPage));
+      
+      loadJobs({ page: newPage }).catch(error => {
+        console.error('Failed to load jobs for page:', newPage, error);
+      });
     }
-  }, [dispatch, isMobile, pagination.currentPage]);
+  }, [dispatch, isMobile, pagination.currentPage, loadJobs]);
 
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
     if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
+      console.log('Jobs per page change requested:', newJobsPerPage);
       dispatch(setJobsPerPage(newJobsPerPage));
-      dispatch(setCurrentPage(1));
+      
+      loadJobs({ limit: newJobsPerPage, page: 1 }).catch(error => {
+        console.error('Failed to load jobs with new page size:', newJobsPerPage, error);
+      });
     }
-  }, [dispatch, isMobile, pagination.jobsPerPage]);
+  }, [dispatch, isMobile, pagination.jobsPerPage, loadJobs]);
 
   const handleLoadMore = useCallback(async () => {
-    if (!infiniteScroll.hasMore || jobsFetching || isLoadingMoreRef.current) {
-      console.log('⏸️ Load more skipped:', { 
+    if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current) {
+      console.log('Cannot load more:', { 
         hasMore: infiniteScroll.hasMore, 
-        fetching: jobsFetching, 
-        loading: isLoadingMoreRef.current 
+        isLoading: infiniteScroll.isLoading,
+        isLoadingMoreRef: isLoadingMoreRef.current
       });
       return;
     }
 
     try {
       isLoadingMoreRef.current = true;
-      console.log('📱 Loading next page:', pagination.currentPage + 1);
+      dispatch(setInfiniteScrollLoading(true));
+      console.log('Loading more jobs... Current page:', pagination.currentPage);
       
-      const nextPage = pagination.currentPage + 1;
-      dispatch(setCurrentPage(nextPage));
+      const result = await loadMoreJobs();
       
+      if (result && result.newJobs && result.newJobs.length > 0) {
+        console.log('Successfully loaded page:', result.pagination?.currentPage || 'unknown');
+        console.log('New jobs count:', result.newJobs.length);
+        console.log('Has more pages:', result.hasMore);
+        
+        dispatch(appendJobs({ 
+          jobs: result.newJobs, 
+          pagination: result.pagination || {
+            ...pagination, 
+            hasNextPage: result.hasMore,
+            totalJobs: result.totalJobs,
+            currentPage: result.pagination?.currentPage || pagination.currentPage + 1
+          }
+        }));
+      } else {
+        console.log('No more jobs to load or empty result');
+      }
     } catch (error) {
       console.error('Error loading more jobs:', error);
       showToast('Error loading more jobs');
     } finally {
-      setTimeout(() => {
-        isLoadingMoreRef.current = false;
-      }, 500);
+      dispatch(setInfiniteScrollLoading(false));
+      isLoadingMoreRef.current = false;
     }
-  }, [infiniteScroll.hasMore, dispatch, pagination.currentPage, jobsFetching, showToast]);
+  }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
 
-  // Apply filters
+  // SIMPLIFIED: Enhanced filter handlers that work reliably after search
   const handleApplyFilters = useCallback(() => {
+    console.log('Applying all pending filters:', pendingFilters);
+    
+    // Apply filters one by one to ensure they all take effect
     const filterActions = [
       () => dispatch(setSelectedCategory(pendingFilters.selectedCategory || [])),
       () => dispatch(setSelectedCompany(pendingFilters.selectedCompany || [])),
@@ -1089,8 +1370,14 @@ const updateURL = useCallback(() => {
       () => dispatch(setSelectedSalary(pendingFilters.selectedSalary || []))
     ];
 
+    // Execute all filter actions
     filterActions.forEach(action => action());
+    
+    // Reset pagination to first page
     dispatch(setCurrentPage(1));
+    
+    // Reset infinite scroll state
+    setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
     const totalFiltersApplied = Object.values(pendingFilters).reduce((acc, arr) => acc + (arr?.length || 0), 0);
@@ -1098,10 +1385,11 @@ const updateURL = useCallback(() => {
     setIsSidebarOpen(false);
   }, [dispatch, pendingFilters, showToast]);
 
-  // Clear filters
+  // FIXED: Enhanced clear filters with proper search term handling
   const handleClearFilters = useCallback(() => {
-    urlSyncRef.current = true;
+    console.log('Clearing all filters and search');
     
+    // Clear all pending filters
     setPendingFilters({
       selectedCategory: [],
       selectedCompany: [],
@@ -1111,29 +1399,31 @@ const updateURL = useCallback(() => {
       selectedSalary: []
     });
     
+    // Clear all Redux filters AND search query
     dispatch(clearFilters());
     dispatch(setSearchQuery(''));
     
+    // Clear local input states
     setLocalFilters({
       searchInput: '',
       locationSearchInput: ''
     });
     
+    setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
     showToast('All filters and search cleared!');
     setIsSidebarOpen(false);
-    navigate(location.pathname, { replace: true });
     
-    setTimeout(() => {
-      urlSyncRef.current = false;
-    }, 100);
+    // Navigate to clean URL
+    navigate(location.pathname, { replace: true });
   }, [dispatch, showToast, navigate, location.pathname]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
+  // Handle search input changes without affecting filters
   const handleSearchInputChange = useCallback((value) => {
     setLocalFilters(prev => ({
       ...prev,
@@ -1154,30 +1444,72 @@ const updateURL = useCallback(() => {
     }
   }, [dispatch]);
 
-  // Update pendingFilters only
+  // ENHANCED: Enhanced pending filter change handler with proper multiple selection support
   const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+    console.log('Filter change:', filterType, value, isChecked);
+    
     setPendingFilters(prev => {
-      const current = Array.isArray(prev[filterType]) ? prev[filterType] : [];
+      const current = prev[filterType] || [];
       let updated;
       
       if (isChecked) {
+        // Add the value if it's not already present - SUPPORTS MULTIPLE SELECTIONS
         updated = current.includes(value) ? current : [...current, value];
       } else {
+        // Remove the value - ALLOWS REMOVING INDIVIDUAL SELECTIONS
         updated = current.filter(item => item !== value);
       }
       
+      console.log('Updated pending filters for', filterType, ':', updated);
       return {
         ...prev,
         [filterType]: updated
       };
     });
-  }, []);
-
-  // Apply dropdown filter
-  const handleDropdownApply = useCallback((filterType) => {
-    const newValues = pendingFilters[filterType];
     
-    console.log('✅ Applying filter:', filterType, newValues);
+    // ADDED: Immediately sync with Redux state for better responsiveness
+    const currentReduxFilters = filters[filterType] || [];
+    let newReduxFilters;
+    
+    if (isChecked) {
+      newReduxFilters = currentReduxFilters.includes(value) ? currentReduxFilters : [...currentReduxFilters, value];
+    } else {
+      newReduxFilters = currentReduxFilters.filter(item => item !== value);
+    }
+    
+    // Apply filter change immediately to Redux for instant UI feedback
+    switch (filterType) {
+      case 'selectedCategory':
+        dispatch(setSelectedCategory(newReduxFilters));
+        break;
+      case 'selectedCompany':
+        dispatch(setSelectedCompany(newReduxFilters));
+        break;
+      case 'selectedExperience':
+        dispatch(setSelectedExperience(newReduxFilters));
+        break;
+      case 'selectedLocation':
+        dispatch(setSelectedLocation(newReduxFilters));
+        break;
+      case 'selectedType':
+        dispatch(setSelectedType(newReduxFilters));
+        break;
+      case 'selectedSalary':
+        dispatch(setSelectedSalary(newReduxFilters));
+        break;
+      default:
+        console.warn('Unknown filter type:', filterType);
+    }
+    
+    // Reset to first page when filters change
+    dispatch(setCurrentPage(1));
+  }, [dispatch, filters]);
+
+  // Handle individual filter dropdown actions
+  const handleDropdownApply = useCallback((filterType) => {
+    console.log('Applying single filter:', filterType, pendingFilters[filterType]);
+    
+    const newValues = pendingFilters[filterType];
     
     switch (filterType) {
       case 'selectedCategory':
@@ -1203,26 +1535,59 @@ const updateURL = useCallback(() => {
     }
     
     dispatch(setCurrentPage(1));
-    
     const filterName = filterType.replace('selected', '');
     const count = newValues.length;
     showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
   }, [dispatch, pendingFilters, showToast]);
 
-  // Clear dropdown filter
+  // FIXED: Enhanced dropdown clear with intelligent search term clearing
   const handleDropdownClear = useCallback((filterType) => {
+    console.log('Clearing single filter:', filterType);
+    
+    const clearedValues = pendingFilters[filterType] || [];
+    
+    // Clear pending filters
     setPendingFilters(prev => ({
       ...prev,
       [filterType]: []
     }));
     
+    // Clear the actual Redux filter immediately
     switch (filterType) {
       case 'selectedCategory':
         dispatch(setSelectedCategory([]));
+        // FIXED: Clear search if it matches cleared categories
+        if (clearedValues.length > 0 && localFilters.searchInput) {
+          const shouldClearSearch = isSearchRelatedToFilters(
+            localFilters.searchInput, 
+            clearedValues, 
+            filterType
+          );
+          
+          if (shouldClearSearch) {
+            setLocalFilters(prev => ({ ...prev, searchInput: '' }));
+            dispatch(setSearchQuery(''));
+          }
+        }
         break;
+        
       case 'selectedCompany':
         dispatch(setSelectedCompany([]));
+        // FIXED: Clear search if it matches cleared companies
+        if (clearedValues.length > 0 && localFilters.searchInput) {
+          const shouldClearSearch = isSearchRelatedToFilters(
+            localFilters.searchInput, 
+            clearedValues, 
+            filterType
+          );
+          
+          if (shouldClearSearch) {
+            setLocalFilters(prev => ({ ...prev, searchInput: '' }));
+            dispatch(setSearchQuery(''));
+          }
+        }
         break;
+        
       case 'selectedExperience':
         dispatch(setSelectedExperience([]));
         break;
@@ -1242,7 +1607,7 @@ const updateURL = useCallback(() => {
     
     const filterName = filterType.replace('selected', '');
     showToast(`${filterName} filter cleared!`);
-  }, [dispatch, showToast]);
+  }, [dispatch, pendingFilters, localFilters.searchInput, isSearchRelatedToFilters, showToast]);
 
   // Modal handlers
   const handleViewDetails = useCallback((job) => {
@@ -1290,6 +1655,7 @@ const updateURL = useCallback(() => {
     }
   }, [selectedJob]);
 
+  // Optimized save job handler for cards
   const handleSaveJob = useCallback(async (jobId) => {
     try {
       const result = await dispatch(saveJob({ 
@@ -1318,55 +1684,20 @@ const updateURL = useCallback(() => {
     }
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
 
-  // LOADING & ERROR STATES
-
-  if (jobsLoading && displayJobs.length === 0) {
-    return (
-      <div className="loading">
-        <div className="spinner"></div>
-        <p>Loading jobs...</p>
-      </div>
-    );
+  // Early returns for loading states
+  if (!initialLoadComplete) {
+    return <div className="loading">Loading jobs...</div>;
   }
 
-  if (filterOptionsQuery.isLoading || categoriesQuery.isLoading || companiesQuery.isLoading) {
-    return (
-      <div className="loading">
-        <div className="spinner"></div>
-        <p>Loading filters...</p>
-      </div>
-    );
+  if (loading && (!isMobile || infiniteScroll.allJobs.length === 0)) {
+    return <div className="loading">Loading jobs...</div>;
   }
-
-  if (jobsError) {
-    return (
-      <div className="error">
-        <p>Error loading jobs: {jobsError.message}</p>
-        <button onClick={() => refetchJobs()} className="retry-button">
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  // RENDER
+  
+  if (error) return <div className="error">Error: {error}</div>;
 
   return (
     <div className="job-list-container">
-       <DebugPanel 
-         filters={filters}
-         pagination={pagination}
-         infiniteScroll={infiniteScroll}
-         displayJobs={displayJobs}
-         isMobile={isMobile}
-       />
-      {jobsFetching && (
-        <div className="background-loading-indicator">
-          <div className="spinner-small"></div>
-          <span>Updating jobs...</span>
-        </div>
-      )}
-
+      {/* Mobile Filter toggle button */}
       {isMobile && (
         <button className="filter-toggle" onClick={toggleSidebar}>
           <i className={`fa ${isSidebarOpen ? 'fa-times' : 'fa-sliders'}`}></i>
@@ -1375,6 +1706,7 @@ const updateURL = useCallback(() => {
         </button>
       )}
 
+      {/* Desktop horizontal filters */}
       {!isMobile && (
         <div className="horizontal-filters">
           <div className="filter-dropdown-group">
@@ -1451,9 +1783,11 @@ const updateURL = useCallback(() => {
         </div>
       )}
 
-      <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
+      {/* Sidebar overlay */}
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
 
       <div className="job-list-layout">
+        {/* Mobile Sidebar */}
         {isMobile && (
           <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
@@ -1464,6 +1798,7 @@ const updateURL = useCallback(() => {
             </div>
             
             <div className="filters-section">
+              {/* Filter Action Buttons */}
               <div className="filter-actions">
                 <button 
                   onClick={handleApplyFilters} 
@@ -1481,6 +1816,7 @@ const updateURL = useCallback(() => {
                 </button>
               </div>
 
+              {/* Mobile sidebar filters */}
               <div className="FilterGroup">
                 <h4>
                   Category
@@ -1617,6 +1953,7 @@ const updateURL = useCallback(() => {
         )}
 
         <div className="jobs-content">
+          {/* Enhanced job count info with active filters display */}
           {isMobile && (
             <div className="mobile-job-info">
               <div className="job-count-display">
@@ -1626,6 +1963,7 @@ const updateURL = useCallback(() => {
                 )}
               </div>
               
+              {/* Active filters summary on mobile */}
               {(filters.searchQuery || 
                 (filters.selectedCategory && filters.selectedCategory.length > 0) ||
                 (filters.selectedCompany && filters.selectedCompany.length > 0) ||
@@ -1661,7 +1999,6 @@ const updateURL = useCallback(() => {
                           <button onClick={() => {
                             const updated = filters.selectedCategory.filter(id => id !== catId);
                             dispatch(setSelectedCategory(updated));
-                            setPendingFilters(prev => ({ ...prev, selectedCategory: updated }));
                           }}>×</button>
                         </span>
                       ) : null;
@@ -1676,7 +2013,6 @@ const updateURL = useCallback(() => {
                           <button onClick={() => {
                             const updated = filters.selectedCompany.filter(id => id !== compId);
                             dispatch(setSelectedCompany(updated));
-                            setPendingFilters(prev => ({ ...prev, selectedCompany: updated }));
                           }}>×</button>
                         </span>
                       ) : null;
@@ -1689,7 +2025,6 @@ const updateURL = useCallback(() => {
                         <button onClick={() => {
                           const updated = filters.selectedExperience.filter(e => e !== exp);
                           dispatch(setSelectedExperience(updated));
-                          setPendingFilters(prev => ({ ...prev, selectedExperience: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -1701,7 +2036,6 @@ const updateURL = useCallback(() => {
                         <button onClick={() => {
                           const updated = filters.selectedLocation.filter(l => l !== loc);
                           dispatch(setSelectedLocation(updated));
-                          setPendingFilters(prev => ({ ...prev, selectedLocation: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -1713,7 +2047,6 @@ const updateURL = useCallback(() => {
                         <button onClick={() => {
                           const updated = filters.selectedType.filter(t => t !== type);
                           dispatch(setSelectedType(updated));
-                          setPendingFilters(prev => ({ ...prev, selectedType: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -1725,7 +2058,6 @@ const updateURL = useCallback(() => {
                         <button onClick={() => {
                           const updated = filters.selectedSalary.filter(s => s !== salary);
                           dispatch(setSelectedSalary(updated));
-                          setPendingFilters(prev => ({ ...prev, selectedSalary: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -1735,6 +2067,7 @@ const updateURL = useCallback(() => {
             </div>
           )}
 
+          {/* Desktop active filters display */}
           {!isMobile && (filters.searchQuery || 
             (filters.selectedCategory && filters.selectedCategory.length > 0) ||
             (filters.selectedCompany && filters.selectedCompany.length > 0) ||
@@ -1766,10 +2099,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop category-chip">
                     <i className="fa fa-industry"></i>
                     Categories ({filters.selectedCategory.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedCategory([]));
-                      setPendingFilters(prev => ({ ...prev, selectedCategory: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedCategory([]))}>×</button>
                   </span>
                 )}
                 
@@ -1777,10 +2107,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop company-chip">
                     <i className="fa fa-building"></i>
                     Companies ({filters.selectedCompany.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedCompany([]));
-                      setPendingFilters(prev => ({ ...prev, selectedCompany: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedCompany([]))}>×</button>
                   </span>
                 )}
                 
@@ -1788,10 +2115,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop experience-chip">
                     <i className="fa fa-user"></i>
                     Experience ({filters.selectedExperience.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedExperience([]));
-                      setPendingFilters(prev => ({ ...prev, selectedExperience: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedExperience([]))}>×</button>
                   </span>
                 )}
                 
@@ -1799,10 +2123,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop location-chip">
                     <i className="fa fa-map-marker"></i>
                     Locations ({filters.selectedLocation.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedLocation([]));
-                      setPendingFilters(prev => ({ ...prev, selectedLocation: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedLocation([]))}>×</button>
                   </span>
                 )}
                 
@@ -1810,10 +2131,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop type-chip">
                     <i className="fa fa-clock"></i>
                     Types ({filters.selectedType.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedType([]));
-                      setPendingFilters(prev => ({ ...prev, selectedType: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedType([]))}>×</button>
                   </span>
                 )}
                 
@@ -1821,10 +2139,7 @@ const updateURL = useCallback(() => {
                   <span className="filter-chip-desktop salary-chip">
                     <i className="fa fa-dollar"></i>
                     Salary ({filters.selectedSalary.length})
-                    <button onClick={() => {
-                      dispatch(setSelectedSalary([]));
-                      setPendingFilters(prev => ({ ...prev, selectedSalary: [] }));
-                    }}>×</button>
+                    <button onClick={() => dispatch(setSelectedSalary([]))}>×</button>
                   </span>
                 )}
               </div>
@@ -1868,25 +2183,26 @@ const updateURL = useCallback(() => {
             )}
           </div>
 
+          {/* Mobile Infinite Scroll Loader */}
           {isMobile && (
             <MobileInfiniteScroll
               jobs={displayJobs}
               hasMore={infiniteScroll.hasMore}
               loadMore={handleLoadMore}
-              loading={jobsFetching}
+              loading={infiniteScroll.isLoading}
             />
           )}
 
-          {!isMobile && (
-            <Pagination
-              pagination={pagination}
-              onPageChange={handlePageChange}
-              onJobsPerPageChange={handleJobsPerPageChange}
-            />
-          )}
+          {/* Pagination - Bottom (Desktop only) */}
+          <Pagination
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onJobsPerPageChange={handleJobsPerPageChange}
+          />
         </div>
       </div>
 
+      {/* Job Details Modal */}
       <JobDetailsModal
         job={selectedJob}
         isOpen={isModalOpen}
@@ -1895,6 +2211,7 @@ const updateURL = useCallback(() => {
         onApply={handleApplyFromModal}
       />
       
+      {/* Enhanced Toast Notification */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
@@ -1906,12 +2223,5 @@ const updateURL = useCallback(() => {
     </div>
   );
 };
-
-JobDetailsModal.displayName = 'JobDetailsModal';
-Pagination.displayName = 'Pagination';
-MobileInfiniteScroll.displayName = 'MobileInfiniteScroll';
-JobCard.displayName = 'JobCard';
-FilterOption.displayName = 'FilterOption';
-FilterDropdown.displayName = 'FilterDropdown';
 
 export default JobList;
