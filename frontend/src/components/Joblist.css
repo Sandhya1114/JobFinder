@@ -873,6 +873,10 @@ h1 {
 /* .modal-footer button .fa-bookmark-o{
  color: transparent;
 } */
+.fa-bookmark-o{
+  /* color:transparent;
+  border: 1px solid black; */
+}
 .modal-footer{
   background-color: #fff;
 }

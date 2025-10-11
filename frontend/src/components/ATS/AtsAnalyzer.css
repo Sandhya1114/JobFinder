@@ -45,7 +45,7 @@
 
 .atsLogoIcon {
   background: white;
-  color: #667eea;
+  color: #fea116;
   /* padding: 0.5rem; */
   /* border-radius: 0.5rem; */
   font-weight: bold;
@@ -300,7 +300,7 @@
 }
 
 .atsStageItem.atsStageActive {
-  border-color: #667eea;
+  border-color: #fea116;
   background: #eef2ff;
 }
 
@@ -321,7 +321,7 @@
 }
 
 .atsStageItem.atsStageActive .atsStageIcon {
-  background: #667eea;
+  background: #fea116;
   color: white;
 }
 
@@ -337,7 +337,7 @@
 }
 
 .atsStageItem.atsStageActive .atsStageText {
-  color: #667eea;
+  color: #fea116;
 }
 
 .atsStageItem.atsStageCompleted .atsStageText {
@@ -547,7 +547,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #667eea;
+  color: #fea116;
 }
 
 .atsDetailContent {
@@ -677,7 +677,7 @@
 }
 
 .atsFixButton {
-  background: #667eea;
+  background: #fea116;
   color: white;
   padding: 1rem 2rem;
   border: none;
@@ -770,7 +770,7 @@
 
 .atsLogoIcon {
   background: white;
-  color: #667eea;
+  color: #fea116;
   /* padding: 0.5rem; */
   border-radius: 0.5rem;
   font-weight: bold;
@@ -1253,7 +1253,7 @@
 }
 
 .atsStageItem.atsStageActive {
-  border-color: #667eea;
+  border-color: #fea116;
   background: #eef2ff;
 }
 
@@ -1785,7 +1785,7 @@
 
 .atsLogoIcon {
   background: white;
-  color: #667eea;
+  color: #fea116;
   /* padding: 0.5rem; */
   border-radius: 0.5rem;
   font-weight: bold;

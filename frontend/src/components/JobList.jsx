@@ -551,7 +551,7 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
           </span>
           <div className="job-actions-horizontal">
             <button onClick={handleSaveJob} className="save-btn-horizontal">
-              <i className="fa fa-bookmark-o"></i>
+              <i className="fa-regular fa-bookmark"></i>
               Save
             </button>
             <button
