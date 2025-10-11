@@ -425,9 +425,106 @@ const SmartSearchBar = ({ onSearch }) => {
   }, []);
 
   // FIXED: Enhanced handleSearch with search-to-filter mapping and modal closing
-  const handleSearch = useCallback(() => {
-    setIsLoading(true);
+  // const handleSearch = useCallback(() => {
+  //   setIsLoading(true);
     
+  //   const { jobSearch, experience, location } = searchValues;
+
+  //   // Navigate to jobs page if not already there
+  //   if (location.pathname !== '/jobs') {
+  //     navigate('/jobs');
+  //   }
+
+  //   // If all inputs are blank, clear all search filters
+  //   if (!jobSearch.trim() && !experience && !location.trim()) {
+  //     dispatch(setSearchQuery(''));
+  //     dispatch(setSelectedExperience([]));
+  //     dispatch(setSelectedLocation([]));
+  //   } else {
+  //     // Apply search query
+  //     if (jobSearch.trim()) {
+  //       dispatch(setSearchQuery(jobSearch.trim()));
+        
+  //       // ENHANCED: Apply smart filter mapping when searching
+  //       console.log('SmartSearchBar: Applying search-to-filter mapping for:', jobSearch.trim());
+  //       const relatedFilters = getRelatedFiltersFromSearch(jobSearch.trim());
+        
+  //       // Auto-apply related category filters
+  //       if (relatedFilters.categories.length > 0) {
+  //         console.log('SmartSearchBar: Auto-applying category filters:', relatedFilters.categories.map(id => 
+  //           categories.find(cat => cat.id === id)?.name || id
+  //         ));
+          
+  //         const currentCategories = filters.selectedCategory || [];
+  //         const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
+  //         dispatch(setSelectedCategory(newCategories));
+  //       }
+        
+  //       // Auto-apply related company filters
+  //       if (relatedFilters.companies.length > 0) {
+  //         console.log('SmartSearchBar: Auto-applying company filters:', relatedFilters.companies.map(id => 
+  //           companies.find(comp => comp.id === id)?.name || id
+  //         ));
+          
+  //         const currentCompanies = filters.selectedCompany || [];
+  //         const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
+  //         dispatch(setSelectedCompany(newCompanies));
+  //       }
+  //     } else {
+  //       dispatch(setSearchQuery(''));
+  //     }
+
+  //     // Handle experience filter
+  //     if (experience) {
+  //       const exp = experienceOptions.find(e => e.label === experience);
+  //       const currentExperience = filters.selectedExperience || [];
+  //       const newExperience = exp ? exp.value : experience;
+        
+  //       if (!currentExperience.includes(newExperience)) {
+  //         dispatch(setSelectedExperience([...currentExperience, newExperience]));
+  //       }
+  //     }
+
+  //     // Handle location filter  
+  //     if (location.trim()) {
+  //       const currentLocations = filters.selectedLocation || [];
+  //       const newLocation = location.trim();
+        
+  //       if (!currentLocations.includes(newLocation)) {
+  //         dispatch(setSelectedLocation([...currentLocations, newLocation]));
+  //       }
+  //     }
+  //   }
+
+  //   // Reset to first page when searching
+  //   dispatch(setCurrentPage(1));
+
+  //   // FIXED: Close the search modal/overlay
+  //   setTimeout(() => {
+  //     setIsExpanded(false);
+  //     setActiveDropdown(null);
+  //     setIsLoading(false);
+  //   }, 500);
+
+  //   if (onSearch) {
+  //     onSearch({ jobSearch, experience, location });
+  //   }
+  // }, [
+  //   searchValues, 
+  //   dispatch, 
+  //   navigate, 
+  //   location.pathname, 
+  //   onSearch, 
+  //   filters.selectedExperience, 
+  //   filters.selectedLocation, 
+  //   filters.selectedCategory, 
+  //   filters.selectedCompany,
+  //   getRelatedFiltersFromSearch,
+  //   categories,
+  //   companies
+  // ]);
+  // FIXED: Enhanced handleSearch with search-to-filter mapping and instant modal closing
+  const handleSearch = useCallback(() => {
     const { jobSearch, experience, location } = searchValues;
 
     // Navigate to jobs page if not already there
@@ -499,12 +596,9 @@ const SmartSearchBar = ({ onSearch }) => {
     // Reset to first page when searching
     dispatch(setCurrentPage(1));
 
-    // FIXED: Close the search modal/overlay
-    setTimeout(() => {
-      setIsExpanded(false);
-      setActiveDropdown(null);
-      setIsLoading(false);
-    }, 500);
+    // FIXED: Instantly close the search modal without loading delay
+    setIsExpanded(false);
+    setActiveDropdown(null);
 
     if (onSearch) {
       onSearch({ jobSearch, experience, location });
