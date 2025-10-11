@@ -1,4 +1,3 @@
-
 import { configureStore, createSlice } from '@reduxjs/toolkit';
 
 // Create a slice for jobs
@@ -37,7 +36,7 @@ const jobSlice = createSlice({
     infiniteScroll: {
       isLoading: false,
       hasMore: true,
-      allJobs: [] // Stores all loaded jobs for mobile
+      allJobs: []
     }
   },
   reducers: {
@@ -56,90 +55,37 @@ const jobSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
-    // FIXED: Better duplicate handling in appendJobs
-    // appendJobs(state, action) {
-    //   const { jobs: newJobs, pagination, resetList = false } = action.payload;
-      
-    //   if (resetList) {
-    //     // Reset the list with new jobs
-    //     state.infiniteScroll.allJobs = newJobs || [];
-    //     console.log('Reset infinite scroll jobs list with', newJobs?.length || 0, 'jobs');
-    //   } else {
-    //     // FIXED: Better duplicate detection using job ID and position
-    //     const existingJobIds = new Set();
-    //     const existingJobKeys = new Set();
-        
-    //     // Create sets of existing job identifiers
-    //     state.infiniteScroll.allJobs.forEach(job => {
-    //       existingJobIds.add(job.id);
-    //       // Create a composite key for better duplicate detection
-    //       existingJobKeys.add(`${job.id}-${job.title}-${job.companies?.name || job.company?.name}`);
-    //     });
-        
-    //     // Filter out duplicates using multiple criteria
-    //     const uniqueNewJobs = (newJobs || []).filter(job => {
-    //       const jobKey = `${job.id}-${job.title}-${job.companies?.name || job.company?.name}`;
-    //       return !existingJobIds.has(job.id) && !existingJobKeys.has(jobKey);
-    //     });
-        
-    //     if (uniqueNewJobs.length > 0) {
-    //       state.infiniteScroll.allJobs = [...state.infiniteScroll.allJobs, ...uniqueNewJobs];
-    //       console.log('Appended', uniqueNewJobs.length, 'new unique jobs. Total jobs:', state.infiniteScroll.allJobs.length);
-    //     } else {
-    //       console.log('No new unique jobs to append. All', newJobs?.length || 0, 'jobs were duplicates.');
-    //     }
-    //   }
-      
-    //   if (pagination) {
-    //     // Update the main pagination state
-    //     state.pagination = {
-    //       ...state.pagination,
-    //       ...pagination,
-    //       currentPage: pagination.currentPage || state.pagination.currentPage
-    //     };
-    //     state.infiniteScroll.hasMore = pagination.hasNextPage || false;
-    //     console.log('Updated pagination - current page:', state.pagination.currentPage, 'hasMore:', state.infiniteScroll.hasMore);
-    //   }
-      
-    //   state.infiniteScroll.isLoading = false;
-    //   state.loading = false;
-    //   state.error = null;
-    // },
-// ============================================
-appendJobs(state, action) {
-  const { jobs: newJobs, pagination, resetList = false } = action.payload;
+    appendJobs(state, action) {
+      const { jobs: newJobs, pagination, resetList = false } = action.payload;
 
-  if (resetList) {
-    // Reset the list with new jobs
-    state.infiniteScroll.allJobs = newJobs || [];
-    console.log('Reset infinite scroll jobs list with', newJobs?.length || 0, 'jobs');
-  } else {
-    // FIXED: Re-enable duplicate filtering to prevent issues
-    const existingJobIds = new Set(state.infiniteScroll.allJobs.map(job => job.id));
-    const uniqueNewJobs = (newJobs || []).filter(job => !existingJobIds.has(job.id));
-    
-    if (uniqueNewJobs.length > 0) {
-      state.infiniteScroll.allJobs = [...state.infiniteScroll.allJobs, ...uniqueNewJobs];
-      console.log('Appended', uniqueNewJobs.length, 'new unique jobs. Total:', state.infiniteScroll.allJobs.length);
-    } else {
-      console.log('No new unique jobs to append.');
-    }
-  }
+      if (resetList) {
+        state.infiniteScroll.allJobs = newJobs || [];
+        console.log('🔄 Reset infinite scroll jobs list with', newJobs?.length || 0, 'jobs');
+      } else {
+        const existingJobIds = new Set(state.infiniteScroll.allJobs.map(job => job.id));
+        const uniqueNewJobs = (newJobs || []).filter(job => !existingJobIds.has(job.id));
+        
+        if (uniqueNewJobs.length > 0) {
+          state.infiniteScroll.allJobs = [...state.infiniteScroll.allJobs, ...uniqueNewJobs];
+          console.log('✅ Appended', uniqueNewJobs.length, 'new unique jobs. Total:', state.infiniteScroll.allJobs.length);
+        } else {
+          console.log('⚠️ No new unique jobs to append. All were duplicates.');
+        }
+      }
 
-  if (pagination) {
-    state.pagination = {
-      ...state.pagination,
-      ...pagination,
-      currentPage: pagination.currentPage || state.pagination.currentPage
-    };
-    state.infiniteScroll.hasMore = pagination.hasNextPage || false;
-  }
+      if (pagination) {
+        state.pagination = {
+          ...state.pagination,
+          ...pagination,
+          currentPage: pagination.currentPage || state.pagination.currentPage
+        };
+        state.infiniteScroll.hasMore = pagination.hasNextPage || false;
+      }
 
-  state.infiniteScroll.isLoading = false;
-  state.loading = false;
-  state.error = null;
-}
-,
+      state.infiniteScroll.isLoading = false;
+      state.loading = false;
+      state.error = null;
+    },
     setInfiniteScrollLoading(state, action) {
       state.infiniteScroll.isLoading = action.payload;
     },
@@ -150,8 +96,7 @@ appendJobs(state, action) {
       state.infiniteScroll.allJobs = [];
       state.infiniteScroll.hasMore = true;
       state.infiniteScroll.isLoading = false;
-      state.pagination.currentPage = 1;
-      console.log('Reset infinite scroll state and current page to 1');
+      console.log('🔄 Reset infinite scroll state');
     },
     setCategories(state, action) {
       state.categories = action.payload;
@@ -174,61 +119,49 @@ appendJobs(state, action) {
     },
     setCurrentPage(state, action) {
       state.pagination.currentPage = action.payload;
-      console.log('Set current page to:', action.payload);
+      console.log('📄 Set current page to:', action.payload);
     },
     setJobsPerPage(state, action) {
       state.pagination.jobsPerPage = action.payload;
-      state.pagination.currentPage = 1; // Reset to first page when changing page size
+      state.pagination.currentPage = 1;
+      console.log('📊 Set jobs per page to:', action.payload);
     },
+    // FIXED: Don't reset infinite scroll on filter changes for desktop
+    // Only reset current page and let React Query handle the rest
     setSelectedCategory(state, action) {
       state.filters.selectedCategory = action.payload;
-      state.pagination.currentPage = 1; // Reset to first page when filter changes
-      // Reset infinite scroll when filters change
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      state.pagination.currentPage = 1;
+      console.log('🏷️ Set category filter:', action.payload);
     },
     setSelectedCompany(state, action) {
       state.filters.selectedCompany = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('🏢 Set company filter:', action.payload);
     },
     setSearchQuery(state, action) {
       state.filters.searchQuery = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('🔍 Set search query:', action.payload);
     },
     setSelectedExperience(state, action) {
       state.filters.selectedExperience = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('💼 Set experience filter:', action.payload);
     },
     setSelectedLocation(state, action) {
       state.filters.selectedLocation = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('📍 Set location filter:', action.payload);
     },
     setSelectedType(state, action) {
       state.filters.selectedType = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('📅 Set type filter:', action.payload);
     },
     setSelectedSalary(state, action) {
       state.filters.selectedSalary = action.payload;
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('💰 Set salary filter:', action.payload);
     },
     setSorting(state, action) {
       state.sorting = {
@@ -236,9 +169,7 @@ appendJobs(state, action) {
         ...action.payload
       };
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('🔀 Set sorting:', action.payload);
     },
     clearFilters(state) {
       state.filters = {
@@ -251,9 +182,7 @@ appendJobs(state, action) {
         selectedSalary: [],
       };
       state.pagination.currentPage = 1;
-      state.infiniteScroll.allJobs = [];
-      state.infiniteScroll.hasMore = true;
-      state.infiniteScroll.isLoading = false;
+      console.log('🧹 Cleared all filters');
     },
   },
 });
@@ -267,7 +196,7 @@ import workExperienceReducer from './workExperienceSlice';
 import resumesReducer from './resumesSlice';
 import advancedFilterReducer from './advancedFilterSlice';
 
-// Export actions for use in components
+// Export actions
 export const {
   setJobs,
   setJobsWithPagination,

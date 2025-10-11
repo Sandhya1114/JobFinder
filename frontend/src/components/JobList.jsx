@@ -1,4 +1,3 @@
-
 import React, { memo, useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -8,6 +7,7 @@ import {
   useCategoriesQuery,
   useCompaniesQuery,
 } from '../hooks/useJobQueries';
+import DebugPanel from './DebugPanel';
 import {
   setSelectedCategory,
   setSelectedCompany,
@@ -19,9 +19,7 @@ import {
   setCurrentPage,
   setJobsPerPage,
   clearFilters,
-  appendJobs,
   resetInfiniteScroll,
-  setInfiniteScrollLoading
 } from '../redux/store';
 import './Joblist.css';
 import { saveJob } from '../redux/savedJobsSlice';
@@ -342,7 +340,7 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
       (entries) => {
         const target = entries[0];
         if (target.isIntersecting && hasMore && !loading) {
-          console.log('Intersection observer triggered - loading more jobs');
+          console.log('📱 Intersection observer triggered - loading more jobs');
           loadMore();
         }
       },
@@ -491,33 +489,6 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
 });
 
 // Filter Option Component
-// const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
-//   const getDisplayName = () => {
-//     if (filterType === 'selectedCategory' && categories) {
-//       const category = categories.find(cat => cat.id === option);
-//       return category ? category.name : option;
-//     } else if (filterType === 'selectedCompany' && companies) {
-//       const company = companies.find(comp => comp.id === option);
-//       return company ? company.name : option;
-//     } else if (filterType === 'selectedSalary') {
-//       return `$${option.replace('-', ' - ')}`;
-//     }
-//     return option;
-//   };
-
-//   return (
-//     <label className="filter-option">
-//       <input
-//         type="checkbox"
-//         checked={isChecked}
-//         onChange={(e) => onChange(filterType, option, e.target.checked)}
-//       />
-//       <span className="checkmark-mini"></span>
-//       {getDisplayName()}
-//     </label>
-//   );
-// });
-// Filter Option Component - WITHOUT React.memo (this is the key fix!)
 const FilterOption = ({ option, isChecked, onChange, filterType, categories, companies }) => {
   const getDisplayName = () => {
     if (filterType === 'selectedCategory' && categories) {
@@ -534,7 +505,6 @@ const FilterOption = ({ option, isChecked, onChange, filterType, categories, com
 
   const handleChange = (e) => {
     e.stopPropagation();
-    console.log('Checkbox clicked:', option, 'New state:', e.target.checked);
     onChange(filterType, option, e.target.checked);
   };
 
@@ -557,106 +527,7 @@ const FilterOption = ({ option, isChecked, onChange, filterType, categories, com
   );
 };
 
-
 // Filter Dropdown Component
-// const FilterDropdown = React.memo(({ 
-//   id, 
-//   icon, 
-//   title, 
-//   options, 
-//   selectedValues, 
-//   onFilterChange, 
-//   onApply, 
-//   onClear,
-//   categories,
-//   companies  
-// }) => {
-//   const [isOpen, setIsOpen] = useState(false);
-//   const dropdownRef = useRef(null);
-
-//   useEffect(() => {
-//     const handleClickOutside = (event) => {
-//       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-//         setIsOpen(false);
-//       }
-//     };
-
-//     document.addEventListener('mousedown', handleClickOutside);
-//     return () => {
-//       document.removeEventListener('mousedown', handleClickOutside);
-//     };
-//   }, []);
-
-//   const handleButtonClick = useCallback((e) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     setIsOpen(prev => !prev);
-//   }, []);
-
-//   const handleOptionChange = useCallback((filterType, option, isChecked) => {
-//     onFilterChange(filterType, option, isChecked);
-//   }, [onFilterChange]);
-
-//   const handleApply = useCallback((e) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     onApply();
-//     setIsOpen(false);
-//   }, [onApply]);
-
-//   const handleClear = useCallback((e) => {
-//     e.preventDefault();
-//     e.stopPropagation();
-//     onClear();
-//   }, [onClear]);
-
-//   const hasActiveFilters = selectedValues && selectedValues.length > 0;
-
-//   return (
-//     <div ref={dropdownRef} className={`filter-dropdown ${isOpen ? 'active' : ''}`}>
-//       <button 
-//         className={`filter-dropdown-btn ${hasActiveFilters ? 'has-active-filters' : ''}`}
-//         onClick={handleButtonClick}
-//         type="button"
-//       >
-//         <i className={`fa fa-${icon}`}></i>
-//         {title}
-//         {hasActiveFilters && <span className="filter-count">({selectedValues.length})</span>}
-//         <i className={`fa ${isOpen ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-//       </button>
-      
-//       {isOpen && (
-//         <div className="filter-dropdown-content">
-//           <div className="filter-dropdown-header">
-//             <h4>{title}</h4>
-//           </div>
-//           <div className="filter-options">
-//             {options.map((option) => {
-//               const optionValue = option.id || option.name || option;
-              
-//               return (
-//                 <FilterOption
-//                   key={optionValue}
-//                   option={optionValue}
-//                   isChecked={selectedValues?.includes(optionValue)}
-//                   onChange={handleOptionChange}
-//                   filterType={id}
-//                   categories={categories}
-//                   companies={companies}
-//                 />
-//               );
-//             })}
-//           </div>
-//           <div className="filter-dropdown-actions">
-//             <button onClick={handleApply} className="apply-btn-mini" type="button">Apply</button>
-//             <button onClick={handleClear} className="clear-btn-mini" type="button">Clear</button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// });
-// Filter Dropdown Component - WITHOUT React.memo (this is the key fix!)
 const FilterDropdown = ({ 
   id, 
   icon, 
@@ -671,11 +542,6 @@ const FilterDropdown = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-
-  // Log when selectedValues changes
-  useEffect(() => {
-    console.log(`FilterDropdown ${id} - selectedValues changed:`, selectedValues);
-  }, [selectedValues, id]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -697,7 +563,6 @@ const FilterDropdown = ({
   }, []);
 
   const handleOptionChange = useCallback((filterType, option, isChecked) => {
-    // Don't close dropdown when selecting options
     onFilterChange(filterType, option, isChecked);
   }, [onFilterChange]);
 
@@ -705,14 +570,13 @@ const FilterDropdown = ({
     e.preventDefault();
     e.stopPropagation();
     onApply();
-    setIsOpen(false); // Close on Apply
+    setIsOpen(false);
   }, [onApply]);
 
   const handleClear = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
     onClear();
-    // Don't close dropdown on clear
   }, [onClear]);
 
   const hasActiveFilters = selectedValues && selectedValues.length > 0;
@@ -740,8 +604,6 @@ const FilterDropdown = ({
               const optionValue = option.id || option.name || option;
               const isChecked = selectedValues?.includes(optionValue) || false;
               
-              console.log('Rendering option:', optionValue, 'isChecked:', isChecked, 'selectedValues:', selectedValues);
-              
               return (
                 <FilterOption
                   key={optionValue}
@@ -765,44 +627,35 @@ const FilterDropdown = ({
   );
 };
 
-// Display name for debugging
-FilterDropdown.displayName = 'FilterDropdown';
-FilterOption.displayName = 'FilterOption';
-
 const JobList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   
+  // ✅ Get state from Redux
   const { 
     filters, 
     pagination, 
     sorting,
-    infiniteScroll 
+    infiniteScroll,
+    jobs: reduxJobs // Get jobs from Redux
   } = useSelector((state) => state.jobs);
 
-  // ========================================
-  // REACT QUERY HOOKS
-  // ========================================
+  // ✅ React Query hooks - they sync to Redux automatically
   const jobsQuery = useJobsQuery(filters, pagination, sorting);
   const filterOptionsQuery = useFilterOptionsQuery();
   const categoriesQuery = useCategoriesQuery();
   const companiesQuery = useCompaniesQuery();
 
-  // Extract data from queries
   const { 
-    data: jobsData, 
     isLoading: jobsLoading, 
     error: jobsError,
     isFetching: jobsFetching,
     refetch: refetchJobs,
-    isPreviousData
   } = jobsQuery;
 
-  const jobs = jobsData?.jobs || [];
-  const jobsPagination = jobsData?.pagination || pagination;
-  
+  // ✅ Use Redux data for display (React Query updates it automatically)
   const filterOptions = useMemo(() => {
     const data = filterOptionsQuery.data;
     if (!data) return { isLoaded: false, experiences: [], locations: [], types: [], salaryRanges: [] };
@@ -838,15 +691,23 @@ const JobList = () => {
   });
 
   const [hasUnappliedFilters, setHasUnappliedFilters] = useState(false);
-  const [infiniteScrollInitialized, setInfiniteScrollInitialized] = useState(false);
+  const isLoadingMoreRef = useRef(false);
 
   // Refs
   const urlSyncRef = useRef(false);
-  const isLoadingMoreRef = useRef(false);
 
-  // ========================================
-  // MEMOIZED VALUES
-  // ========================================
+  // ✅ CRITICAL: Display jobs based on mobile/desktop
+  const displayJobs = useMemo(() => {
+    if (isMobile) {
+      // Mobile: use infinite scroll jobs from Redux
+      return infiniteScroll.allJobs;
+    } else {
+      // Desktop: use current page jobs from Redux
+      return reduxJobs;
+    }
+  }, [isMobile, infiniteScroll.allJobs, reduxJobs]);
+
+  // Memoized values
   const experienceOptions = useMemo(() => {
     return filterOptions.isLoaded ? filterOptions.experiences : [];
   }, [filterOptions.experiences, filterOptions.isLoaded]);
@@ -864,10 +725,6 @@ const JobList = () => {
       ? filterOptions.salaryRanges.map(range => range.value)
       : [];
   }, [filterOptions.salaryRanges, filterOptions.isLoaded]);
-
-  const displayJobs = useMemo(() => {
-    return isMobile ? infiniteScroll.allJobs : jobs;
-  }, [isMobile, infiniteScroll.allJobs, jobs]);
 
   const categoryOptionsForDropdown = useMemo(() => {
     return categories.map(category => ({
@@ -888,9 +745,7 @@ const JobList = () => {
     setTimeout(() => setToast(null), 3000);
   }, []);
 
-  // ========================================
-  // HELPER FUNCTIONS
-  // ========================================
+  // Helper functions
   const getRelatedFiltersFromSearch = useCallback((searchTerm) => {
     if (!searchTerm || !searchTerm.trim()) return { categories: [], companies: [] };
     
@@ -953,41 +808,9 @@ const JobList = () => {
     return { categories: relatedCategories, companies: relatedCompanies };
   }, [categories, companies]);
 
-  const isSearchRelatedToFilters = useCallback((searchTerm, filterValues, filterType) => {
-    if (!searchTerm || !filterValues || filterValues.length === 0) return false;
-    
-    const term = searchTerm.toLowerCase().trim();
-    
-    if (filterType === 'selectedCategory') {
-      return categories.some(cat => {
-        if (filterValues.includes(cat.id)) {
-          const catName = cat.name.toLowerCase();
-          return catName.includes(term) || 
-                 term.includes(catName) ||
-                 catName.split(' ').some(word => term.includes(word) && word.length > 2);
-        }
-        return false;
-      });
-    } else if (filterType === 'selectedCompany') {
-      return companies.some(comp => {
-        if (filterValues.includes(comp.id)) {
-          const compName = comp.name.toLowerCase();
-          return compName.includes(term) || 
-                 term.includes(compName) ||
-                 compName.split(' ').some(word => term.includes(word) && word.length > 2);
-        }
-        return false;
-      });
-    }
-    
-    return false;
-  }, [categories, companies]);
-
-  // ========================================
-  // URL MANAGEMENT
-  // ========================================
- const updateURL = useCallback(() => {
-  if (urlSyncRef.current) return;
+  // ✅ FIX 1: Remove urlSyncRef blocking in updateURL
+const updateURL = useCallback(() => {
+  // REMOVED: if (urlSyncRef.current) return; // This was blocking URL updates
   
   const params = new URLSearchParams();
   
@@ -1022,7 +845,6 @@ const JobList = () => {
   const newURL = params.toString() ? `${location.pathname}?${params.toString()}` : location.pathname;
   navigate(newURL, { replace: true });
 }, [filters, pagination, location.pathname, navigate]);
-
   const parseURLAndSetFilters = useCallback(() => {
     urlSyncRef.current = true;
     
@@ -1083,9 +905,7 @@ const JobList = () => {
     }, 100);
   }, [searchParams, dispatch, filters, pagination]);
 
-  // ========================================
   // EFFECTS
-  // ========================================
 
   // Parse URL on mount
   useEffect(() => {
@@ -1110,7 +930,6 @@ const JobList = () => {
       
       if (wasMobile !== mobile) {
         dispatch(resetInfiniteScroll());
-        setInfiniteScrollInitialized(false);
         if (!mobile && isSidebarOpen) {
           setIsSidebarOpen(false);
         }
@@ -1121,46 +940,20 @@ const JobList = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, [dispatch, isMobile, isSidebarOpen]);
 
-  // Sync pending filters with Redux
-  // useEffect(() => {
-  //   const shouldUpdate = (pendingArray, reduxArray) => {
-  //     if (!pendingArray || !reduxArray) return true;
-  //     if (pendingArray.length !== reduxArray.length) return true;
-  //     return !pendingArray.every(item => reduxArray.includes(item));
-  //   };
+  // Sync pendingFilters when Redux filters change
+  useEffect(() => {
+    if (urlSyncRef.current) {
+      setPendingFilters({
+        selectedCategory: filters.selectedCategory || [],
+        selectedCompany: filters.selectedCompany || [],
+        selectedExperience: filters.selectedExperience || [],
+        selectedLocation: filters.selectedLocation || [],
+        selectedType: filters.selectedType || [],
+        selectedSalary: filters.selectedSalary || []
+      });
+    }
+  }, [filters]);
 
-  //   const needsUpdate = {
-  //     categories: shouldUpdate(pendingFilters.selectedCategory, filters.selectedCategory),
-  //     companies: shouldUpdate(pendingFilters.selectedCompany, filters.selectedCompany),
-  //     experience: shouldUpdate(pendingFilters.selectedExperience, filters.selectedExperience),
-  //     location: shouldUpdate(pendingFilters.selectedLocation, filters.selectedLocation),
-  //     type: shouldUpdate(pendingFilters.selectedType, filters.selectedType),
-  //     salary: shouldUpdate(pendingFilters.selectedSalary, filters.selectedSalary)
-  //   };
-
-  //   if (Object.values(needsUpdate).some(Boolean)) {
-  //     setPendingFilters({
-  //       selectedCategory: filters.selectedCategory || [],
-  //       selectedCompany: filters.selectedCompany || [],
-  //       selectedExperience: filters.selectedExperience || [],
-  //       selectedLocation: filters.selectedLocation || [],
-  //       selectedType: filters.selectedType || [],
-  //       selectedSalary: filters.selectedSalary || []
-  //     });
-  //   }
-  // }, [filters, pendingFilters]);
-  // Initialize pendingFilters only once on mount
-useEffect(() => {
-  console.log('Initializing pendingFilters on mount');
-  setPendingFilters({
-    selectedCategory: filters.selectedCategory || [],
-    selectedCompany: filters.selectedCompany || [],
-    selectedExperience: filters.selectedExperience || [],
-    selectedLocation: filters.selectedLocation || [],
-    selectedType: filters.selectedType || [],
-    selectedSalary: filters.selectedSalary || []
-  });
-}, []); // ✅ Empty dependency array - runs only once on mount
   // Check for unapplied filters
   useEffect(() => {
     const currentFiltersStr = JSON.stringify({
@@ -1234,27 +1027,7 @@ useEffect(() => {
     }, 800);
 
     return () => clearTimeout(debounceTimer);
-  }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, categories, companies, showToast, isMobile, isSidebarOpen]);
-
-  // Initialize mobile infinite scroll when jobs load
-  useEffect(() => {
-    if (
-      isMobile && 
-      jobs.length > 0 && 
-      filterOptions.isLoaded &&
-      !infiniteScrollInitialized &&
-      infiniteScroll.allJobs.length === 0
-    ) {
-      console.log('Initializing infinite scroll with jobs:', jobs.length);
-      dispatch(appendJobs({ 
-        jobs: jobs, 
-        pagination: jobsPagination, 
-        resetList: true 
-      }));
-      setInfiniteScrollInitialized(true);
-      isLoadingMoreRef.current = false;
-    }
-  }, [jobs, isMobile, jobsPagination, dispatch, filterOptions.isLoaded, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
+  }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, showToast, isMobile, isSidebarOpen]);
 
   // Scroll to top on page change (desktop)
   useEffect(() => {
@@ -1263,47 +1036,47 @@ useEffect(() => {
     }
   }, [pagination.currentPage, isMobile]);
 
-  // ========================================
   // HANDLERS
-  // ========================================
 
   const handlePageChange = useCallback((newPage) => {
     if (!isMobile && newPage !== pagination.currentPage) {
       dispatch(setCurrentPage(newPage));
-      // React Query will automatically refetch with new page
     }
   }, [dispatch, isMobile, pagination.currentPage]);
 
   const handleJobsPerPageChange = useCallback((newJobsPerPage) => {
     if (!isMobile && newJobsPerPage !== pagination.jobsPerPage) {
       dispatch(setJobsPerPage(newJobsPerPage));
-      // React Query will automatically refetch
+      dispatch(setCurrentPage(1));
     }
   }, [dispatch, isMobile, pagination.jobsPerPage]);
 
   const handleLoadMore = useCallback(async () => {
-    if (!infiniteScroll.hasMore || infiniteScroll.isLoading || isLoadingMoreRef.current || jobsFetching) {
+    if (!infiniteScroll.hasMore || jobsFetching || isLoadingMoreRef.current) {
+      console.log('⏸️ Load more skipped:', { 
+        hasMore: infiniteScroll.hasMore, 
+        fetching: jobsFetching, 
+        loading: isLoadingMoreRef.current 
+      });
       return;
     }
 
     try {
       isLoadingMoreRef.current = true;
-      dispatch(setInfiniteScrollLoading(true));
+      console.log('📱 Loading next page:', pagination.currentPage + 1);
       
       const nextPage = pagination.currentPage + 1;
       dispatch(setCurrentPage(nextPage));
-      
-      // Wait for React Query to fetch with updated page
-      // The component will re-render with new data
       
     } catch (error) {
       console.error('Error loading more jobs:', error);
       showToast('Error loading more jobs');
     } finally {
-      dispatch(setInfiniteScrollLoading(false));
-      isLoadingMoreRef.current = false;
+      setTimeout(() => {
+        isLoadingMoreRef.current = false;
+      }, 500);
     }
-  }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, pagination.currentPage, jobsFetching, showToast]);
+  }, [infiniteScroll.hasMore, dispatch, pagination.currentPage, jobsFetching, showToast]);
 
   // Apply filters
   const handleApplyFilters = useCallback(() => {
@@ -1318,18 +1091,17 @@ useEffect(() => {
 
     filterActions.forEach(action => action());
     dispatch(setCurrentPage(1));
-    setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
     const totalFiltersApplied = Object.values(pendingFilters).reduce((acc, arr) => acc + (arr?.length || 0), 0);
     showToast(`${totalFiltersApplied} filter${totalFiltersApplied !== 1 ? 's' : ''} applied successfully!`);
     setIsSidebarOpen(false);
-    
-    // React Query will automatically refetch
   }, [dispatch, pendingFilters, showToast]);
 
   // Clear filters
   const handleClearFilters = useCallback(() => {
+    urlSyncRef.current = true;
+    
     setPendingFilters({
       selectedCategory: [],
       selectedCompany: [],
@@ -1347,12 +1119,15 @@ useEffect(() => {
       locationSearchInput: ''
     });
     
-    setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
     showToast('All filters and search cleared!');
     setIsSidebarOpen(false);
     navigate(location.pathname, { replace: true });
+    
+    setTimeout(() => {
+      urlSyncRef.current = false;
+    }, 100);
   }, [dispatch, showToast, navigate, location.pathname]);
 
   const toggleSidebar = useCallback(() => {
@@ -1379,154 +1154,63 @@ useEffect(() => {
     }
   }, [dispatch]);
 
-  // const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
-  //   setPendingFilters(prev => {
-  //     const current = prev[filterType] || [];
-  //     let updated;
+  // Update pendingFilters only
+  const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+    setPendingFilters(prev => {
+      const current = Array.isArray(prev[filterType]) ? prev[filterType] : [];
+      let updated;
       
-  //     if (isChecked) {
-  //       updated = current.includes(value) ? current : [...current, value];
-  //     } else {
-  //       updated = current.filter(item => item !== value);
-  //     }
+      if (isChecked) {
+        updated = current.includes(value) ? current : [...current, value];
+      } else {
+        updated = current.filter(item => item !== value);
+      }
       
-  //     return {
-  //       ...prev,
-  //       [filterType]: updated
-  //     };
-  //   });
-    
-  //   const currentReduxFilters = filters[filterType] || [];
-  //   let newReduxFilters;
-    
-  //   if (isChecked) {
-  //     newReduxFilters = currentReduxFilters.includes(value) ? currentReduxFilters : [...currentReduxFilters, value];
-  //   } else {
-  //     newReduxFilters = currentReduxFilters.filter(item => item !== value);
-  //   }
-    
-  //   switch (filterType) {
-  //     case 'selectedCategory':
-  //       dispatch(setSelectedCategory(newReduxFilters));
-  //       break;
-  //     case 'selectedCompany':
-  //       dispatch(setSelectedCompany(newReduxFilters));
-  //       break;
-  //     case 'selectedExperience':
-  //       dispatch(setSelectedExperience(newReduxFilters));
-  //       break;
-  //     case 'selectedLocation':
-  //       dispatch(setSelectedLocation(newReduxFilters));
-  //       break;
-  //     case 'selectedType':
-  //       dispatch(setSelectedType(newReduxFilters));
-  //       break;
-  //     case 'selectedSalary':
-  //       dispatch(setSelectedSalary(newReduxFilters));
-  //       break;
-  //     default:
-  //       console.warn('Unknown filter type:', filterType);
-  //   }
-    
-  //   dispatch(setCurrentPage(1));
-  // }, [dispatch, filters]);
-// 3. FIX: Update handlePendingFilterChange to ensure state updates correctly
+      return {
+        ...prev,
+        [filterType]: updated
+      };
+    });
+  }, []);
 
-// CORRECT VERSION - Only update pendingFilters, NOT Redux
-const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
-  console.log('Filter change:', filterType, value, isChecked);
-  
-  // ONLY UPDATE PENDING FILTERS - Don't dispatch to Redux yet
-  setPendingFilters(prev => {
-    const current = Array.isArray(prev[filterType]) ? prev[filterType] : [];
-    let updated;
+  // Apply dropdown filter
+  const handleDropdownApply = useCallback((filterType) => {
+    const newValues = pendingFilters[filterType];
     
-    if (isChecked) {
-      updated = current.includes(value) ? current : [...current, value];
-    } else {
-      updated = current.filter(item => item !== value);
+    console.log('✅ Applying filter:', filterType, newValues);
+    
+    switch (filterType) {
+      case 'selectedCategory':
+        dispatch(setSelectedCategory(newValues));
+        break;
+      case 'selectedCompany':
+        dispatch(setSelectedCompany(newValues));
+        break;
+      case 'selectedExperience':
+        dispatch(setSelectedExperience(newValues));
+        break;
+      case 'selectedLocation':
+        dispatch(setSelectedLocation(newValues));
+        break;
+      case 'selectedType':
+        dispatch(setSelectedType(newValues));
+        break;
+      case 'selectedSalary':
+        dispatch(setSelectedSalary(newValues));
+        break;
+      default:
+        console.warn('Unknown filter type:', filterType);
     }
     
-    console.log('Updated pending filters:', filterType, updated);
+    dispatch(setCurrentPage(1));
     
-    return {
-      ...prev,
-      [filterType]: updated
-    };
-  });
-}, []); // ✅ Empty dependencies - only uses setPendingFilters
- const handleDropdownApply = useCallback((filterType) => {
-  const newValues = pendingFilters[filterType];
-  
-  console.log('=== APPLY CLICKED ===');
-  console.log(`Filter Type: ${filterType}`);
-  console.log('New Values:', newValues);
-  console.log('Current Redux Filters BEFORE dispatch:', {
-    selectedCategory: filters.selectedCategory,
-    selectedCompany: filters.selectedCompany,
-    selectedExperience: filters.selectedExperience,
-    selectedLocation: filters.selectedLocation,
-    selectedType: filters.selectedType,
-    selectedSalary: filters.selectedSalary
-  });
-  
-  switch (filterType) {
-    case 'selectedCategory':
-      dispatch(setSelectedCategory(newValues));
-      console.log('Dispatched setSelectedCategory with:', newValues);
-      break;
-    case 'selectedCompany':
-      dispatch(setSelectedCompany(newValues));
-      console.log('Dispatched setSelectedCompany with:', newValues);
-      break;
-    case 'selectedExperience':
-      dispatch(setSelectedExperience(newValues));
-      console.log('Dispatched setSelectedExperience with:', newValues);
-      break;
-    case 'selectedLocation':
-      dispatch(setSelectedLocation(newValues));
-      console.log('Dispatched setSelectedLocation with:', newValues);
-      break;
-    case 'selectedType':
-      dispatch(setSelectedType(newValues));
-      console.log('Dispatched setSelectedType with:', newValues);
-      break;
-    case 'selectedSalary':
-      dispatch(setSelectedSalary(newValues));
-      console.log('Dispatched setSelectedSalary with:', newValues);
-      break;
-    default:
-      console.warn('Unknown filter type:', filterType);
-  }
-  
-  dispatch(setCurrentPage(1));
-  
-  // Reset infinite scroll for mobile
-  if (isMobile) {
-    dispatch(resetInfiniteScroll());
-    setInfiniteScrollInitialized(false);
-  }
-  
-  // Log after a small delay to see if Redux state updated
-  setTimeout(() => {
-    console.log('Redux Filters AFTER dispatch (should be updated):', {
-      selectedCategory: filters.selectedCategory,
-      selectedCompany: filters.selectedCompany,
-      selectedExperience: filters.selectedExperience,
-      selectedLocation: filters.selectedLocation,
-      selectedType: filters.selectedType,
-      selectedSalary: filters.selectedSalary
-    });
-  }, 100);
-  
-  const filterName = filterType.replace('selected', '');
-  const count = newValues.length;
-  showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
-}, [dispatch, pendingFilters, showToast, isMobile, filters]);
+    const filterName = filterType.replace('selected', '');
+    const count = newValues.length;
+    showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
+  }, [dispatch, pendingFilters, showToast]);
 
+  // Clear dropdown filter
   const handleDropdownClear = useCallback((filterType) => {
-    const clearedValues = pendingFilters[filterType] || [];
-    
     setPendingFilters(prev => ({
       ...prev,
       [filterType]: []
@@ -1535,36 +1219,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     switch (filterType) {
       case 'selectedCategory':
         dispatch(setSelectedCategory([]));
-        if (clearedValues.length > 0 && localFilters.searchInput) {
-          const shouldClearSearch = isSearchRelatedToFilters(
-            localFilters.searchInput, 
-            clearedValues, 
-            filterType
-          );
-          
-          if (shouldClearSearch) {
-            setLocalFilters(prev => ({ ...prev, searchInput: '' }));
-            dispatch(setSearchQuery(''));
-          }
-        }
         break;
-        
       case 'selectedCompany':
         dispatch(setSelectedCompany([]));
-        if (clearedValues.length > 0 && localFilters.searchInput) {
-          const shouldClearSearch = isSearchRelatedToFilters(
-            localFilters.searchInput, 
-            clearedValues, 
-            filterType
-          );
-          
-          if (shouldClearSearch) {
-            setLocalFilters(prev => ({ ...prev, searchInput: '' }));
-            dispatch(setSearchQuery(''));
-          }
-        }
         break;
-        
       case 'selectedExperience':
         dispatch(setSelectedExperience([]));
         break;
@@ -1584,7 +1242,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     
     const filterName = filterType.replace('selected', '');
     showToast(`${filterName} filter cleared!`);
-  }, [dispatch, pendingFilters, localFilters.searchInput, isSearchRelatedToFilters, showToast]);
+  }, [dispatch, showToast]);
 
   // Modal handlers
   const handleViewDetails = useCallback((job) => {
@@ -1660,12 +1318,9 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     }
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
 
-  // ========================================
   // LOADING & ERROR STATES
-  // ========================================
 
-  // Show loading only on initial load (not when refetching with cached data)
-  if (jobsLoading && !jobsData) {
+  if (jobsLoading && displayJobs.length === 0) {
     return (
       <div className="loading">
         <div className="spinner"></div>
@@ -1674,7 +1329,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     );
   }
 
-  // Show loading for filter options
   if (filterOptionsQuery.isLoading || categoriesQuery.isLoading || companiesQuery.isLoading) {
     return (
       <div className="loading">
@@ -1695,21 +1349,24 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     );
   }
 
-  // ========================================
   // RENDER
-  // ========================================
 
   return (
     <div className="job-list-container">
-      {/* Show background loading indicator when fetching new data */}
-      {jobsFetching && !isPreviousData && (
+       <DebugPanel 
+         filters={filters}
+         pagination={pagination}
+         infiniteScroll={infiniteScroll}
+         displayJobs={displayJobs}
+         isMobile={isMobile}
+       />
+      {jobsFetching && (
         <div className="background-loading-indicator">
           <div className="spinner-small"></div>
           <span>Updating jobs...</span>
         </div>
       )}
 
-      {/* Mobile Filter toggle button */}
       {isMobile && (
         <button className="filter-toggle" onClick={toggleSidebar}>
           <i className={`fa ${isSidebarOpen ? 'fa-times' : 'fa-sliders'}`}></i>
@@ -1718,7 +1375,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
         </button>
       )}
 
-      {/* Desktop horizontal filters */}
       {!isMobile && (
         <div className="horizontal-filters">
           <div className="filter-dropdown-group">
@@ -1798,7 +1454,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
       <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>
 
       <div className="job-list-layout">
-        {/* Mobile Sidebar */}
         {isMobile && (
           <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
@@ -1809,7 +1464,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
             </div>
             
             <div className="filters-section">
-              {/* Filter Action Buttons */}
               <div className="filter-actions">
                 <button 
                   onClick={handleApplyFilters} 
@@ -1827,7 +1481,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                 </button>
               </div>
 
-              {/* Mobile sidebar filters */}
               <div className="FilterGroup">
                 <h4>
                   Category
@@ -1964,7 +1617,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
         )}
 
         <div className="jobs-content">
-          {/* Enhanced job count info with active filters display */}
           {isMobile && (
             <div className="mobile-job-info">
               <div className="job-count-display">
@@ -1974,7 +1626,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                 )}
               </div>
               
-              {/* Active filters summary on mobile */}
               {(filters.searchQuery || 
                 (filters.selectedCategory && filters.selectedCategory.length > 0) ||
                 (filters.selectedCompany && filters.selectedCompany.length > 0) ||
@@ -2010,6 +1661,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                           <button onClick={() => {
                             const updated = filters.selectedCategory.filter(id => id !== catId);
                             dispatch(setSelectedCategory(updated));
+                            setPendingFilters(prev => ({ ...prev, selectedCategory: updated }));
                           }}>×</button>
                         </span>
                       ) : null;
@@ -2024,6 +1676,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                           <button onClick={() => {
                             const updated = filters.selectedCompany.filter(id => id !== compId);
                             dispatch(setSelectedCompany(updated));
+                            setPendingFilters(prev => ({ ...prev, selectedCompany: updated }));
                           }}>×</button>
                         </span>
                       ) : null;
@@ -2036,6 +1689,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                         <button onClick={() => {
                           const updated = filters.selectedExperience.filter(e => e !== exp);
                           dispatch(setSelectedExperience(updated));
+                          setPendingFilters(prev => ({ ...prev, selectedExperience: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -2047,6 +1701,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                         <button onClick={() => {
                           const updated = filters.selectedLocation.filter(l => l !== loc);
                           dispatch(setSelectedLocation(updated));
+                          setPendingFilters(prev => ({ ...prev, selectedLocation: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -2058,6 +1713,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                         <button onClick={() => {
                           const updated = filters.selectedType.filter(t => t !== type);
                           dispatch(setSelectedType(updated));
+                          setPendingFilters(prev => ({ ...prev, selectedType: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -2069,6 +1725,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                         <button onClick={() => {
                           const updated = filters.selectedSalary.filter(s => s !== salary);
                           dispatch(setSelectedSalary(updated));
+                          setPendingFilters(prev => ({ ...prev, selectedSalary: updated }));
                         }}>×</button>
                       </span>
                     ))}
@@ -2078,7 +1735,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
             </div>
           )}
 
-          {/* Desktop active filters display */}
           {!isMobile && (filters.searchQuery || 
             (filters.selectedCategory && filters.selectedCategory.length > 0) ||
             (filters.selectedCompany && filters.selectedCompany.length > 0) ||
@@ -2110,7 +1766,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop category-chip">
                     <i className="fa fa-industry"></i>
                     Categories ({filters.selectedCategory.length})
-                    <button onClick={() => dispatch(setSelectedCategory([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedCategory([]));
+                      setPendingFilters(prev => ({ ...prev, selectedCategory: [] }));
+                    }}>×</button>
                   </span>
                 )}
                 
@@ -2118,7 +1777,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop company-chip">
                     <i className="fa fa-building"></i>
                     Companies ({filters.selectedCompany.length})
-                    <button onClick={() => dispatch(setSelectedCompany([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedCompany([]));
+                      setPendingFilters(prev => ({ ...prev, selectedCompany: [] }));
+                    }}>×</button>
                   </span>
                 )}
                 
@@ -2126,7 +1788,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop experience-chip">
                     <i className="fa fa-user"></i>
                     Experience ({filters.selectedExperience.length})
-                    <button onClick={() => dispatch(setSelectedExperience([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedExperience([]));
+                      setPendingFilters(prev => ({ ...prev, selectedExperience: [] }));
+                    }}>×</button>
                   </span>
                 )}
                 
@@ -2134,7 +1799,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop location-chip">
                     <i className="fa fa-map-marker"></i>
                     Locations ({filters.selectedLocation.length})
-                    <button onClick={() => dispatch(setSelectedLocation([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedLocation([]));
+                      setPendingFilters(prev => ({ ...prev, selectedLocation: [] }));
+                    }}>×</button>
                   </span>
                 )}
                 
@@ -2142,7 +1810,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop type-chip">
                     <i className="fa fa-clock"></i>
                     Types ({filters.selectedType.length})
-                    <button onClick={() => dispatch(setSelectedType([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedType([]));
+                      setPendingFilters(prev => ({ ...prev, selectedType: [] }));
+                    }}>×</button>
                   </span>
                 )}
                 
@@ -2150,7 +1821,10 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <span className="filter-chip-desktop salary-chip">
                     <i className="fa fa-dollar"></i>
                     Salary ({filters.selectedSalary.length})
-                    <button onClick={() => dispatch(setSelectedSalary([]))}>×</button>
+                    <button onClick={() => {
+                      dispatch(setSelectedSalary([]));
+                      setPendingFilters(prev => ({ ...prev, selectedSalary: [] }));
+                    }}>×</button>
                   </span>
                 )}
               </div>
@@ -2164,7 +1838,7 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
                   <i className="fa fa-search fa-3x"></i>
                   <h3>No Jobs Found</h3>
                   <p>
-                    {jobsPagination.totalJobs === 0 
+                    {pagination.totalJobs === 0 
                       ? 'No jobs are currently available.' 
                       : 'No jobs match your current search and filter criteria.'
                     }
@@ -2194,26 +1868,25 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
             )}
           </div>
 
-          {/* Mobile Infinite Scroll */}
           {isMobile && (
             <MobileInfiniteScroll
               jobs={displayJobs}
               hasMore={infiniteScroll.hasMore}
               loadMore={handleLoadMore}
-              loading={infiniteScroll.isLoading || jobsFetching}
+              loading={jobsFetching}
             />
           )}
 
-          {/* Pagination - Desktop only */}
-          <Pagination
-            pagination={jobsPagination}
-            onPageChange={handlePageChange}
-            onJobsPerPageChange={handleJobsPerPageChange}
-          />
+          {!isMobile && (
+            <Pagination
+              pagination={pagination}
+              onPageChange={handlePageChange}
+              onJobsPerPageChange={handleJobsPerPageChange}
+            />
+          )}
         </div>
       </div>
 
-      {/* Job Details Modal */}
       <JobDetailsModal
         job={selectedJob}
         isOpen={isModalOpen}
@@ -2222,7 +1895,6 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
         onApply={handleApplyFromModal}
       />
       
-      {/* Toast Notification */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">
@@ -2234,5 +1906,12 @@ const handlePendingFilterChange = useCallback((filterType, value, isChecked) => 
     </div>
   );
 };
+
+JobDetailsModal.displayName = 'JobDetailsModal';
+Pagination.displayName = 'Pagination';
+MobileInfiniteScroll.displayName = 'MobileInfiniteScroll';
+JobCard.displayName = 'JobCard';
+FilterOption.displayName = 'FilterOption';
+FilterDropdown.displayName = 'FilterDropdown';
 
 export default JobList;
