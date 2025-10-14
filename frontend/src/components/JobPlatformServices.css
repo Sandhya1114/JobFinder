@@ -328,6 +328,9 @@
   
   .feature-item {
     gap: 16px;
+  
+        flex-direction: column;
+        align-items: center;
   }
   
   .feature-content h3 {

@@ -1,5 +1,6 @@
 /* 
   HERO SECTION CSS WITH DYNAMIC SUGGESTIONS
+  Fixed with specific selectors to prevent CSS conflicts
 */
 
 /* Hero Section */
@@ -219,126 +220,156 @@
   background: var(--secondary-color);
 }
 
-/* Right Visual */
-.hero-visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 500px;
-  position: relative;
+/* Right Visual - HERO SPECIFIC */
+.hero .hero-visual {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 500px !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
 }
 
-.cards-stack {
-  position: relative;
-  width: 400px;
-  height: 60vh;
-  margin: auto;
+.hero .cards-stack {
+  position: relative !important;
+  width: 400px !important;
+  height: 500px !important;
+  margin: 0 auto !important;
 }
 
-/* Job Cards */
-.job-card {
-  position: absolute;
-  background: white;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 20px var(--shadow-light);
-  border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  width: 400px;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border-left: 1px solid #625e5e;
-  box-shadow: 8px 8px 10px rgb(0 0 0 / 29%);
+/* Job Cards - HERO SPECIFIC ONLY */
+.hero .hero-visual .cards-stack .job-card {
+  position: absolute !important;
+  background: white !important;
+  border-radius: 16px !important;
+  padding: 1.5rem !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid #e5e7eb !important;
+  border-left: 4px solid var(--primary-color) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  width: 380px !important;
+  max-width: 380px !important;
+  min-height: auto !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  cursor: pointer !important;
+  backdrop-filter: blur(10px) !important;
+  will-change: transform, box-shadow !important;
 }
 
-.job-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px var(--shadow-medium);
-  border-color: var(--primary-color);
+.hero .hero-visual .cards-stack .job-card:hover {
+  transform: translateY(-5px) scale(1.02) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.12) !important;
+  border-left-color: var(--secondary-color) !important;
+  z-index: 10 !important;
 }
 
-.card-logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  overflow: hidden;
-  background: var(--background-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
+.hero .hero-visual .cards-stack .job-card .card-logo {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 12px !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  background: var(--background-light) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid var(--border-color) !important;
+  padding: 8px !important;
 }
 
-.card-logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
+.hero .hero-visual .cards-stack .job-card .card-logo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
 }
 
-.card-content {
-  flex: 1;
-  min-width: 0;
+.hero .hero-visual .cards-stack .job-card .card-content {
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
-.job-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-  line-height: 1.3;
+.hero .hero-visual .cards-stack .job-card .job-title {
+  font-size: 1.125rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 0.375rem !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
-.company-name {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.25rem;
-  line-height: 1.4;
-  font-weight: 400;
+.hero .hero-visual .cards-stack .job-card .company-name {
+  font-size: 0.938rem !important;
+  color: var(--text-secondary) !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.4 !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
-.job-type {
-  font-size: 0.75rem;
-  color: var(--primary-color);
-  font-weight: 600;
-  background: var(--background-lighter);
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  display: inline-block;
+.hero .hero-visual .cards-stack .job-card .job-type {
+  font-size: 0.813rem !important;
+  color: var(--primary-color) !important;
+  font-weight: 600 !important;
+  background: var(--background-lighter) !important;
+  padding: 0.375rem 0.75rem !important;
+  border-radius: 8px !important;
+  display: inline-block !important;
+  border: 1px solid var(--border-color) !important;
 }
 
-.card-menu {
-  color: var(--text-secondary);
-  font-size: 1.2rem;
-  cursor: pointer;
-  line-height: 1;
-  transition: color 0.2s ease;
+.hero .hero-visual .cards-stack .job-card .card-menu {
+  color: var(--text-secondary) !important;
+  font-size: 1.5rem !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  transition: all 0.2s ease !important;
+  padding: 0.5rem !important;
+  border-radius: 8px !important;
 }
 
-.card-menu:hover {
-  color: var(--primary-color);
+.hero .hero-visual .cards-stack .job-card .card-menu:hover {
+  color: var(--primary-color) !important;
+  background: var(--background-light) !important;
 }
 
-/* Card Positioning */
-.card-1 {
-  top: 5vh;
-  right: 20px;
-  z-index: 3;
+/* Card Positioning - Stacked Layout - HERO SPECIFIC */
+.hero .hero-visual .cards-stack .job-card.card-1 {
+  top: 40px !important;
+  right: 20px !important;
+  z-index: 3 !important;
+  transform: rotate(-2deg) !important;
 }
 
-.card-2 {
-  top: 2vh;
-  right: 60px;
-  z-index: 2;
+.hero .hero-visual .cards-stack .job-card.card-1:hover {
+  transform: rotate(-2deg) translateY(-5px) scale(1.02) !important;
 }
 
-.card-3 {
-  bottom: 5vh;
-  right: 0px;
-  z-index: 1;
+.hero .hero-visual .cards-stack .job-card.card-2 {
+  top: 180px !important;
+  right: 60px !important;
+  z-index: 2 !important;
+  transform: rotate(1deg) !important;
+}
+
+.hero .hero-visual .cards-stack .job-card.card-2:hover {
+  transform: rotate(1deg) translateY(-5px) scale(1.02) !important;
+}
+
+.hero .hero-visual .cards-stack .job-card.card-3 {
+  top: 320px !important;
+  right: 10px !important;
+  z-index: 1 !important;
+  transform: rotate(-1deg) !important;
+}
+
+.hero .hero-visual .cards-stack .job-card.card-3:hover {
+  transform: rotate(-1deg) translateY(-5px) scale(1.02) !important;
 }
 
 /* Responsive Design */
@@ -353,21 +384,99 @@
     font-size: 3.5rem;
   }
   
-  .hero-visual {
-    height: 400px;
+  .hero .hero-visual {
+    height: 400px !important;
   }
   
-  .cards-stack {
-    width: 350px;
-    height: 400px;
+  .hero .cards-stack {
+    width: 350px !important;
+    height: 400px !important;
   }
   
-  .job-card {
-    width: 280px;
+  .hero .hero-visual .cards-stack .job-card {
+    width: 320px !important;
   }
   
   .hero-content {
     margin-right: 0;
+  }
+}
+
+/* Tablet Landscape (768px to 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hero {
+    min-height: 55vh;
+    padding: 1.5rem;
+  }
+  
+  .hero-container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    max-width: 100%;
+  }
+  
+  .hero-content {
+    max-width: 100%;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .hero .hero-container .hero-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .hero .hero-subtitle {
+    font-size: 1.125rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .search-container {
+    padding: 8px;
+  }
+  
+  .input-field {
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .input-field input {
+    font-size: 0.95rem;
+  }
+  
+  .search-btn {
+    padding: 0.875rem 1.75rem;
+    font-size: 0.95rem;
+  }
+  
+  /* Job cards for tablet - HERO SPECIFIC */
+  .hero .hero-visual {
+    height: 350px !important;
+    margin: 0 auto !important;
+  }
+  
+  .hero .cards-stack {
+    width: 320px !important;
+    height: 350px !important;
+  }
+  
+  .hero .hero-visual .cards-stack .job-card {
+    width: 320px !important;
+    padding: 1.25rem !important;
+  }
+  
+  .hero .hero-visual .cards-stack .job-card.card-1 {
+    top: 20px !important;
+    right: 30px !important;
+  }
+  
+  .hero .hero-visual .cards-stack .job-card.card-2 {
+    top: 120px !important;
+    right: 50px !important;
+  }
+  
+  .hero .hero-visual .cards-stack .job-card.card-3 {
+    top: 220px !important;
+    right: 10px !important;
   }
 }
 
@@ -420,245 +529,33 @@
     padding: 1rem;
   }
   
-  .hero-visual {
-    height: 300px;
+  .hero .hero-visual {
+    height: 300px !important;
   }
   
-  .cards-stack {
-    width: 300px;
-    height: 250px;
+  .hero .cards-stack {
+    width: 300px !important;
+    height: 250px !important;
   }
   
-  .job-card {
-    width: 280px;
-    padding: 1.25rem;
+  .hero .hero-visual .cards-stack .job-card {
+    width: 280px !important;
+    padding: 1.25rem !important;
   }
   
-  .card-1 {
-    top: 10px;
-    right: 10px;
+  .hero .hero-visual .cards-stack .job-card.card-1 {
+    top: 10px !important;
+    right: 10px !important;
   }
   
-  .card-2 {
-    top: 120px;
-    right: 40px;
+  .hero .hero-visual .cards-stack .job-card.card-2 {
+    top: 100px !important;
+    right: 40px !important;
   }
   
-  .card-3 {
-    top: 200px;
-    right: 0px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero .hero-container .hero-title {
-    font-size: 2rem;
-  }
-  
-  .hero-subtitle {
-    font-size: 1rem;
-  }
-  
-  .job-card {
-    width: 260px;
-    padding: 1rem;
-  }
-  
-  .job-title {
-    font-size: 0.9rem;
-  }
-  
-  .company-name {
-    font-size: 0.8rem;
-  }
-  
-  .card-logo {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .hero-suggestion-item {
-    padding: 0.75rem 1rem;
-  }
-  
-  .hero-suggestion-item:hover {
-    padding-left: 1.25rem;
-  }
-  
-  .hero-suggestion-item span {
-    font-size: 0.875rem;
-  }
-}
-
-/* Focus States for Accessibility */
-.input-field input:focus {
-  outline: none;
-}
-
-/* Loading State for Search Button */
-.search-btn:disabled {
-  background: var(--text-secondary);
-  cursor: not-allowed;
-  transform: none;
-}
-
-.search-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-/* Enhanced Suggestion Item Animations */
-.hero-suggestion-item:active {
-  background: var(--background-light);
-  transform: scale(0.98);
-}
-
-/* Empty State for Suggestions */
-.hero-suggestions-empty {
-  padding: 1.5rem;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-/* Suggestion Category Headers (if needed) */
-.hero-suggestion-category {
-  padding: 0.5rem 1.25rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--background-lighter);
-  border-bottom: 1px solid rgba(254, 215, 170, 0.3);
-}
-
-/* Ensure proper z-index layering */
-.search-wrapper {
-  position: relative;
-  z-index: 10;
-}
-
-/* Prevent text selection on suggestion items */
-.hero-suggestion-item {
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-/* Smooth transitions for all interactive elements */
-* {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  .hero-suggestions-dropdown {
-    border: 2px solid var(--text-primary);
-  }
-  
-  .hero-suggestion-item:hover {
-    background: var(--primary-color);
-    color: white;
-  }
-  
-  .hero-suggestion-item:hover .hero-suggestion-icon {
-    color: white;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  
-  @keyframes slideDown {
-    from, to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-}
-/* Add these responsive improvements to your Hero.css */
-
-/* Tablet Landscape (768px to 1023px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .hero {
-    min-height: 55vh;
-    padding: 1.5rem;
-  }
-  
-  .hero-container {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-    max-width: 100%;
-  }
-  
-  .hero-content {
-    max-width: 100%;
-    margin: 0 auto;
-    text-align: center;
-  }
-  
-  .hero .hero-container .hero-title {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-  }
-  
-  .hero .hero-subtitle {
-    font-size: 1.125rem;
-    margin-bottom: 2.5rem;
-  }
-  
-  .search-container {
-    padding: 8px;
-  }
-  
-  .input-field {
-    padding: 0.875rem 1.25rem;
-  }
-  
-  .input-field input {
-    font-size: 0.95rem;
-  }
-  
-  .search-btn {
-    padding: 0.875rem 1.75rem;
-    font-size: 0.95rem;
-  }
-  
-  /* Job cards for tablet */
-  .hero-visual {
-    height: 350px;
-    margin: 0 auto;
-  }
-  
-  .cards-stack {
-    width: 320px;
-    height: 350px;
-  }
-  
-  .job-card {
-    width: 320px;
-    padding: 1.25rem;
-  }
-  
-  .card-1 {
-    top: 20px;
-    right: 30px;
-  }
-  
-  .card-2 {
-    top: 120px;
-    right: 50px;
-  }
-  
-  .card-3 {
-    bottom: 20px;
-    right: 10px;
+  .hero .hero-visual .cards-stack .job-card.card-3 {
+    top: 180px !important;
+    right: 0px !important;
   }
 }
 
@@ -728,42 +625,42 @@
     font-size: 1rem;
   }
   
-  /* Job cards for tablet portrait */
-  .hero-visual {
-    height: 300px;
+  /* Job cards for tablet portrait - HERO SPECIFIC */
+  .hero .hero-visual {
+    height: 300px !important;
   }
   
-  .cards-stack {
-    width: 280px;
-    height: 300px;
+  .hero .cards-stack {
+    width: 280px !important;
+    height: 300px !important;
   }
   
-  .job-card {
-    width: 280px;
-    padding: 1.125rem;
+  .hero .hero-visual .cards-stack .job-card {
+    width: 280px !important;
+    padding: 1.125rem !important;
   }
   
-  .job-title {
-    font-size: 0.95rem;
+  .hero .hero-visual .cards-stack .job-card .job-title {
+    font-size: 0.95rem !important;
   }
   
-  .company-name {
-    font-size: 0.85rem;
+  .hero .hero-visual .cards-stack .job-card .company-name {
+    font-size: 0.85rem !important;
   }
   
-  .card-1 {
-    top: 15px;
-    right: 15px;
+  .hero .hero-visual .cards-stack .job-card.card-1 {
+    top: 15px !important;
+    right: 15px !important;
   }
   
-  .card-2 {
-    top: 110px;
-    right: 35px;
+  .hero .hero-visual .cards-stack .job-card.card-2 {
+    top: 110px !important;
+    right: 35px !important;
   }
   
-  .card-3 {
-    top: 190px;
-    right: 5px;
+  .hero .hero-visual .cards-stack .job-card.card-3 {
+    top: 190px !important;
+    right: 5px !important;
   }
 }
 
@@ -848,59 +745,61 @@
     min-width: 14px;
   }
   
-  /* Job cards for mobile */
-  .hero-visual {
-    height: 280px;
+  /* Job cards for mobile - HERO SPECIFIC */
+  .hero .hero-visual {
+    height: 280px !important;
   }
   
-  .cards-stack {
-    width: 260px;
-    height: 280px;
+  .hero .cards-stack {
+    width: 260px !important;
+    height: 280px !important;
   }
   
-  .job-card {
-    width: 260px;
-    padding: 1rem;
-    border-radius: 12px;
+  .hero .hero-visual .cards-stack .job-card {
+    width: 260px !important;
+    padding: 1rem !important;
+    border-radius: 12px !important;
   }
   
-  .card-logo {
-    width: 36px;
-    height: 36px;
+  .hero .hero-visual .cards-stack .job-card .card-logo {
+    width: 40px !important;
+    height: 40px !important;
+    padding: 6px !important;
   }
   
-  .job-title {
-    font-size: 0.875rem;
-    margin-bottom: 0.2rem;
+  .hero .hero-visual .cards-stack .job-card .job-title {
+    font-size: 0.875rem !important;
+    margin-bottom: 0.2rem !important;
   }
   
-  .company-name {
-    font-size: 0.75rem;
-    margin-bottom: 0.2rem;
+  .hero .hero-visual .cards-stack .job-card .company-name {
+    font-size: 0.75rem !important;
+    margin-bottom: 0.3rem !important;
   }
   
-  .job-type {
-    font-size: 0.688rem;
-    padding: 0.2rem 0.4rem;
+  .hero .hero-visual .cards-stack .job-card .job-type {
+    font-size: 0.688rem !important;
+    padding: 0.25rem 0.5rem !important;
   }
   
-  .card-menu {
-    font-size: 1rem;
+  .hero .hero-visual .cards-stack .job-card .card-menu {
+    font-size: 1.2rem !important;
+    padding: 0.25rem !important;
   }
   
-  .card-1 {
-    top: 10px;
-    right: 10px;
+  .hero .hero-visual .cards-stack .job-card.card-1 {
+    top: 10px !important;
+    right: 10px !important;
   }
   
-  .card-2 {
-    top: 100px;
-    right: 30px;
+  .hero .hero-visual .cards-stack .job-card.card-2 {
+    top: 100px !important;
+    right: 30px !important;
   }
   
-  .card-3 {
-    top: 180px;
-    right: 0px;
+  .hero .hero-visual .cards-stack .job-card.card-3 {
+    top: 180px !important;
+    right: 0px !important;
   }
 }
 
@@ -931,29 +830,103 @@
     font-size: 0.875rem;
   }
   
-  .job-card {
-    width: 240px;
+  /* Job cards for extra small mobile - HERO SPECIFIC */
+  .hero .hero-visual .cards-stack .job-card {
+    width: 240px !important;
   }
   
-  .cards-stack {
-    width: 240px;
-    height: 260px;
+  .hero .cards-stack {
+    width: 240px !important;
+    height: 260px !important;
   }
   
-  .hero-visual {
-    height: 260px;
+  .hero .hero-visual {
+    height: 260px !important;
   }
   
-  .card-logo {
-    width: 32px;
-    height: 32px;
+  .hero .hero-visual .cards-stack .job-card .card-logo {
+    width: 36px !important;
+    height: 36px !important;
   }
   
-  .job-title {
-    font-size: 0.813rem;
+  .hero .hero-visual .cards-stack .job-card .job-title {
+    font-size: 0.813rem !important;
   }
   
-  .company-name {
-    font-size: 0.688rem;
+  .hero .hero-visual .cards-stack .job-card .company-name {
+    font-size: 0.688rem !important;
+  }
+}
+
+/* Focus States for Accessibility */
+.input-field input:focus {
+  outline: none;
+}
+
+/* Loading State for Search Button */
+.search-btn:disabled {
+  background: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.search-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Enhanced Suggestion Item Animations */
+.hero-suggestion-item:active {
+  background: var(--background-light);
+  transform: scale(0.98);
+}
+
+/* Ensure proper z-index layering */
+.search-wrapper {
+  position: relative;
+  z-index: 10;
+}
+
+/* Prevent text selection on suggestion items */
+.hero-suggestion-item {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .hero-suggestions-dropdown {
+    border: 2px solid var(--text-primary);
+  }
+  
+  .hero-suggestion-item:hover {
+    background: var(--primary-color);
+    color: white;
+  }
+  
+  .hero-suggestion-item:hover .hero-suggestion-icon {
+    color: white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  @keyframes slideDown {
+    from, to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }

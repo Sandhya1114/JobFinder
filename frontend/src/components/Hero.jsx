@@ -602,7 +602,7 @@ function Hero() {
             {/* Google Job Card */}
             <div className="job-card card-1">
               <div className="card-logo">
-                <img src="https://logo.clearbit.com/google.com" alt="Google" />
+                <img src="https://www.gstatic.com/marketing-cms/assets/images/d5/dc/cfe9ce8b4425b410b49b7f2dd3f3/g.webp=s96-fcrop64=1,00000000ffffffff-rw" alt="Google" />
               </div>
               <div className="card-content">
                 <div className="job-title">Senior Software Engineer</div>

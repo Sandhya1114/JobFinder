@@ -385,3 +385,117 @@
     font-size: 13px;
   }
 }
+/* 🌐 Tablet (up to 1024px) */
+@media (max-width: 1024px) {
+  .homeQuickFiltersContainer {
+    padding: 32px 20px;
+  }
+
+  .homeQuickFiltersHeader h2 {
+    font-size: 36px;
+  }
+
+  .homeQuickFiltersHeader p {
+    font-size: 15px;
+  }
+
+  .homeQuickFiltersGrid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .homeQuickFilterCard {
+    padding: 14px 10px;
+    min-height: 60px;
+  }
+
+  .homeFilterIcon {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .homeFilterLabel {
+    font-size: 13px;
+  }
+}
+
+/* 📱 Mobile (up to 768px) */
+@media (max-width: 768px) {
+  .homeQuickFiltersContainer {
+    padding: 28px 16px;
+  }
+
+  .homeQuickFiltersHeader h2 {
+    font-size: 28px;
+  }
+
+  .homeQuickFiltersHeader p {
+    font-size: 14px;
+  }
+
+  .homeQuickFiltersGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .homeQuickFilterCard {
+    padding: 12px 8px;
+    border-radius: 12px;
+  }
+
+  .homeFilterIcon {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .homeFilterLabel {
+    font-size: 12px;
+  }
+
+  .homeFilterArrow {
+    display: none; /* hide arrows on mobile */
+  }
+}
+
+/* 📱 Small Phones (up to 480px) */
+@media (max-width: 480px) {
+  .homeQuickFiltersContainer {
+    padding: 20px 12px;
+  }
+
+  .homeQuickFiltersHeader h2 {
+    font-size: 22px;
+  }
+
+  .homeQuickFiltersHeader p {
+    font-size: 13px;
+  }
+
+  .homeQuickFiltersGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .homeQuickFilterCard {
+    padding: 10px 6px;
+    min-height: 54px;
+    border-radius: 10px;
+  }
+
+  .homeFilterIcon {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .homeFilterLabel {
+    font-size: 11px;
+  }
+
+  .homeViewMoreBtn {
+    padding: 8px 18px;
+    font-size: 12px;
+  }
+}
