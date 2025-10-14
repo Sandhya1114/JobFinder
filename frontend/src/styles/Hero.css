@@ -671,6 +671,7 @@
   .hero {
     min-height: auto;
     padding: 1rem 0.75rem;
+
   }
   
   .hero-container {
@@ -750,6 +751,7 @@
   /* Job cards for mobile - HERO SPECIFIC */
   .hero .hero-visual {
     height: 280px !important;
+    margin-left: 14vw;
   }
   
   .hero .cards-stack {
