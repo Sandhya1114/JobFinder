@@ -832,6 +832,13 @@ export default function Header({ user }) {
               </span>
               <span className="nav-text">Jobs</span>
             </Link>
+             <Link 
+             to="/score"
+             className={isActiveLink("/score") ? "active" : ""}
+            ><span className="nav-icon">
+                <i className="fas fa-briefcase"></i>
+              </span>
+              <span className="nav-text">ATS</span></Link>
             <Link 
               to="/about" 
               onClick={() => setIsMobileMenuOpen(false)}

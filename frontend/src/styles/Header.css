@@ -1078,6 +1078,6 @@ body, html {
 .mobile-menu {
   box-sizing: border-box;
 }
-.mobile-nav-links a.active .nav-icon .fa-solid, .fas{
+.mobile-nav-links a.active .nav-icon .fa-solid .fas  {
   color: #000;
 }
