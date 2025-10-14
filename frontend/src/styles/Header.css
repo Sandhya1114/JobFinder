@@ -1068,3 +1068,13 @@ header.shrink .logo{
     display: none !important;
   }
 }
+/* ONLY ADD THIS - Don't change your existing mobile-menu-overlay styles */
+body, html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.header-container,
+.mobile-menu {
+  box-sizing: border-box;
+}
