@@ -629,6 +629,7 @@
   /* Job cards for tablet portrait - HERO SPECIFIC */
   .hero .hero-visual {
     height: 300px !important;
+    margin-left: 14vw;
   }
   
   .hero .cards-stack {
