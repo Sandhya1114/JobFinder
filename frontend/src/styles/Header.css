@@ -327,8 +327,8 @@ header.shrink .logo{
   height: 100vh;
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.95) 0%, 
-    rgba(255, 255, 255, 0.9) 50%, 
-    rgba(254, 161, 22, 0.05) 100%);
+    rgb(255, 255, 255) 50%, 
+    rgb(255, 255, 255) 100%);
   backdrop-filter: blur(30px);
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1077,4 +1077,7 @@ body, html {
 .header-container,
 .mobile-menu {
   box-sizing: border-box;
+}
+.mobile-nav-links a.active .nav-icon .fa-solid, .fas{
+  color: #000;
 }
