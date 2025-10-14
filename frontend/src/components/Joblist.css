@@ -3497,37 +3497,389 @@ h1 {
    display: flex;
 }
 /* ========================================
-   MOBILE FILTER IMPROVEMENTS
+   CLEAN MOBILE FILTER DESIGN - MATCHES REFERENCE IMAGE
    ======================================== */
 
-/* Mobile Filter Toggle Button - Enhanced */
 @media (max-width: 768px) {
+  /* Mobile Sidebar - Clean White Background */
+  .filters-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 90%;
+    max-width: 360px;
+    height: 100vh;
+    z-index: 1000;
+    background: #ffffff;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    overflow-x: hidden;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filters-sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Sidebar Header - Simple and Clean */
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 16px 20px;
+    background: #ffffff;
+    border-bottom: 1px solid #e8e8e8;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .sidebar-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .sidebar-header h3 i {
+    display: none; /* Hide icon for cleaner look */
+  }
+
+  /* Sidebar Header Actions */
+  .sidebar-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .active-filter-count {
+    display: none; /* Will show filter count differently */
+  }
+
+  /* Clear All Link - Top Right */
+  .filter-clear-link {
+    color: #0066ff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .filter-clear-link:active {
+    color: #0052cc;
+  }
+
+  /* Close Button - X icon */
+  .sidebar-close-btn {
+    background: none;
+    border: none;
+    color: #666666;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+
+  .sidebar-close-btn:active {
+    background: #f0f0f0;
+  }
+
+  .sidebar-close-btn i {
+    display: flex;
+    color: #666666;
+  }
+
+  /* Filter Actions - Bottom Sticky */
+  .filter-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e8e8e8;
+    position: sticky;
+    bottom: 0;
+    z-index: 9;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .apply-filters-btn,
+  .clear-filters-btn {
+    flex: 1;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+  }
+
+  .apply-filters-btn {
+    background: #0066ff;
+    color: white;
+  }
+
+  .apply-filters-btn:active {
+    background: #0052cc;
+  }
+
+  .apply-filters-btn i {
+    display: none; /* Hide icon for cleaner look */
+  }
+
+  .clear-filters-btn {
+    background: #ffffff;
+    color: #666666;
+    border: 1px solid #d4d4d4;
+  }
+
+  .clear-filters-btn:active {
+    background: #f5f5f5;
+  }
+
+  .clear-filters-btn i {
+    display: none; /* Hide icon for cleaner look */
+  }
+
+  /* Filters Section - Clean Spacing */
+  .filters-section {
+    padding: 0;
+    background: #ffffff;
+  }
+
+  /* Filter Group - Clean Collapsible Design */
+  .FilterGroup {
+    margin-bottom: 0;
+    padding: 0;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .FilterGroup:last-child {
+    border-bottom: none;
+    margin-bottom: 80px; /* Space for bottom buttons */
+  }
+
+  .FilterGroup h4 {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+    padding: 16px 20px;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    background: #ffffff;
+    transition: background 0.2s ease;
+    position: relative;
+  }
+
+  .FilterGroup h4:active {
+    background: #f8f8f8;
+  }
+
+  /* Chevron Icon for Expandable Sections */
+  .FilterGroup h4::after {
+    content: '\f078'; /* FontAwesome chevron-down */
+    font-family: 'FontAwesome';
+    font-size: 12px;
+    color: #999999;
+    transition: transform 0.3s ease;
+  }
+
+  .FilterGroup.expanded h4::after {
+    transform: rotate(180deg);
+  }
+
+  .filter-count-badge {
+    background: transparent;
+    color: #999999;
+    padding: 0;
+    border-radius: 0;
+    font-size: 14px;
+    font-weight: 400;
+    min-width: auto;
+    text-align: right;
+    margin-right: 20px;
+  }
+
+  /* Filter Options Container - Collapsible */
+  .filter-options-container {
+    display: none;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 20px 16px 20px;
+    background: #fafafa;
+  }
+
+  .FilterGroup.expanded .filter-options-container {
+    display: flex;
+  }
+
+  /* Filter Checkbox - Clean Minimal Design */
+  .filter-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    margin: 0;
+    font-size: 14px;
+    color: #333333;
+    cursor: pointer;
+    transition: none;
+    position: relative;
+    padding-left: 32px;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .filter-checkbox:hover {
+    background: transparent;
+    color: #333333;
+  }
+
+  .filter-checkbox:active {
+    background: transparent;
+  }
+
+  .filter-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Custom Checkbox - Minimal Square Design */
+  .checkmark {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+    background-color: white;
+    border: 1.5px solid #d4d4d4;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .filter-checkbox:hover input ~ .checkmark {
+    border-color: #999999;
+    background: white;
+  }
+
+  .filter-checkbox input:checked ~ .checkmark {
+    background: #0066ff;
+    border-color: #0066ff;
+  }
+
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .filter-checkbox input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  /* Filter Label with Count */
+  .filter-checkbox span:not(.checkmark) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .filter-option-count {
+    color: #999999;
+    font-size: 13px;
+    margin-left: auto;
+  }
+
+  /* Hide Active Filters Section in Sidebar */
+  .active-filters-mobile {
+    display: none;
+  }
+
+  /* Mobile Job Info - Keep Minimal */
+  .mobile-job-info {
+    display: block;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 16px 20px;
+    margin: 0;
+  }
+
+  .job-count-display {
+    font-size: 15px;
+    font-weight: 500;
+    color: #666666;
+    text-align: left;
+  }
+
+  .job-count-display span:first-child {
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+
+  /* Filter Toggle Button - Bottom Fixed */
   .filter-toggle {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 999;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: #0066ff;
     color: white;
     border: none;
-    border-radius: 30px;
-    padding: 14px 28px;
+    border-radius: 8px;
+    padding: 14px 24px;
     cursor: pointer;
     font-size: 15px;
     font-weight: 600;
-    box-shadow: 0 6px 20px rgba(254, 161, 22, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     min-width: 140px;
     justify-content: center;
   }
 
-  .filter-toggle:hover {
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 8px 25px rgba(254, 161, 22, 0.5);
+  .filter-toggle:active {
+    transform: translateX(-50%) translateY(1px);
+    box-shadow: 0 2px 8px rgba(0, 102, 255, 0.3);
   }
 
   .filter-toggle p {
@@ -3544,48 +3896,41 @@ h1 {
 
   .filter-badge {
     position: absolute;
-    top: -6px;
-    right: -6px;
+    top: -8px;
+    right: -8px;
     width: 22px;
     height: 22px;
-    background: #ff4757;
+    background: #ff3b30;
     color: white;
     border-radius: 50%;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: pulseNotification 1.5s infinite;
     border: 2px solid white;
   }
 
-  /* Mobile Sidebar - Clean and Modern */
-  .filters-sidebar {
+  /* Sidebar Overlay */
+  .sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 85%;
-    max-width: 320px;
-    height: 100vh;
-    z-index: 1000;
-    background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
-    overflow-y: auto;
-    overflow-x: hidden;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
   }
 
-  .filters-sidebar.open {
-    transform: translateX(0);
+  .sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
   }
 
-  /* Custom Scrollbar for Mobile Sidebar */
+  /* Scrollbar - Minimal */
   .filters-sidebar::-webkit-scrollbar {
     width: 4px;
   }
@@ -3595,488 +3940,49 @@ h1 {
   }
 
   .filters-sidebar::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
+    background: #d4d4d4;
     border-radius: 4px;
   }
 
-  /* Sidebar Header - Clean Design */
-  .sidebar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 20px 16px 20px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .sidebar-header h3 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .sidebar-header h3 i {
-    font-size: 16px;
-  }
-
-  .active-filter-count {
-    background: rgba(255, 255, 255, 0.25);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  /* Filter Actions at Top - Sticky */
-  .filter-actions {
-    display: flex;
-    gap: 10px;
-    padding: 16px 20px;
-    background: white;
-    border-bottom: 1px solid #e9ecef;
-    position: sticky;
-    top: 60px;
-    z-index: 9;
-  }
-
-  .apply-filters-btn,
-  .clear-filters-btn {
-    flex: 1;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .apply-filters-btn {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    border: none;
-  }
-
-  .apply-filters-btn:disabled {
-    background: #d4d4d4;
-    color: #888;
-    cursor: not-allowed;
-  }
-
-  .apply-filters-btn:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(254, 161, 22, 0.3);
-  }
-
-  .apply-filters-btn i {
-    color: white;
-    font-size: 14px;
-  }
-
-  .clear-filters-btn {
-    background: white;
-    color: #666;
-    border: 2px solid #dee2e6;
-  }
-
-  .clear-filters-btn:hover {
-    background: #f8f9fa;
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-  }
-
-  .clear-filters-btn i {
-    color: #666;
-    font-size: 14px;
-  }
-
-  .clear-filters-btn:hover i {
-    color: var(--primary-color);
-  }
-
-  /* Filters Section - Clean Layout */
-  .filters-section {
-    padding: 20px;
-    background: white;
-  }
-
-  /* Filter Group - Enhanced */
-  .FilterGroup {
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
-  }
-
-  .FilterGroup:last-child {
-    border-bottom: none;
-    margin-bottom: 80px; /* Space for filter toggle button */
-  }
-
-  .FilterGroup h4 {
-    font-size: 15px;
-    font-weight: 700;
-    margin: 0 0 12px 0;
-    color: #1a1a1a;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .filter-count-badge {
-    background: var(--primary-color);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 600;
-    min-width: 22px;
-    text-align: center;
-  }
-
-  /* Filter Options Container - Improved */
-  .filter-options-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  /* Filter Checkbox - Clean Design */
-  .filter-checkbox {
-    display: flex;
-    align-items: center;
-    padding: 10px 12px;
-    margin: 0;
-    font-size: 14px;
-    color: #495057;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    padding-left: 40px;
-    border-radius: 8px;
-    background: transparent;
-  }
-
-  .filter-checkbox:hover {
-    background: #f8f9fa;
-    color: #1a1a1a;
-  }
-
-  .filter-checkbox:active {
-    background: #e9ecef;
-  }
-
-  .filter-checkbox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  /* Custom Checkbox - Modern Design */
-  .checkmark {
-    position: absolute;
-    top: 50%;
-    left: 12px;
-    transform: translateY(-50%);
-    height: 20px;
-    width: 20px;
-    background-color: white;
-    border: 2px solid #dee2e6;
-    border-radius: 6px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .filter-checkbox:hover input ~ .checkmark {
-    border-color: var(--primary-color);
-    background: rgba(254, 161, 22, 0.05);
-  }
-
-  .filter-checkbox input:checked ~ .checkmark {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-color: var(--primary-color);
-  }
-
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 6px;
-    top: 2px;
-    width: 5px;
-    height: 10px;
-    border: solid white;
-    border-width: 0 2.5px 2.5px 0;
-    transform: rotate(45deg);
-  }
-
-  .filter-checkbox input:checked ~ .checkmark:after {
-    display: block;
-    animation: checkmark 0.3s ease-in-out;
-  }
-
+  /* Remove all animations for cleaner feel */
   @keyframes checkmark {
     0% {
-      opacity: 0;
-      transform: rotate(45deg) scale(0.5);
+      opacity: 1;
+      transform: rotate(45deg) scale(1);
     }
     100% {
       opacity: 1;
       transform: rotate(45deg) scale(1);
     }
   }
-
-  /* Active Filters Mobile - Cleaner Design */
-  .active-filters-mobile {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 12px;
-    padding: 12px;
-    margin: 12px 0;
-  }
-
-  .active-filters-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #e9ecef;
-  }
-
-  .active-filters-header span {
-    font-size: 13px;
-    font-weight: 600;
-    color: #495057;
-  }
-
-  .clear-all-mobile {
-    background: transparent;
-    border: none;
-    color: var(--primary-color);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-
-  .clear-all-mobile:hover {
-    background: rgba(254, 161, 22, 0.1);
-  }
-
-  /* Filter Chips - Clean Design */
-  .filter-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .filter-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: white;
-    border: 1px solid #dee2e6;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 12px;
-    color: #495057;
-    font-weight: 500;
-  }
-
-  .filter-chip i {
-    font-size: 11px;
-    color: #6c757d;
-  }
-
-  .filter-chip button {
-    background: none;
-    border: none;
-    color: #6c757d;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 4px;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-  }
-
-  .filter-chip button:hover {
-    background: rgba(0, 0, 0, 0.1);
-    color: #1a1a1a;
-  }
-
-  /* Specific chip colors */
-  .search-chip {
-    background: #e3f2fd;
-    border-color: #2196f3;
-    color: #1565c0;
-  }
-
-  .category-chip {
-    background: #f3e5f5;
-    border-color: #9c27b0;
-    color: #6a1b9a;
-  }
-
-  .company-chip {
-    background: #fff3e0;
-    border-color: #ff9800;
-    color: #e65100;
-  }
-
-  .experience-chip {
-    background: #e8f5e9;
-    border-color: #4caf50;
-    color: #2e7d32;
-  }
-
-  .location-chip {
-    background: #fce4ec;
-    border-color: #e91e63;
-    color: #c2185b;
-  }
-
-  .type-chip {
-    background: #e0f2f1;
-    border-color: #009688;
-    color: #00695c;
-  }
-
-  .salary-chip {
-    background: #f1f8e9;
-    border-color: #8bc34a;
-    color: #558b2f;
-  }
-
-  /* Mobile Job Info - Cleaner */
-  .mobile-job-info {
-    display: block;
-    background: linear-gradient(135deg, rgba(254, 161, 22, 0.05), rgba(254, 161, 22, 0.1));
-    border: 1px solid rgba(254, 161, 22, 0.2);
-    border-radius: 12px;
-    padding: 12px 16px;
-    margin: 16px 0;
-  }
-
-  .job-count-display {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a1a1a;
-    text-align: center;
-  }
-
-  .job-count-display span:first-child {
-    color: var(--primary-color);
-    font-weight: 700;
-  }
 }
 
-/* Very Small Screens - Extra Clean */
+/* Very Small Screens */
 @media (max-width: 480px) {
   .filters-sidebar {
-    width: 90%;
+    width: 100%;
     max-width: none;
   }
 
-  .sidebar-header {
-    padding: 18px 16px 14px 16px;
-  }
-
   .sidebar-header h3 {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .filter-actions {
-    padding: 12px 16px;
-    gap: 8px;
-  }
-
-  .apply-filters-btn,
-  .clear-filters-btn {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .filters-section {
-    padding: 16px;
-  }
-
-  .FilterGroup {
-    margin-bottom: 20px;
-    padding-bottom: 16px;
+    padding: 14px 16px;
   }
 
   .FilterGroup h4 {
     font-size: 14px;
+    padding: 14px 16px;
+  }
+
+  .filter-options-container {
+    padding: 8px 16px 14px 16px;
   }
 
   .filter-checkbox {
-    padding: 8px 10px 8px 36px;
+    padding: 10px 0;
     font-size: 13px;
-  }
-
-  .checkmark {
-    height: 18px;
-    width: 18px;
-    left: 10px;
-  }
-
-  .checkmark:after {
-    left: 5px;
-    top: 1px;
-    width: 4px;
-    height: 9px;
-  }
-
-  .filter-chip {
-    padding: 5px 10px;
-    font-size: 11px;
-  }
-}
-
-/* Landscape Mode - Optimize for horizontal screens */
-@media (max-width: 768px) and (orientation: landscape) {
-  .filters-sidebar {
-    width: 60%;
-    max-width: 400px;
-  }
-
-  .sidebar-header {
-    padding: 12px 16px;
-  }
-
-  .filter-actions {
-    padding: 10px 16px;
-  }
-
-  .FilterGroup {
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-  }
-
-  .filter-checkbox {
-    padding: 6px 8px 6px 32px;
   }
 }

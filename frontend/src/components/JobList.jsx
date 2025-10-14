@@ -1,4 +1,3 @@
-
 import React,{ memo,useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useDataLoader } from '../hooks/useDataLoader';
@@ -386,74 +385,6 @@ const MobileInfiniteScroll = React.memo(({ jobs, hasMore, loadMore, loading }) =
 });
 
 // Memoized Job Card Component
-// const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
-//   // Memoize truncated description
-//   const truncatedDescription = useMemo(() => {
-//     if (!job.description) return 'No description available';
-//     return job.description.length > 150 
-//       ? job.description.substring(0, 150) + '...' 
-//       : job.description;
-//   }, [job.description]);
-
-//   // Memoize formatted date
-//   const formattedDate = useMemo(() => {
-//     return job.postedDate || job.created_at 
-//       ? new Date(job.postedDate || job.created_at).toLocaleDateString() 
-//       : 'Date not available';
-//   }, [job.postedDate, job.created_at]);
-
-//   const handleSaveJob = useCallback(async () => {
-//     try {
-//       await onSave(job.id);
-//     } catch (error) {
-//       console.error('Error saving job:', error);
-//     }
-//   }, [job.id, onSave]);
-
-//   return (
-//     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-minimal">
-//       <div className="job-header">
-//         <h2 className="job-title">{job.title || 'No Title'}</h2>
-//         <div className="job-meta">
-//           <span className="company-name">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-//           <span className="job-location">{job.location || 'Location not specified'}</span>
-//         </div>
-//       </div>
-
-//       <div className="job-details job-details-minimal">
-//         <div className="job-category">
-//           <span className="category-badge">{job.categories?.name || job.category?.name || 'Category not specified'}</span>
-//         </div>
-
-//         <div className="job-info job-info-minimal">
-//           <p><strong>Experience:</strong> {job.experience || 'Not specified'}</p>
-//           <p><strong>Type:</strong> {job.type || 'Not specified'}</p>
-//         </div>
-
-//         <div className="job-description job-description-minimal">
-//           <p>{truncatedDescription}</p>
-//         </div>
-
-//         <div className="job-footer">
-//           <span className="posted-date">Posted: {formattedDate}</span>
-//           <div className="job-actions">
-//             <button
-//               onClick={() => onViewDetails(job)}
-//               className="view-details-btn"
-//             >
-//               {/* <i className="fa fa-eye"></i> */}
-//               View Details
-//             </button>
-//             <button onClick={handleSaveJob} className="save-btn">
-//               Save Job
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// });
-// Memoized Job Card Component
 const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => {
   // Memoize truncated description
   const truncatedDescription = useMemo(() => {
@@ -480,13 +411,9 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
 
   return (
     <div key={`${job.id}-${index}-${isMobile ? 'mobile' : 'desktop'}`} className="job-card job-card-horizontal">
-     
-
-      {/* Job Content */}
       <div className="job-content-horizontal">
         <div className='ROWFELXLOGOJOBS'>
-         {/* Company Logo */}
-      <div className="job-logo-container">
+         <div className="job-logo-container">
         {job.companies?.logo || job.company?.logo ? (
           <img 
             src={job.companies?.logo || job.company?.logo} 
@@ -507,10 +434,6 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
             <h2 className="job-title-horizontal">{job.title || 'No Title'}</h2>
             <div className="job-company-info">
               <span className="company-name-horizontal">{job.companies?.name || job.company?.name || 'Company not specified'}</span>
-              {/* <span className="company-rating">
-                <i className="fa fa-star"></i> {job.companies?.rating || job.company?.rating || '4.0'}
-              </span>
-              <span className="company-reviews">{job.companies?.reviews || job.company?.reviews || '0'} Reviews</span> */}
             </div>
           </div>
         </div>
@@ -566,6 +489,7 @@ const JobCard = React.memo(({ job, index, isMobile, onViewDetails, onSave }) => 
     </div>
   );
 });
+
 // FIXED: Filter Option Component with proper display names
 const FilterOption = React.memo(({ option, isChecked, onChange, filterType, categories, companies }) => {
   const getDisplayName = () => {
@@ -721,6 +645,16 @@ const JobList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isJobPage = location.pathname === '/jobs';
 
+  // NEW: State for expandable filter sections
+  const [expandedSections, setExpandedSections] = useState({
+    category: true, // First section open by default
+    company: false,
+    experience: false,
+    location: false,
+    type: false,
+    salary: false
+  });
+
   // Separate state for input fields to avoid losing user input
   const [localFilters, setLocalFilters] = useState({
     searchInput: '',
@@ -775,6 +709,14 @@ const JobList = () => {
       name: company.name
     }));
   }, [companies]);
+
+  // NEW: Toggle function for expandable sections
+  const toggleSection = useCallback((section) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  }, []);
 
   // FIXED: Move showToast function definition before it's used
   const showToast = useCallback((message) => {
@@ -1052,8 +994,6 @@ const JobList = () => {
 
   // FIXED: Improved synchronization between Redux filters and pending filters
   useEffect(() => {
-    // Only update pending filters if they significantly differ from Redux filters
-    // This prevents constant re-synchronization conflicts
     const shouldUpdate = (pendingArray, reduxArray) => {
       if (!pendingArray || !reduxArray) return true;
       if (pendingArray.length !== reduxArray.length) return true;
@@ -1069,7 +1009,6 @@ const JobList = () => {
       salary: shouldUpdate(pendingFilters.selectedSalary, filters.selectedSalary)
     };
 
-    // Only update if there are significant differences
     if (Object.values(needsUpdate).some(Boolean)) {
       console.log('Syncing pending filters with Redux state');
       setPendingFilters({
@@ -1114,21 +1053,17 @@ const JobList = () => {
         const oldQuery = filters.searchQuery;
         const newQuery = localFilters.searchInput;
         
-        // Update search query
         dispatch(setSearchQuery(newQuery));
         
-        // Reset page to 1 when search changes
         if (newQuery !== oldQuery) {
           dispatch(setCurrentPage(1));
         }
         
-        // ENHANCED: Smart filter mapping - automatically add related filters when searching
         if (newQuery && newQuery.trim()) {
           console.log('🔍 Searching for:', newQuery.trim());
           const relatedFilters = getRelatedFiltersFromSearch(newQuery.trim());
           console.log('📋 Found related filters:', relatedFilters);
           
-          // Add related categories to pending filters AND apply immediately
           if (relatedFilters.categories.length > 0) {
             console.log('🏷️ Adding categories:', relatedFilters.categories.map(id => 
               categories.find(cat => cat.id === id)?.name || id
@@ -1141,7 +1076,6 @@ const JobList = () => {
               return { ...prev, selectedCategory: newCategories };
             });
             
-            // Auto-apply related category filters immediately
             const currentCategories = filters.selectedCategory || [];
             const newCategories = [...new Set([...currentCategories, ...relatedFilters.categories])];
             if (newCategories.length > currentCategories.length) {
@@ -1150,7 +1084,6 @@ const JobList = () => {
             }
           }
           
-          // Add related companies to pending filters AND apply immediately
           if (relatedFilters.companies.length > 0) {
             console.log('🏢 Adding companies:', relatedFilters.companies.map(id => 
               companies.find(comp => comp.id === id)?.name || id
@@ -1163,7 +1096,6 @@ const JobList = () => {
               return { ...prev, selectedCompany: newCompanies };
             });
             
-            // Auto-apply related company filters immediately
             const currentCompanies = filters.selectedCompany || [];
             const newCompanies = [...new Set([...currentCompanies, ...relatedFilters.companies])];
             if (newCompanies.length > currentCompanies.length) {
@@ -1172,18 +1104,15 @@ const JobList = () => {
             }
           }
           
-          // Show toast notification when filters are auto-added
           if (relatedFilters.categories.length > 0 || relatedFilters.companies.length > 0) {
             const totalAdded = relatedFilters.categories.length + relatedFilters.companies.length;
             showToast(`Auto-added ${totalAdded} matching filter${totalAdded !== 1 ? 's' : ''} for "${newQuery.trim()}"`);
           }
           
-          // ADDED: Auto-close search modal/sidebar when search is performed
           if (isMobile && isSidebarOpen) {
             setIsSidebarOpen(false);
           }
         } else {
-          // When search is cleared, optionally clear auto-added filters
           console.log('🧹 Search cleared');
         }
       }
@@ -1192,7 +1121,6 @@ const JobList = () => {
     return () => clearTimeout(debounceTimer);
   }, [localFilters.searchInput, filters.searchQuery, dispatch, getRelatedFiltersFromSearch, filters.selectedCategory, filters.selectedCompany, categories, companies, showToast, isMobile, isSidebarOpen]);
 
-  // Update local state when Redux filters change (prevent override during typing)
   useEffect(() => {
     if (!urlSyncRef.current) {
       setLocalFilters(prev => ({
@@ -1205,7 +1133,6 @@ const JobList = () => {
     }
   }, [filters.selectedLocation, filters.searchQuery]);
 
-  // Sidebar management effects
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isSidebarOpen && !event.target.closest('.filters-sidebar') && !event.target.closest('.filter-toggle')) {
@@ -1226,7 +1153,6 @@ const JobList = () => {
     };
   }, [isSidebarOpen]);
 
-  // Load initial data only once
   useEffect(() => {
     if (!initialLoadComplete && !initializationRef.current) {
       initializationRef.current = true;
@@ -1242,7 +1168,6 @@ const JobList = () => {
     }
   }, [loadAllData, initialLoadComplete]);
 
-  // Reload jobs when filters change
   useEffect(() => {
     if (!initialLoadComplete || !initializationRef.current) return;
 
@@ -1263,7 +1188,6 @@ const JobList = () => {
     }
   }, [filters, loadJobs, initialLoadComplete, dispatch]);
 
-  // Initialize mobile infinite scroll data when jobs are loaded
   useEffect(() => {
     if (
       isMobile && 
@@ -1283,14 +1207,12 @@ const JobList = () => {
     }
   }, [jobs, isMobile, pagination, dispatch, initialLoadComplete, infiniteScrollInitialized, infiniteScroll.allJobs.length]);
 
-  // Scroll to top when page changes (desktop only)
   useEffect(() => {
     if (!isMobile && pagination.currentPage > 1) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [pagination.currentPage, isMobile]);
 
-  // Memoized handlers
   const handlePageChange = useCallback((newPage) => {
     if (!isMobile && newPage !== pagination.currentPage) {
       console.log('Page change requested:', newPage, 'Current:', pagination.currentPage);
@@ -1356,11 +1278,9 @@ const JobList = () => {
     }
   }, [infiniteScroll.hasMore, infiniteScroll.isLoading, dispatch, loadMoreJobs, pagination, showToast]);
 
-  // SIMPLIFIED: Enhanced filter handlers that work reliably after search
   const handleApplyFilters = useCallback(() => {
     console.log('Applying all pending filters:', pendingFilters);
     
-    // Apply filters one by one to ensure they all take effect
     const filterActions = [
       () => dispatch(setSelectedCategory(pendingFilters.selectedCategory || [])),
       () => dispatch(setSelectedCompany(pendingFilters.selectedCompany || [])),
@@ -1370,13 +1290,10 @@ const JobList = () => {
       () => dispatch(setSelectedSalary(pendingFilters.selectedSalary || []))
     ];
 
-    // Execute all filter actions
     filterActions.forEach(action => action());
     
-    // Reset pagination to first page
     dispatch(setCurrentPage(1));
     
-    // Reset infinite scroll state
     setInfiniteScrollInitialized(false);
     isLoadingMoreRef.current = false;
     
@@ -1385,11 +1302,9 @@ const JobList = () => {
     setIsSidebarOpen(false);
   }, [dispatch, pendingFilters, showToast]);
 
-  // FIXED: Enhanced clear filters with proper search term handling
   const handleClearFilters = useCallback(() => {
     console.log('Clearing all filters and search');
     
-    // Clear all pending filters
     setPendingFilters({
       selectedCategory: [],
       selectedCompany: [],
@@ -1399,11 +1314,9 @@ const JobList = () => {
       selectedSalary: []
     });
     
-    // Clear all Redux filters AND search query
     dispatch(clearFilters());
     dispatch(setSearchQuery(''));
     
-    // Clear local input states
     setLocalFilters({
       searchInput: '',
       locationSearchInput: ''
@@ -1415,7 +1328,6 @@ const JobList = () => {
     showToast('All filters and search cleared!');
     setIsSidebarOpen(false);
     
-    // Navigate to clean URL
     navigate(location.pathname, { replace: true });
   }, [dispatch, showToast, navigate, location.pathname]);
 
@@ -1423,7 +1335,6 @@ const JobList = () => {
     setIsSidebarOpen(prev => !prev);
   }, []);
 
-  // Handle search input changes without affecting filters
   const handleSearchInputChange = useCallback((value) => {
     setLocalFilters(prev => ({
       ...prev,
@@ -1444,7 +1355,6 @@ const JobList = () => {
     }
   }, [dispatch]);
 
-  // ENHANCED: Enhanced pending filter change handler with proper multiple selection support
   const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
     console.log('Filter change:', filterType, value, isChecked);
     
@@ -1453,10 +1363,8 @@ const JobList = () => {
       let updated;
       
       if (isChecked) {
-        // Add the value if it's not already present - SUPPORTS MULTIPLE SELECTIONS
         updated = current.includes(value) ? current : [...current, value];
       } else {
-        // Remove the value - ALLOWS REMOVING INDIVIDUAL SELECTIONS
         updated = current.filter(item => item !== value);
       }
       
@@ -1467,7 +1375,6 @@ const JobList = () => {
       };
     });
     
-    // ADDED: Immediately sync with Redux state for better responsiveness
     const currentReduxFilters = filters[filterType] || [];
     let newReduxFilters;
     
@@ -1477,7 +1384,6 @@ const JobList = () => {
       newReduxFilters = currentReduxFilters.filter(item => item !== value);
     }
     
-    // Apply filter change immediately to Redux for instant UI feedback
     switch (filterType) {
       case 'selectedCategory':
         dispatch(setSelectedCategory(newReduxFilters));
@@ -1501,11 +1407,9 @@ const JobList = () => {
         console.warn('Unknown filter type:', filterType);
     }
     
-    // Reset to first page when filters change
     dispatch(setCurrentPage(1));
   }, [dispatch, filters]);
 
-  // Handle individual filter dropdown actions
   const handleDropdownApply = useCallback((filterType) => {
     console.log('Applying single filter:', filterType, pendingFilters[filterType]);
     
@@ -1540,23 +1444,19 @@ const JobList = () => {
     showToast(`${count} ${filterName.toLowerCase()} filter${count !== 1 ? 's' : ''} applied!`);
   }, [dispatch, pendingFilters, showToast]);
 
-  // FIXED: Enhanced dropdown clear with intelligent search term clearing
   const handleDropdownClear = useCallback((filterType) => {
     console.log('Clearing single filter:', filterType);
     
     const clearedValues = pendingFilters[filterType] || [];
     
-    // Clear pending filters
     setPendingFilters(prev => ({
       ...prev,
       [filterType]: []
     }));
     
-    // Clear the actual Redux filter immediately
     switch (filterType) {
       case 'selectedCategory':
         dispatch(setSelectedCategory([]));
-        // FIXED: Clear search if it matches cleared categories
         if (clearedValues.length > 0 && localFilters.searchInput) {
           const shouldClearSearch = isSearchRelatedToFilters(
             localFilters.searchInput, 
@@ -1573,7 +1473,6 @@ const JobList = () => {
         
       case 'selectedCompany':
         dispatch(setSelectedCompany([]));
-        // FIXED: Clear search if it matches cleared companies
         if (clearedValues.length > 0 && localFilters.searchInput) {
           const shouldClearSearch = isSearchRelatedToFilters(
             localFilters.searchInput, 
@@ -1609,7 +1508,6 @@ const JobList = () => {
     showToast(`${filterName} filter cleared!`);
   }, [dispatch, pendingFilters, localFilters.searchInput, isSearchRelatedToFilters, showToast]);
 
-  // Modal handlers
   const handleViewDetails = useCallback((job) => {
     setSelectedJob(job);
     setIsModalOpen(true);
@@ -1655,7 +1553,6 @@ const JobList = () => {
     }
   }, [selectedJob]);
 
-  // Optimized save job handler for cards
   const handleSaveJob = useCallback(async (jobId) => {
     try {
       const result = await dispatch(saveJob({ 
@@ -1684,7 +1581,6 @@ const JobList = () => {
     }
   }, [dispatch, showToast, isMobile, isSidebarOpen]);
 
-  // Early returns for loading states
   if (!initialLoadComplete) {
     return <div className="loading">Loading jobs...</div>;
   }
@@ -1697,7 +1593,6 @@ const JobList = () => {
 
   return (
     <div className="job-list-container">
-      {/* Mobile Filter toggle button */}
       {isMobile && (
         <button className="filter-toggle" onClick={toggleSidebar}>
           <i className={`fa ${isSidebarOpen ? 'fa-times' : 'fa-sliders'}`}></i>
@@ -1706,7 +1601,6 @@ const JobList = () => {
         </button>
       )}
 
-      {/* Desktop horizontal filters */}
       {!isMobile && (
         <div className="horizontal-filters">
           <div className="filter-dropdown-group">
@@ -1783,45 +1677,25 @@ const JobList = () => {
         </div>
       )}
 
-      {/* Sidebar overlay */}
       <div className={`sidebar-overlay ${isSidebarOpen ? 'show' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
 
       <div className="job-list-layout">
-        {/* Mobile Sidebar */}
         {isMobile && (
           <div className={`filters-sidebar ${isSidebarOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
-              <h3><i className="fa fa-sliders"></i> Filters</h3>
-              <div className="active-filter-count">
-                {Object.values(pendingFilters).reduce((acc, arr) => acc + arr.length, 0)} active
-              </div>
+              <h3>Filter jobs</h3>
+              <button onClick={handleClearFilters} className="filter-clear-link">
+                Clear all
+              </button>
             </div>
             
             <div className="filters-section">
-              {/* Filter Action Buttons */}
-              <div className="filter-actions">
-                <button 
-                  onClick={handleApplyFilters} 
-                  className={`apply-filters-btn ${hasUnappliedFilters ? 'highlighted' : ''}`}
-                  disabled={!hasUnappliedFilters}
-                >
-                  <i className="fa fa-check"></i>
-                  Apply Filters
-                  {hasUnappliedFilters && <span className="pulse-dot"></span>}
-                </button>
-                
-                <button onClick={handleClearFilters} className="clear-filters-btn">
-                  <i className="fa fa-refresh"></i>
-                  Clear All
-                </button>
-              </div>
-
-              {/* Mobile sidebar filters */}
-              <div className="FilterGroup">
-                <h4>
+              {/* Category Filter */}
+              <div className={`FilterGroup ${expandedSections.category ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('category')}>
                   Category
                   {pendingFilters.selectedCategory?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedCategory.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedCategory.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1833,17 +1707,18 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedCategory', category.id, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      {category.name}
+                      <span>{category.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="FilterGroup">
-                <h4>
+              {/* Company Filter */}
+              <div className={`FilterGroup ${expandedSections.company ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('company')}>
                   Company
                   {pendingFilters.selectedCompany?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedCompany.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedCompany.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1855,17 +1730,18 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedCompany', company.id, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      {company.name}
+                      <span>{company.name}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="FilterGroup">
-                <h4>
+              {/* Experience Filter */}
+              <div className={`FilterGroup ${expandedSections.experience ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('experience')}>
                   Experience
                   {pendingFilters.selectedExperience?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedExperience.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedExperience.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1877,17 +1753,18 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedExperience', level, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      {level}
+                      <span>{level}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="FilterGroup">
-                <h4>
+              {/* Location Filter */}
+              <div className={`FilterGroup ${expandedSections.location ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('location')}>
                   Location
                   {pendingFilters.selectedLocation?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedLocation.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedLocation.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1899,17 +1776,18 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedLocation', location, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      {location}
+                      <span>{location}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="FilterGroup">
-                <h4>
-                  Type
+              {/* Type Filter */}
+              <div className={`FilterGroup ${expandedSections.type ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('type')}>
+                  Job Type
                   {pendingFilters.selectedType?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedType.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedType.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1921,17 +1799,18 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedType', type, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      {type}
+                      <span>{type}</span>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="FilterGroup">
-                <h4>
-                  Salary
+              {/* Salary Filter */}
+              <div className={`FilterGroup ${expandedSections.salary ? 'expanded' : ''}`}>
+                <h4 onClick={() => toggleSection('salary')}>
+                  Salary Range
                   {pendingFilters.selectedSalary?.length > 0 && (
-                    <span className="filter-count-badge">({pendingFilters.selectedSalary.length})</span>
+                    <span className="filter-count-badge">{pendingFilters.selectedSalary.length}</span>
                   )}
                 </h4>
                 <div className="filter-options-container">
@@ -1943,17 +1822,30 @@ const JobList = () => {
                         onChange={(e) => handlePendingFilterChange('selectedSalary', salary, e.target.checked)}
                       />
                       <span className="checkmark"></span>
-                      ${salary.replace('-', ' - ')}
+                      <span>${salary.replace('-', ' - ')}</span>
                     </label>
                   ))}
                 </div>
               </div>
             </div>
+
+            {/* Filter Action Buttons - Bottom Sticky */}
+            <div className="filter-actions">
+              <button onClick={handleClearFilters} className="clear-filters-btn">
+                Cancel
+              </button>
+              <button 
+                onClick={handleApplyFilters} 
+                className={`apply-filters-btn ${hasUnappliedFilters ? 'highlighted' : ''}`}
+                disabled={!hasUnappliedFilters}
+              >
+                Apply
+              </button>
+            </div>
           </div>
         )}
 
         <div className="jobs-content">
-          {/* Enhanced job count info with active filters display */}
           {isMobile && (
             <div className="mobile-job-info">
               <div className="job-count-display">
@@ -1962,112 +1854,9 @@ const JobList = () => {
                   <span> of {pagination.totalJobs} total</span>
                 )}
               </div>
-              
-              {/* Active filters summary on mobile */}
-              {(filters.searchQuery || 
-                (filters.selectedCategory && filters.selectedCategory.length > 0) ||
-                (filters.selectedCompany && filters.selectedCompany.length > 0) ||
-                (filters.selectedExperience && filters.selectedExperience.length > 0) ||
-                (filters.selectedLocation && filters.selectedLocation.length > 0) ||
-                (filters.selectedType && filters.selectedType.length > 0) ||
-                (filters.selectedSalary && filters.selectedSalary.length > 0)) && (
-                <div className="active-filters-mobile">
-                  <div className="active-filters-header">
-                    <span>Active Filters:</span>
-                    <button onClick={handleClearFilters} className="clear-all-mobile">
-                      Clear All
-                    </button>
-                  </div>
-                  <div className="filter-chips">
-                    {filters.searchQuery && (
-                      <span className="filter-chip search-chip">
-                        <i className="fa fa-search"></i>
-                        {filters.searchQuery}
-                        <button onClick={() => {
-                          setLocalFilters(prev => ({ ...prev, searchInput: '' }));
-                          dispatch(setSearchQuery(''));
-                        }}>×</button>
-                      </span>
-                    )}
-                    
-                    {filters.selectedCategory?.map(catId => {
-                      const category = categories.find(c => c.id === catId);
-                      return category ? (
-                        <span key={catId} className="filter-chip category-chip">
-                          <i className="fa fa-industry"></i>
-                          {category.name}
-                          <button onClick={() => {
-                            const updated = filters.selectedCategory.filter(id => id !== catId);
-                            dispatch(setSelectedCategory(updated));
-                          }}>×</button>
-                        </span>
-                      ) : null;
-                    })}
-                    
-                    {filters.selectedCompany?.map(compId => {
-                      const company = companies.find(c => c.id === compId);
-                      return company ? (
-                        <span key={compId} className="filter-chip company-chip">
-                          <i className="fa fa-building"></i>
-                          {company.name}
-                          <button onClick={() => {
-                            const updated = filters.selectedCompany.filter(id => id !== compId);
-                            dispatch(setSelectedCompany(updated));
-                          }}>×</button>
-                        </span>
-                      ) : null;
-                    })}
-                    
-                    {filters.selectedExperience?.map(exp => (
-                      <span key={exp} className="filter-chip experience-chip">
-                        <i className="fa fa-user"></i>
-                        {exp}
-                        <button onClick={() => {
-                          const updated = filters.selectedExperience.filter(e => e !== exp);
-                          dispatch(setSelectedExperience(updated));
-                        }}>×</button>
-                      </span>
-                    ))}
-                    
-                    {filters.selectedLocation?.map(loc => (
-                      <span key={loc} className="filter-chip location-chip">
-                        <i className="fa fa-map-marker"></i>
-                        {loc}
-                        <button onClick={() => {
-                          const updated = filters.selectedLocation.filter(l => l !== loc);
-                          dispatch(setSelectedLocation(updated));
-                        }}>×</button>
-                      </span>
-                    ))}
-                    
-                    {filters.selectedType?.map(type => (
-                      <span key={type} className="filter-chip type-chip">
-                        <i className="fa fa-clock"></i>
-                        {type}
-                        <button onClick={() => {
-                          const updated = filters.selectedType.filter(t => t !== type);
-                          dispatch(setSelectedType(updated));
-                        }}>×</button>
-                      </span>
-                    ))}
-                    
-                    {filters.selectedSalary?.map(salary => (
-                      <span key={salary} className="filter-chip salary-chip">
-                        <i className="fa fa-dollar"></i>
-                        ${salary.replace('-', ' - ')}
-                        <button onClick={() => {
-                          const updated = filters.selectedSalary.filter(s => s !== salary);
-                          dispatch(setSelectedSalary(updated));
-                        }}>×</button>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
-          {/* Desktop active filters display */}
           {!isMobile && (filters.searchQuery || 
             (filters.selectedCategory && filters.selectedCategory.length > 0) ||
             (filters.selectedCompany && filters.selectedCompany.length > 0) ||
@@ -2183,7 +1972,6 @@ const JobList = () => {
             )}
           </div>
 
-          {/* Mobile Infinite Scroll Loader */}
           {isMobile && (
             <MobileInfiniteScroll
               jobs={displayJobs}
@@ -2193,7 +1981,6 @@ const JobList = () => {
             />
           )}
 
-          {/* Pagination - Bottom (Desktop only) */}
           <Pagination
             pagination={pagination}
             onPageChange={handlePageChange}
@@ -2202,7 +1989,6 @@ const JobList = () => {
         </div>
       </div>
 
-      {/* Job Details Modal */}
       <JobDetailsModal
         job={selectedJob}
         isOpen={isModalOpen}
@@ -2211,7 +1997,6 @@ const JobList = () => {
         onApply={handleApplyFromModal}
       />
       
-      {/* Enhanced Toast Notification */}
       {toast && (
         <div className="toast-popup">
           <div className="toast-content">

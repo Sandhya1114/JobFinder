@@ -679,8 +679,8 @@
   }
   
   .hero-content {
-    max-width: 100%;
-    margin: 0;
+    max-width: 96%;
+    margin:auto;
   }
   
   .hero .hero-container .hero-title {

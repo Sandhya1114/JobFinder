@@ -203,8 +203,9 @@
 
 @media (max-width: 768px) {
   .homeQuickFiltersContainer {
-    padding: 32px 16px;
+    padding: 32px 0px;
     background: #ffffff;
+    width: 92vw;
   }
   
   .homeQuickFiltersHeader {
@@ -252,6 +253,7 @@
 @media (max-width: 480px) {
   .homeQuickFiltersContainer {
     padding: 24px 12px;
+    width: 92vw;
   }
   
   .homeQuickFiltersHeader h2 {
