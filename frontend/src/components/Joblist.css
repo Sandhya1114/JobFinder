@@ -3384,11 +3384,21 @@ h1 {
   }
 
   .job-title-horizontal {
-    font-size: 16px;
+    
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #222;
+    height: 32px;
   }
 
+  .job-card h2{
+    font-size: 15px;
+    margin-bottom: 10px;
+    color: #222;
+    height: 32px;
+  }
   .company-name-horizontal {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .job-meta-horizontal {

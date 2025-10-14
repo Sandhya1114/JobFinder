@@ -745,7 +745,7 @@ header.shrink .logo{
   }
   
   .mobile-menu {
-    width: 280px;
+    width: 100%;
   }
   
   .mobile-nav-links a {
@@ -781,7 +781,7 @@ header.shrink .logo{
   }
   
   .mobile-menu {
-    width: 260px;
+    width:100%;
   }
 }
 
@@ -1057,4 +1057,14 @@ header.shrink .logo{
 .search-input-wrapper input:focus-visible {
   border: 2px solid #fea116;
   outline: none;
+}
+/* Mobile override for jobs page - must come after jobs-page styles */
+@media screen and (max-width: 768px) {
+  .jobs-page .header-options.desktop-nav {
+    display: none !important;
+  }
+  
+  .jobs-page .desktop-account {
+    display: none !important;
+  }
 }
