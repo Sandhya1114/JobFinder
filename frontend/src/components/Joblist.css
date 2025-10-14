@@ -2438,7 +2438,7 @@ h1 {
 /* Jobs content should take full width when sidebar is hidden */
 .job-list-layout {
   display: flex;
-  width: 80%;
+  width: 93%;
   margin: auto;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
