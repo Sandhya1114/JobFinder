@@ -1830,7 +1830,7 @@ const JobList = () => {
             </div>
 
             {/* Filter Action Buttons - Bottom Sticky */}
-            <div className="filter-actions">
+            {/* <div className="filter-actions">
               <button onClick={handleClearFilters} className="clear-filters-btn">
                 Cancel
               </button>
@@ -1841,7 +1841,7 @@ const JobList = () => {
               >
                 Apply
               </button>
-            </div>
+            </div> */}
           </div>
         )}
 
