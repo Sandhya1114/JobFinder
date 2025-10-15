@@ -1354,7 +1354,6 @@ const JobList = () => {
       dispatch(setSelectedLocation([]));
     }
   }, [dispatch]);
-
   const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
     console.log('Filter change:', filterType, value, isChecked);
     
@@ -1408,7 +1407,68 @@ const JobList = () => {
     }
     
     dispatch(setCurrentPage(1));
-  }, [dispatch, filters]);
+    
+    // Close sidebar on mobile after filter selection
+    if (isMobile && isSidebarOpen) {
+      setTimeout(() => {
+        setIsSidebarOpen(false);
+      }, 300); // Small delay for better UX
+    }
+  }, [dispatch, filters, isMobile, isSidebarOpen]);
+  // const handlePendingFilterChange = useCallback((filterType, value, isChecked) => {
+  //   console.log('Filter change:', filterType, value, isChecked);
+    
+  //   setPendingFilters(prev => {
+  //     const current = prev[filterType] || [];
+  //     let updated;
+      
+  //     if (isChecked) {
+  //       updated = current.includes(value) ? current : [...current, value];
+  //     } else {
+  //       updated = current.filter(item => item !== value);
+  //     }
+      
+  //     console.log('Updated pending filters for', filterType, ':', updated);
+  //     return {
+  //       ...prev,
+  //       [filterType]: updated
+  //     };
+  //   });
+    
+  //   const currentReduxFilters = filters[filterType] || [];
+  //   let newReduxFilters;
+    
+  //   if (isChecked) {
+  //     newReduxFilters = currentReduxFilters.includes(value) ? currentReduxFilters : [...currentReduxFilters, value];
+  //   } else {
+  //     newReduxFilters = currentReduxFilters.filter(item => item !== value);
+  //   }
+    
+  //   switch (filterType) {
+  //     case 'selectedCategory':
+  //       dispatch(setSelectedCategory(newReduxFilters));
+  //       break;
+  //     case 'selectedCompany':
+  //       dispatch(setSelectedCompany(newReduxFilters));
+  //       break;
+  //     case 'selectedExperience':
+  //       dispatch(setSelectedExperience(newReduxFilters));
+  //       break;
+  //     case 'selectedLocation':
+  //       dispatch(setSelectedLocation(newReduxFilters));
+  //       break;
+  //     case 'selectedType':
+  //       dispatch(setSelectedType(newReduxFilters));
+  //       break;
+  //     case 'selectedSalary':
+  //       dispatch(setSelectedSalary(newReduxFilters));
+  //       break;
+  //     default:
+  //       console.warn('Unknown filter type:', filterType);
+  //   }
+    
+  //   dispatch(setCurrentPage(1));
+  // }, [dispatch, filters]);
 
   const handleDropdownApply = useCallback((filterType) => {
     console.log('Applying single filter:', filterType, pendingFilters[filterType]);
