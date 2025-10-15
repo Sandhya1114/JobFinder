@@ -968,8 +968,8 @@ h1 {
 
 .filter-toggle:hover {
   transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0 12px 35px var(--primary-color)
-   ;
+  /* box-shadow: 0 12px 35px var(--primary-color)
+   ; */
    z-index: 9999999;
 }
 
@@ -2366,7 +2366,7 @@ h1 {
 
 .filter-toggle:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 35px var(--primary-color);
+  /* box-shadow: 0 12px 35px var(--primary-color); */
 }
 
 .filter-toggle p {
