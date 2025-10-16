@@ -643,7 +643,7 @@ function generateRecommendations(errors, warnings, role) {
   recommendations.push('Share or engage with industry content to increase visibility');
 
   return recommendations;
-}cd
+}
 // ============ DYNAMIC FILTER OPTIONS ENDPOINT ============
 
 /**
