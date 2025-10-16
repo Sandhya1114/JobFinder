@@ -15,6 +15,8 @@ import { createClient } from '@supabase/supabase-js';
 dotenv.config();
 
 const app = express();
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 // ===== Middleware =====
 app.use(cors());
@@ -28,6 +30,618 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 // Add this endpoint to your server.js file
 // Place it before your other job routes for better organization
 
+// LinkedIn Profile Analyzer - URL Based Endpoint
+app.post('/api/analyze-linkedin-profile-url', async (req, res) => {
+  try {
+    const { profileUrl } = req.body;
+
+    if (!profileUrl || profileUrl.trim().length === 0) {
+      return res.status(400).json({ 
+        error: 'LinkedIn profile URL is required' 
+      });
+    }
+
+    // Validate URL format
+    const linkedinRegex = /^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-]+\/?$/;
+    if (!linkedinRegex.test(profileUrl.trim())) {
+      return res.status(400).json({ 
+        error: 'Please provide a valid LinkedIn profile URL (e.g., https://linkedin.com/in/yourprofile)' 
+      });
+    }
+
+    console.log('🔍 Scraping LinkedIn profile:', profileUrl);
+
+    // Fetch public profile data
+    const profileData = await scrapeLinkedInProfile(profileUrl);
+
+    if (!profileData) {
+      return res.status(404).json({ 
+        error: 'Could not fetch profile. Make sure the profile is public and the URL is correct.' 
+      });
+    }
+
+    // Now analyze the extracted profile data
+    return await analyzeProfileData(profileData, res);
+
+  } catch (error) {
+    console.error('❌ Error analyzing profile:', error.message);
+    res.status(500).json({ error: error.message || 'Failed to analyze profile' });
+  }
+});
+
+// Helper function to scrape LinkedIn profile
+async function scrapeLinkedInProfile(profileUrl) {
+  try {
+    const response = await axios.get(profileUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      },
+      timeout: 10000
+    });
+
+    const $ = cheerio.load(response.data);
+    
+    // Extract profile data from public fields
+    const profileData = {
+      headline: extractText($, '[data-testid="top-card-headline"]') || extractMetaTag($, 'headline'),
+      about: extractText($, '[data-testid="about"]') || extractText($, '.summary'),
+      skills: extractSkills($),
+      experience: extractExperience($),
+      education: extractEducation($),
+      picture: checkProfilePicture($),
+      connections: extractConnections($)
+    };
+
+    return profileData.headline ? profileData : null;
+
+  } catch (error) {
+    console.error('Scraping error:', error.message);
+    return null;
+  }
+}
+
+// Extract text from selector
+function extractText($, selector) {
+  const text = $(selector).text()?.trim();
+  return text || null;
+}
+
+// Extract from meta tags (JSON-LD)
+function extractMetaTag($, property) {
+  const jsonLd = $('script[type="application/ld+json"]').first().text();
+  if (jsonLd) {
+    try {
+      const data = JSON.parse(jsonLd);
+      if (property === 'headline') return data.headline || data.jobTitle;
+      if (property === 'about') return data.description;
+    } catch (e) {}
+  }
+  return null;
+}
+
+// Extract skills from profile
+function extractSkills($) {
+  const skills = [];
+  $('[data-testid="skill"]').each((_, el) => {
+    const skill = $(el).text().trim();
+    if (skill) skills.push(skill);
+  });
+  
+  // Fallback: extract from text
+  if (skills.length === 0) {
+    const skillText = $('h3:contains("Skills")').next().text();
+    return skillText ? skillText.split(',').map(s => s.trim()) : [];
+  }
+  
+  return skills;
+}
+
+// Extract experience from profile
+function extractExperience($) {
+  const experience = [];
+  $('[data-testid="experience-section"] li').each((_, el) => {
+    const title = $(el).find('[data-testid="title"]').text().trim();
+    const company = $(el).find('[data-testid="company-name"]').text().trim();
+    const duration = $(el).find('[data-testid="duration"]').text().trim();
+    
+    if (title || company) {
+      experience.push(`${title} at ${company} (${duration})`);
+    }
+  });
+  return experience;
+}
+
+// Extract education from profile
+function extractEducation($) {
+  const education = [];
+  $('[data-testid="education-section"] li').each((_, el) => {
+    const school = $(el).find('[data-testid="school-name"]').text().trim();
+    const degree = $(el).find('[data-testid="degree"]').text().trim();
+    
+    if (school || degree) {
+      education.push(`${degree} from ${school}`);
+    }
+  });
+  return education;
+}
+
+// Check if profile has picture
+function checkProfilePicture($) {
+  const picture = $('img[data-testid="profile-photo"]').attr('src');
+  return !!picture;
+}
+
+// Extract connection count
+function extractConnections($) {
+  const connText = $('[data-testid="topcard-connections"]').text();
+  const match = connText?.match(/(\d+)/);
+  return match ? parseInt(match[1]) : 0;
+}
+
+// Analyze profile data and return results
+async function analyzeProfileData(profileData, res) {
+  try {
+    console.log('📋 Analyzing LinkedIn profile data');
+    
+    const { 
+      headline = '',
+      about = '',
+      skills = [],
+      experience = [],
+      education = [],
+      picture = false,
+      connections = 0
+    } = profileData;
+
+    const profile = {
+      headline,
+      about,
+      skills: Array.isArray(skills) ? skills : [],
+      experience: Array.isArray(experience) ? experience : [],
+      education: Array.isArray(education) ? education : [],
+      hasPicture: picture,
+      connectionCount: connections
+    };
+
+    // ============ RULE-BASED SCORING ============
+    
+    // 1. Detect spelling errors in headline and about
+    const spellingErrors = detectSpellingErrors(profile.headline, profile.about);
+    
+    // 2. Check for common issues
+    const issues = [];
+    const warnings = [];
+    
+    // Headline issues
+    if (!profile.headline || profile.headline.trim().length === 0) {
+      issues.push({
+        section: 'Headline',
+        severity: 'error',
+        message: 'Missing headline - this is critical for first impressions',
+        suggestion: 'Add a compelling headline that includes your role and key skills'
+      });
+    } else if (profile.headline.length < 20) {
+      warnings.push({
+        section: 'Headline',
+        severity: 'warning',
+        message: 'Headline is too short and may not fully describe your role',
+        suggestion: 'Expand to include specific technologies or expertise'
+      });
+    } else if (profile.headline.includes('||')) {
+      issues.push({
+        section: 'Headline',
+        severity: 'warning',
+        message: 'Using "||" symbols looks unprofessional',
+        suggestion: 'Use pipes "|" or remove separators. Example: "Full Stack Developer | Java & React | 3+ years"'
+      });
+    }
+
+    // About section issues
+    if (!profile.about || profile.about.trim().length === 0) {
+      issues.push({
+        section: 'About',
+        severity: 'error',
+        message: 'Missing About section reduces profile completeness',
+        suggestion: 'Write a compelling summary (3-5 sentences) highlighting your expertise and goals'
+      });
+    } else if (profile.about.length < 50) {
+      warnings.push({
+        section: 'About',
+        severity: 'warning',
+        message: 'About section is very brief - add more details',
+        suggestion: 'Expand with specific skills, achievements, and what you\'re looking for'
+      });
+    }
+
+    // Skills issues
+    if (!profile.skills || profile.skills.length === 0) {
+      issues.push({
+        section: 'Skills',
+        severity: 'error',
+        message: 'No skills listed - ATS systems rely heavily on this',
+        suggestion: 'Add 10-15 relevant skills including technical stack (e.g., Java, React, SQL)'
+      });
+    } else if (profile.skills.length < 5) {
+      warnings.push({
+        section: 'Skills',
+        severity: 'warning',
+        message: 'Limited skills listed - add more technical and soft skills',
+        suggestion: `Currently have ${profile.skills.length} skills. Aim for 10-15 relevant skills`
+      });
+    }
+
+    // Experience issues
+    if (!profile.experience || profile.experience.length === 0) {
+      issues.push({
+        section: 'Experience',
+        severity: 'error',
+        message: 'No work experience listed - critical for professional profiles',
+        suggestion: 'Add current and past roles with specific achievements and metrics'
+      });
+    } else {
+      // Check for metrics in experience
+      const experienceText = profile.experience.join(' ').toLowerCase();
+      if (!experienceText.match(/\d+%|increased|improved|grew|launched|built|developed \d+/)) {
+        warnings.push({
+          section: 'Experience',
+          severity: 'warning',
+          message: 'Experience lacks quantifiable achievements (numbers, percentages)',
+          suggestion: 'Add metrics: "Increased performance by 40%", "Led team of 5", "Shipped 3+ features"'
+        });
+      }
+    }
+
+    // Education issues
+    if (!profile.education || profile.education.length === 0) {
+      warnings.push({
+        section: 'Education',
+        severity: 'warning',
+        message: 'No education listed - helps build credibility',
+        suggestion: 'Add your degree, university, and graduation year'
+      });
+    }
+
+    // Picture check
+    if (!profile.hasPicture) {
+      issues.push({
+        section: 'Profile Picture',
+        severity: 'error',
+        message: 'Missing professional profile picture - critical first impression',
+        suggestion: 'Add a clear, professional headshot against a simple background'
+      });
+    }
+
+    // ============ CALCULATE SCORES ============
+    
+    const completenessScore = calculateCompletenessScore({
+      headline: profile.headline,
+      about: profile.about,
+      skills: profile.skills,
+      experience: profile.experience,
+      education: profile.education,
+      hasPicture: profile.hasPicture
+    });
+
+    const issueScore = Math.max(0, 100 - (issues.length * 15 + warnings.length * 5));
+    
+    // ============ AI SUGGESTIONS ============
+    
+    const aiSuggestions = await generateAISuggestions(profile, issues, detectedRole);
+
+    // ============ ROLE DETECTION ============
+    
+    const detectedRole = detectRole(profile.headline, profile.skills, profile.about);
+
+    // ============ BUILD RESPONSE ============
+    
+    const analysisResult = {
+      overallScore: Math.round((completenessScore + issueScore) / 2),
+      completenessScore,
+      issueScore,
+      detectedRole,
+      sections: {
+        headline: {
+          present: !!profile.headline,
+          score: profile.headline ? Math.min(100, Math.max(0, (profile.headline.length / 100) * 100)) : 0,
+          length: profile.headline ? profile.headline.length : 0
+        },
+        about: {
+          present: !!profile.about,
+          score: profile.about ? Math.min(100, Math.max(0, (profile.about.length / 500) * 100)) : 0,
+          length: profile.about ? profile.about.length : 0
+        },
+        skills: {
+          present: profile.skills && profile.skills.length > 0,
+          count: profile.skills ? profile.skills.length : 0,
+          score: profile.skills ? Math.min(100, (profile.skills.length / 15) * 100) : 0
+        },
+        experience: {
+          present: profile.experience && profile.experience.length > 0,
+          count: profile.experience ? profile.experience.length : 0
+        },
+        education: {
+          present: profile.education && profile.education.length > 0,
+          count: profile.education ? profile.education.length : 0
+        },
+        picture: {
+          present: profile.hasPicture
+        }
+      },
+      issues: {
+        errors: issues.filter(i => i.severity === 'error'),
+        warnings: warnings.filter(w => w.severity === 'warning'),
+        total: issues.length + warnings.length
+      },
+      spellingErrors: spellingErrors,
+      aiSuggestions: aiSuggestions,
+      recommendations: generateRecommendations(issues, warnings, detectedRole)
+    };
+
+    console.log('✅ Profile analysis complete');
+    return res.json(analysisResult);
+
+  } catch (error) {
+    console.error('❌ Error analyzing profile:', error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+// Enhanced endpoint that accepts profile data as text (for manual input)
+app.post('/api/check-linkedin-profile', async (req, res) => {
+  try {
+    console.log('📋 Checking LinkedIn profile');
+    
+    const { 
+      headline = '',
+      about = '',
+      skills = [],
+      experience = [],
+      education = [],
+      picture = false,
+      connections = 0
+    } = req.body;
+
+    const profileData = {
+      headline,
+      about,
+      skills: Array.isArray(skills) ? skills : [],
+      experience: Array.isArray(experience) ? experience : [],
+      education: Array.isArray(education) ? education : [],
+      picture,
+      connections
+    };
+
+    return await analyzeProfileData(profileData, res);
+
+  } catch (error) {
+    console.error('❌ Error checking profile:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Helper functions
+
+function detectSpellingErrors(headline = '', about = '') {
+  const commonErrors = {
+    'devloveper': 'developer',
+    'developper': 'developer',
+    'managment': 'management',
+    'bussiness': 'business',
+    'experiance': 'experience',
+    'occured': 'occurred',
+    'recieve': 'receive',
+    'acheive': 'achieve',
+    'seperete': 'separate',
+    'refered': 'referred',
+    'recomend': 'recommend'
+  };
+
+  const text = (headline + ' ' + about).toLowerCase();
+  const errors = [];
+
+  for (const [wrong, correct] of Object.entries(commonErrors)) {
+    if (text.includes(wrong)) {
+      errors.push({
+        word: wrong,
+        suggestion: correct,
+        found_in: text.includes(wrong) ? 'profile' : null
+      });
+    }
+  }
+
+  return errors;
+}
+
+function calculateCompletenessScore(profile) {
+  let score = 0;
+  const maxPoints = 100;
+  
+  if (profile.headline && profile.headline.length > 20) score += 15;
+  if (profile.about && profile.about.length > 50) score += 20;
+  if (profile.skills && profile.skills.length >= 10) score += 20;
+  if (profile.experience && profile.experience.length > 0) score += 20;
+  if (profile.education && profile.education.length > 0) score += 15;
+  if (profile.hasPicture) score += 10;
+
+  return Math.min(maxPoints, score);
+}
+
+function detectRole(headline = '', skills = [], about = '') {
+  const roles = {
+    'full stack': 'Full Stack Developer',
+    'frontend': 'Frontend Developer',
+    'backend': 'Backend Developer',
+    'data scientist': 'Data Scientist',
+    'devops': 'DevOps Engineer',
+    'qa': 'QA Engineer',
+    'product manager': 'Product Manager',
+    'designer': 'UX/UI Designer',
+    'manager': 'Engineering Manager'
+  };
+
+  const text = (headline + ' ' + skills.join(' ') + ' ' + about).toLowerCase();
+  
+  for (const [keyword, role] of Object.entries(roles)) {
+    if (text.includes(keyword)) {
+      return role;
+    }
+  }
+
+  return 'Professional';
+}
+
+async function generateAISuggestions(profile, issues, detectedRole) {
+  try {
+    console.log('🤖 Generating AI suggestions using Groq');
+
+    if (!process.env.GROQ_API_KEY) {
+      console.warn('⚠️ GROQ_API_KEY not found, using fallback suggestions');
+      return generateFallbackSuggestions(profile, issues, detectedRole);
+    }
+
+    const systemPrompt = `You are a LinkedIn profile optimization expert. Generate specific, actionable suggestions to improve a user's LinkedIn profile. Focus on their actual content and role. Return ONLY valid JSON, no markdown.`;
+
+    const userPrompt = `Analyze this LinkedIn profile and generate AI suggestions:
+
+CURRENT PROFILE:
+- Role: ${detectedRole}
+- Headline: "${profile.headline || '[Missing]'}"
+- About: "${profile.about?.substring(0, 200) || '[Missing]'}"
+- Skills: ${profile.skills.slice(0, 5).join(', ') || '[None listed]'}
+- Experience: ${profile.experience.slice(0, 2).join(' | ') || '[None listed]'}
+
+ISSUES FOUND:
+${issues.map(i => `- ${i.section}: ${i.message}`).join('\n')}
+
+Generate 3-4 specific, personalized suggestions as JSON:
+
+{
+  "suggestions": [
+    {
+      "type": "headline",
+      "priority": "high",
+      "current": "current headline from profile",
+      "suggestion": "improved headline specific to their role and skills",
+      "explanation": "why this is better"
+    },
+    {
+      "type": "about",
+      "priority": "high",
+      "suggestion": "improved about section specific to their skills and experience",
+      "explanation": "why this is better"
+    },
+    {
+      "type": "skills",
+      "priority": "medium",
+      "suggestion": "list of skills to add based on their role",
+      "explanation": "why these skills matter for ${detectedRole}"
+    },
+    {
+      "type": "experience",
+      "priority": "medium",
+      "suggestion": "how to improve their experience bullet points",
+      "explanation": "add metrics and specifics"
+    }
+  ]
+}`;
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Groq API error:', errorData);
+      return generateFallbackSuggestions(profile, issues, detectedRole);
+    }
+
+    const data = await response.json();
+    const content = data.choices[0].message.content.trim();
+    const cleanContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    const result = JSON.parse(cleanContent);
+    return result.suggestions || generateFallbackSuggestions(profile, issues, detectedRole);
+
+  } catch (error) {
+    console.error('Error generating AI suggestions:', error.message);
+    return generateFallbackSuggestions(profile, issues, detectedRole);
+  }
+}
+
+function generateFallbackSuggestions(profile, issues, detectedRole) {
+  const suggestions = [];
+
+  if (issues.some(i => i.section === 'Headline') || !profile.headline) {
+    suggestions.push({
+      type: 'headline',
+      priority: 'high',
+      current: profile.headline || '[Missing]',
+      suggestion: `${detectedRole} | Expert in ${profile.skills.slice(0, 2).join(' & ') || 'cutting-edge technologies'} | Building impactful solutions`,
+      explanation: 'Include your role, top skills, and value proposition for better visibility'
+    });
+  }
+
+  if (issues.some(i => i.section === 'About') || !profile.about) {
+    const skillsText = profile.skills.slice(0, 3).join(', ');
+    suggestions.push({
+      type: 'about',
+      priority: 'high',
+      suggestion: `Passionate ${detectedRole} with expertise in ${skillsText}. I specialize in building scalable, user-centric solutions. My approach combines technical excellence with problem-solving. I'm committed to continuous learning and collaborating with talented teams to deliver high-impact projects. Let's connect if you're looking for someone who's dedicated to excellence.`,
+      explanation: 'Make it personal: add your expertise, passion, and what you\'re seeking'
+    });
+  }
+
+  if (issues.some(i => i.section === 'Experience')) {
+    suggestions.push({
+      type: 'experience',
+      priority: 'high',
+      suggestion: 'Transform each role with metrics: Instead of "Built features", use "Architected microservices handling 100K+ requests/day, reducing latency by 45%"',
+      explanation: 'Add numbers: user count, performance gains, team size, revenue impact'
+    });
+  }
+
+  if (profile.skills.length < 10) {
+    suggestions.push({
+      type: 'skills',
+      priority: 'medium',
+      suggestion: `Add these relevant skills for ${detectedRole}: Technical Leadership, Agile/Scrum, Problem-Solving, Communication, System Design`,
+      explanation: 'Expand skills beyond technical to include soft skills and industry-relevant competencies'
+    });
+  }
+
+  return suggestions;
+}
+
+function generateRecommendations(errors, warnings, role) {
+  const recommendations = [];
+  
+  if (errors.length > 0) {
+    recommendations.push(`Fix ${errors.length} critical error(s) - these directly impact your profile visibility`);
+  }
+  
+  if (warnings.length > 0) {
+    recommendations.push(`Address ${warnings.length} warning(s) to improve profile strength`);
+  }
+
+  recommendations.push(`Tailor profile content to ${role} opportunities - use role-specific keywords`);
+  recommendations.push('Request endorsements from colleagues to boost credibility');
+  recommendations.push('Share or engage with industry content to increase visibility');
+
+  return recommendations;
+}cd
 // ============ DYNAMIC FILTER OPTIONS ENDPOINT ============
 
 /**
