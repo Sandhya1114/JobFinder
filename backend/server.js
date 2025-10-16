@@ -12,11 +12,13 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import axios from "axios";
+import * as cheerio from "cheerio";
 dotenv.config();
 
 const app = express();
-const axios = require('axios');
-const cheerio = require('cheerio');
+// const axios = require('axios');
+// const cheerio = require('cheerio');
 
 // ===== Middleware =====
 app.use(cors());
