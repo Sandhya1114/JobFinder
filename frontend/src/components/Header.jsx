@@ -711,6 +711,9 @@ export default function Header({ user }) {
             >
               Jobs
             </Link>
+            <Link to='/likedln' 
+               className={isActiveLink("/likedln") ? "active" : ""}
+              ><span className="nav-text">Linkedln</span></Link>
             <Link 
               to="/about" 
               className={isActiveLink("/about") ? "active" : ""}
@@ -839,6 +842,9 @@ export default function Header({ user }) {
                 <i className="fas fa-briefcase"></i>
               </span>
               <span className="nav-text">ATS</span></Link>
+              <Link to='/likedln' 
+               className={isActiveLink("/likedln") ? "active" : ""}
+              ><span className="nav-text">Linkedln</span></Link>
             <Link 
               to="/about" 
               onClick={() => setIsMobileMenuOpen(false)}
