@@ -15,7 +15,8 @@ import { supabase } from "./supabaseClient";
 import { useDataLoader } from "./hooks/useDataLoader";
 import AllFilters from "./components/AllFilterOption/AllFilters";
 import ATSResumeAnalyzer from "./components/ATS/AtsAnalyzer";
-import LinkedInProfileChecker from './components/LinkedInProfileChecker';
+import LinkedInProfileChecker from "./components/LinkedInProfileChecker/LinkedInProfileChecker";
+// import LinkedInProfileChecker from './components/LinkedInProfileChecker';
 
 // ✅ SOLUTION: Create a separate component that uses useDataLoader
 function AppContent() {
@@ -76,7 +77,7 @@ function AppContent() {
             element={
               <>
                 <Header user={user} />
-                <LinkedInProfileChecker />
+                <LinkedInProfileChecker/>
               </>
             }
           />

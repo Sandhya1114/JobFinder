@@ -32,7 +32,7 @@ export default function LinkedInProfileChecker() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/analyze-linkedin-profile-url', {
+      const response = await fetch('/analyze-linkedin-profile-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ profileUrl: url })
