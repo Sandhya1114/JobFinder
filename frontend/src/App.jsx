@@ -72,7 +72,7 @@ function AppContent() {
               </>
             } 
           />
-          <Route 
+          {/* <Route 
             path="/likedln" 
             element={
               <>
@@ -80,7 +80,7 @@ function AppContent() {
                 <LinkedInProfileChecker/>
               </>
             }
-          />
+          /> */}
           <Route 
             path="/jobs" 
             element={
